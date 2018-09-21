@@ -1,0 +1,102 @@
+.. index-start-marker1
+
+PyQUBO
+======
+
+PyQUBO allows you to create QUBOs or Ising models from flexible mathematical expressions easily.
+Some of the features of PyQUBO are
+
+* **Python-based** (the entire code is written in Python).
+* **QUBO generation (compile) is fast** (due to the JIT like compile mechanism).
+* **Comes with plenty of useful expressions** such as binary integer variables, logical constraints, or matrix/vector variables.
+
+Example Usage
+-------------
+
+This example constructs a simple expression and compile it to ``model``.
+By calling ``model.to_qubo()``, we get the resulting QUBO.
+(This example solves a number partitioning problem with a set S = {4, 2, 7, 1})
+
+>>> from pyqubo import Spin
+>>> s1, s2, s3, s4 = Spin("s1"), Spin("s2"), Spin("s3"), Spin("s4")
+>>> H = (4*s1 + 2*s2 + 7*s3 + s4)**2
+>>> model = H.compile()
+>>> qubo, offset = model.to_qubo()
+>>> pprint(qubo)
+{('s1', 's1'): -160.0,
+ ('s1', 's2'): 64.0,
+ ('s1', 's3'): 224.0,
+ ('s1', 's4'): 32.0,
+ ('s2', 's2'): -96.0,
+ ('s2', 's3'): 112.0,
+ ('s2', 's4'): 16.0,
+ ('s3', 's3'): -196.0,
+ ('s3', 's4'): 56.0,
+ ('s4', 's4'): -52.0}
+
+
+
+More examples can be found in `readthedocs_example_page (not published yet) <http://readthedocs_example_page/>`_
+
+Installation
+------------
+
+.. code-block:: shell
+
+    pip install pyqubo
+
+or
+
+.. code-block:: shell
+
+    python setup.py install
+
+Supported Python Versions
+-------------------------
+
+Python 2.7, 3.4, 3.5, 3.6 and 3.7 are supported.
+
+.. index-end-marker1
+
+Test
+----
+
+Run all tests.
+
+.. code-block:: shell
+
+    python -m unittest discover test
+
+Show coverage report.
+
+.. code-block:: shell
+
+    coverage run -m unittest discover
+    coverage html
+
+Run test with circleci CLI.
+
+.. code-block:: shell
+
+    circleci build --job $JOBNAME
+
+Run doctest.
+
+.. code-block:: shell
+
+    make doctest
+
+Organization
+------------
+
+Recruit Communications Co., Ltd.
+
+Licence
+-------
+
+Released under the Apache License 2.0.
+
+Contribution
+------------
+
+We welcome contributions to this project.

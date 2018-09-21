@@ -1,0 +1,7 @@
+dimod==0.7.4
+numpy==1.15.1
+six==1.11.0
+coverage==4.5.1
+codecov==2.0.15
+nbsphinx==0.3.5
+ipykernel==4.9.0

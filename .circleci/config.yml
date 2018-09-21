@@ -1,0 +1,107 @@
+version: 2
+jobs:
+  test-2.7: &test-template
+    docker:
+      - image: circleci/python:2.7-jessie
+
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: create virtualenv
+          command: |
+            python -m virtualenv env
+
+      - run:
+          name: install python dependencies
+          command: |
+            . env/bin/activate
+            python --version
+            pip install -r requirements.txt
+
+      - run:
+          name: run unittests
+          command: |
+            . env/bin/activate
+            python --version
+            coverage run -m unittest discover
+
+      - run:
+          name: codecov
+          command: |
+            . env/bin/activate
+            # todo: uncomment below when the repository becomes public
+            #codecov
+
+  test-3.4:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.4-jessie
+
+  test-3.5:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.5-jessie
+
+  test-3.6:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.6-jessie
+
+  test-3.7:
+    <<: *test-template
+    docker:
+      - image: circleci/python:3.7-stretch
+
+  test-doc:
+    docker:
+      - image: circleci/python:3.6-jessie
+
+    working_directory: ~/repo
+
+    steps:
+      - run:
+          name: install graphviz and pandoc
+          command: |
+            sudo apt-get install graphviz
+            sudo apt-get install pandoc
+
+      - checkout
+
+      - run:
+          name: create virtualenv
+          command: |
+            python -m virtualenv env
+
+      - run:
+          name: install sphinx and dependencies
+          command: |
+            . env/bin/activate
+            pip install -r requirements.txt
+            pip install sphinx
+            pip install sphinx_rtd_theme
+
+      - run:
+          name: test doc build
+          command: |
+            . env/bin/activate
+            sphinx-build -W -b html docs docs/_build/html
+
+      - run:
+          name: run doctest
+          command: |
+            . env/bin/activate
+            make doctest
+
+workflows:
+  version: 2
+  tests:
+    jobs:
+      - test-2.7
+      - test-3.4
+      - test-3.5
+      - test-3.6
+      - test-3.7
+      - test-doc
