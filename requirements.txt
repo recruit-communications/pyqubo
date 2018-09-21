@@ -1,4 +1,4 @@
-dimod==0.7.4
+dimod>=0.7.4
 numpy==1.15.1
 six==1.11.0
 coverage==4.5.1

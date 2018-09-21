@@ -1,3 +1,16 @@
+.. image:: https://img.shields.io/pypi/v/pyqubo.svg
+    :target: https://pypi.python.org/pypi/pyqubo
+
+.. image:: https://codecov.io/gh/recruit-communications/pyqubo/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/recruit-communications/pyqubo
+
+.. image:: https://readthedocs.org/projects/pyqubo/badge/?version=latest
+    :target: http://pyqubo.readthedocs.io/en/latest/?badge=latest
+
+.. image:: https://circleci.com/gh/recruit-communications/pyqubo.svg?style=svg
+    :target: https://circleci.com/gh/recruit-communications/pyqubo
+
+
 .. index-start-marker1
 
 PyQUBO
@@ -9,6 +22,8 @@ Some of the features of PyQUBO are
 * **Python-based** (the entire code is written in Python).
 * **QUBO generation (compile) is fast** (due to the JIT like compile mechanism).
 * **Comes with plenty of useful expressions** such as binary integer variables, logical constraints, or matrix/vector variables.
+
+For more details, see `PyQUBO Documentation <https://pyqubo.readthedocs.io/>`_.
 
 Example Usage
 -------------
@@ -34,9 +49,6 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
  ('s3', 's4'): 56.0,
  ('s4', 's4'): -52.0}
 
-
-
-More examples can be found in `readthedocs_example_page (not published yet) <http://readthedocs_example_page/>`_
 
 Installation
 ------------
