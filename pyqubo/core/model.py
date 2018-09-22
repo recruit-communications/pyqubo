@@ -145,8 +145,9 @@ class Model:
                 Specify the parameter values.
                 
         Returns:
-            tuple(dict, dict): Tuple of the decoded solution and broken constraints.
-            Structure of this dict is defined by :obj:`structure`.
+            tuple(dict, dict, float): Tuple of the decoded solution,
+            broken constraints and energy.
+            Structure of decoded_solution is defined by :obj:`structure`.
         """
 
         def put_value_with_keys(dict_body, keys, value):
@@ -207,8 +208,9 @@ class Model:
                 Decode only top-k (energy is smaller) solutions.
         
         Returns:
-            tuple(dict, dict): Tuple of the decoded solution and broken constraints.
-            Structure of this dict is defined by :obj:`structure`.
+            list[tuple(dict, dict, float)]: List of tuple of the decoded solution and
+            broken constraints and energy. Solutions are sorted by energy.
+            Structure of decoded_solution is defined by :obj:`structure`.
         """
         top_indices = np.argsort(response.record.energy)
         if topk:
@@ -227,6 +229,7 @@ class Model:
 
     def to_dimod_bqm(self, params=None):
         """Returns :class:`dimod.BinaryQuadraticModel`.
+        
         For more details about :class:`dimod.BinaryQuadraticModel`,
         see `dimod.BinaryQuadraticModel 
         <https://dimod.readthedocs.io/en/latest/reference/binary_quadratic_model.html>`_.
