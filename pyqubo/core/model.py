@@ -131,7 +131,7 @@ class Model:
             s += dict_solution[label1] * dict_solution[label2] * value
         return s + offset
 
-    def decode_solution(self, solution, var_type):
+    def decode_solution(self, solution, var_type, params=None):
         """Returns decoded solution.
         
         Args:
@@ -140,10 +140,14 @@ class Model:
             
             var_type (str):
                 Specify the input and output variable type. "binary" or "spin".
+            
+            params (dict[str, float]):
+                Specify the parameter values.
                 
         Returns:
-            tuple(dict, dict): Tuple of the decoded solution and broken constraints.
-            Structure of this dict is defined by :obj:`structure`.
+            tuple(dict, dict, float): Tuple of the decoded solution,
+            broken constraints and energy.
+            Structure of decoded_solution is defined by :obj:`structure`.
         """
 
         def put_value_with_keys(dict_body, keys, value):
@@ -186,7 +190,59 @@ class Model:
                                  "But an energy of constraints should not be negative."
                                  .format(label=label, energy=energy))
 
-        return decoded_solution, broken_const
+        problem_energy = self.energy(dict_bin_solution, "binary", params)
+
+        return decoded_solution, broken_const, problem_energy
+
+    def decode_dimod_response(self, response, topk=None):
+        """Decode the solution of :class:`dimod.Response`.
+        
+        For more details about :class:`dimod.Response`,
+        see `dimod.Response 
+        <https://dimod.readthedocs.io/en/latest/reference/response.html>`_.
+        
+        Args:
+            response (:class:`dimod.Response`):
+                The solution returned from dimod sampler.
+            topk (int, default=None):
+                Decode only top-k (energy is smaller) solutions.
+        
+        Returns:
+            list[tuple(dict, dict, float)]: List of tuple of the decoded solution and
+            broken constraints and energy. Solutions are sorted by energy.
+            Structure of decoded_solution is defined by :obj:`structure`.
+        """
+        top_indices = np.argsort(response.record.energy)
+        if topk:
+            top_indices = top_indices[:topk]
+
+        dict_solutions = list(dict(zip(response.variable_labels, sample)) for sample in response.record.sample[top_indices])
+
+        decoded_solutions = []
+        for sol in dict_solutions:
+            if response.vartype == dimod.SPIN:
+                var_type = "spin"
+            else:
+                var_type = "binary"
+            decoded_solutions.append(self.decode_solution(sol, var_type))
+        return decoded_solutions
+
+    def to_dimod_bqm(self, params=None):
+        """Returns :class:`dimod.BinaryQuadraticModel`.
+        
+        For more details about :class:`dimod.BinaryQuadraticModel`,
+        see `dimod.BinaryQuadraticModel 
+        <https://dimod.readthedocs.io/en/latest/reference/binary_quadratic_model.html>`_.
+        
+        Args:
+            params (dict[str, float]):
+                If the expression contains :class:`Param` objects,
+                you have to specify the value of them by :obj:`params`.
+        
+        Returns:
+            :class:`dimod.BinaryQuadraticModel` with vartype set to `dimod.BINARY`.
+        """
+        return self.compiled_qubo.eval(params)
 
     def to_qubo(self, index_label=False, params=None):
         """Returns QUBO and energy offset.
