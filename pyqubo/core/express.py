@@ -519,10 +519,10 @@ class Constraint(Express):
         >>> a, b = Qbit('a'), Qbit('b')
         >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
         >>> model = exp.compile()
-        >>> sol, broken = model.decode_solution({'a': 1, 'b': 1}, var_type='binary')
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, var_type='binary')
         >>> pprint(broken)
         {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-        >>> sol, broken = model.decode_solution({'a': 1, 'b': 0}, var_type='binary')
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, var_type='binary')
         >>> pprint(broken)
         {}
     """
