@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Matrix, Constraint, Param
+from pyqubo import Qbit, Matrix, Constraint, Param, Vector
 from pyqubo import assert_qubo_equal
 
 
@@ -78,35 +78,40 @@ class TestModel(unittest.TestCase):
         # when the constraint is not broken
 
         # type of solution is dict[label, bit]
-        decoded_sol, broken = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': 1.0},
-                                                    var_type="binary")
+        decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': 1.0},
+                                                            var_type="binary")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
+        self.assertTrue(energy == 0)
 
         # type of solution is list[bit]
-        decoded_sol, broken = model.decode_solution([1, 1], var_type="binary")
+        decoded_sol, broken, energy = model.decode_solution([1, 1], var_type="binary")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
+        self.assertTrue(energy == 0)
 
         # type of solution is dict[index_label(int), bit]
-        decoded_sol, broken = model.decode_solution({0: 1.0, 1: 1.0},
-                                                    var_type="binary")
+        decoded_sol, broken, energy = model.decode_solution({0: 1.0, 1: 1.0},
+                                                            var_type="binary")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
+        self.assertTrue(energy == 0)
 
         # when the constraint is broken
 
         # type of solution is dict[label, bit]
-        decoded_sol, broken = model.decode_solution({'x[0][1]': 0.0, 'x[1][1]': 1.0},
-                                                    var_type="binary")
+        decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 0.0, 'x[1][1]': 1.0},
+                                                            var_type="binary")
         self.assertTrue(decoded_sol == {'x': {0: {1: 0}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 1)
+        self.assertTrue(energy == 1)
 
         # type of solution is dict[label, spin]
-        decoded_sol, broken = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': -1.0},
-                                                    var_type="spin")
+        decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': -1.0},
+                                                            var_type="spin")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: -1}}})
         self.assertTrue(len(broken) == 1)
+        self.assertTrue(energy == 1)
 
         # invalid solution
         self.assertRaises(ValueError, lambda: model.decode_solution([1, 1, 1], var_type="binary"))
@@ -122,6 +127,31 @@ class TestModel(unittest.TestCase):
         exp = Constraint(-(x[1, 1] - x[0, 1]) ** 2, label="const")
         model = exp.compile()
         self.assertRaises(ValueError, lambda: model.decode_solution([1, 0], var_type="binary"))
+
+    def test_work_with_dimod(self):
+        import numpy as np
+        import dimod
+        n = 10
+        A = [np.random.randint(-50, 50) for _ in range(n)]
+        S = Vector('S', n)
+        H = sum(A[i] * S[i] for i in range(n)) ** 2
+        model = H.compile()
+        binary_bqm = model.to_dimod_bqm()
+        sa = dimod.reference.SimulatedAnnealingSampler()
+        response = sa.sample(binary_bqm, num_reads=10, num_sweeps=5)
+        decoded_solutions = model.decode_dimod_response(response, topk=2)
+        for (decoded_solution, broken, energy) in decoded_solutions:
+            assert isinstance(decoded_solution, dict)
+            assert isinstance(broken, dict)
+            assert isinstance(energy, float)
+
+        spin_bqm = binary_bqm.change_vartype(dimod.SPIN)
+        response = sa.sample(spin_bqm, num_reads=10, num_sweeps=5)
+        decoded_solutions = model.decode_dimod_response(response, topk=2)
+        for (decoded_solution, broken, energy) in decoded_solutions:
+            assert isinstance(decoded_solution, dict)
+            assert isinstance(broken, dict)
+            assert isinstance(energy, float)
 
     def test_params(self):
         a, b, p = Qbit("a"), Qbit("b"), Param("p")
