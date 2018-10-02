@@ -34,9 +34,9 @@ class NotConst(UserDefinedExpress):
         >>> a, b = Qbit('a'), Qbit('b')
         >>> exp = NotConst(a, b, 'not')
         >>> model = exp.compile()
-        >>> model.energy({'a': 1, 'b': 0}, var_type='binary')
+        >>> model.energy({'a': 1, 'b': 0}, vartype='BINARY')
         0.0
-        >>> model.energy({'a': 1, 'b': 1}, var_type='binary')
+        >>> model.energy({'a': 1, 'b': 1}, vartype='BINARY')
         1.0
     """
 
@@ -66,9 +66,9 @@ class AndConst(UserDefinedExpress):
         >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
         >>> exp = AndConst(a, b, c, 'and')
         >>> model = exp.compile()
-        >>> model.energy({'a': 1, 'b': 0, 'c': 0}, var_type='binary')
+        >>> model.energy({'a': 1, 'b': 0, 'c': 0}, vartype='BINARY')
         0.0
-        >>> model.energy({'a': 0, 'b': 1, 'c': 1}, var_type='binary')
+        >>> model.energy({'a': 0, 'b': 1, 'c': 1}, vartype='BINARY')
         1.0
     """
 
@@ -98,9 +98,9 @@ class OrConst(UserDefinedExpress):
         >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
         >>> exp = OrConst(a, b, c, 'or')
         >>> model = exp.compile()
-        >>> model.energy({'a': 1, 'b': 0, 'c': 1}, var_type='binary')
+        >>> model.energy({'a': 1, 'b': 0, 'c': 1}, vartype='BINARY')
         0.0
-        >>> model.energy({'a': 0, 'b': 1, 'c': 0}, var_type='binary')
+        >>> model.energy({'a': 0, 'b': 1, 'c': 0}, vartype='BINARY')
         1.0
     """
 
@@ -130,9 +130,9 @@ class XorConst(UserDefinedExpress):
         >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
         >>> exp = XorConst(a, b, c, 'xor')
         >>> model = exp.compile()
-        >>> model.energy({'a': 1, 'b': 0, 'c': 1, 'aux_xor': 0}, var_type='binary')
+        >>> model.energy({'a': 1, 'b': 0, 'c': 1, 'aux_xor': 0}, vartype='BINARY')
         0.0
-        >>> model.energy({'a': 0, 'b': 1, 'c': 0, 'aux_xor': 0}, var_type='binary')
+        >>> model.energy({'a': 0, 'b': 1, 'c': 0, 'aux_xor': 0}, vartype='BINARY')
         1.0
     """
 

@@ -21,7 +21,8 @@ import dimod
 import six
 
 from .coefficient import Coefficient
-from .model import Model, CompiledQubo
+from .model import Model
+from .compiled_qubo import CompiledQubo
 from .binaryprod import BinaryProd
 from .paramprod import ParamProd
 
@@ -213,7 +214,7 @@ class Express:
                 return label
 
         # Expand the expression to polynomial
-        expanded, const = Express._expand(self)
+        expanded, constraints = Express._expand(self)
 
         # Make polynomials quadratic
         offset = 0.0
@@ -248,11 +249,16 @@ class Express:
             compiled_qubo[label_key] = compile_param_if_express(value)
         compiled_qubo = CompiledQubo(compiled_qubo, compile_param_if_express(offset + bqm_offset))
 
+        # compile values of constraint
+        #for const_label, const in constraints.items():
+        #    print(const_label, const)
+
+
         # Merge structures
         uniq_variables = Express._unique_vars(self)
         structure = reduce(Express._merge_dict, [var.structure for var in uniq_variables])
 
-        return Model(compiled_qubo, structure, Express._merge_dict(const, product_consts))
+        return Model(compiled_qubo, structure, Express._merge_dict(constraints, product_consts))
 
     def _compile_param(self):
         expanded, _ = Express._expand_param(self)
@@ -519,10 +525,10 @@ class Constraint(Express):
         >>> a, b = Qbit('a'), Qbit('b')
         >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
         >>> model = exp.compile()
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, var_type='binary')
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
         >>> pprint(broken)
         {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, var_type='binary')
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
         >>> pprint(broken)
         {}
     """

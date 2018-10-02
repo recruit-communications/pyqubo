@@ -36,7 +36,7 @@ class Coefficient:
         
         If we specify the params as :math:`a=2, b=3`, then the evaluated value will be 14.0.
         
-        >>> coeff.eval(params={'a': 2, 'b': 3})
+        >>> coeff.evaluate(params={'a': 2, 'b': 3})
         14.0
         
     """
@@ -44,7 +44,7 @@ class Coefficient:
     def __init__(self, terms):
         self.terms = terms
 
-    def eval(self, params):
+    def evaluate(self, params):
         """Returns evaluated value with `params`.
         
         Args:

@@ -24,7 +24,7 @@ class TestLogic(unittest.TestCase):
         exp = And(a, b)
         model = exp.compile()
         for a, b in itertools.product(*[(0, 1)] * 2):
-            e = int(model.energy({'a': a, 'b': b}, var_type='binary'))
+            e = int(model.energy({'a': a, 'b': b}, vartype='BINARY'))
             self.assertEqual(a*b, e)
 
     def test_or(self):
@@ -32,7 +32,7 @@ class TestLogic(unittest.TestCase):
         exp = Or(a, b)
         model = exp.compile()
         for a, b in itertools.product(*[(0, 1)] * 2):
-            e = int(model.energy({'a': a, 'b': b}, var_type='binary'))
+            e = int(model.energy({'a': a, 'b': b}, vartype='BINARY'))
             self.assertEqual(int(a+b > 0), e)
 
     def test_not(self):
@@ -40,7 +40,7 @@ class TestLogic(unittest.TestCase):
         exp = Not(a)
         model = exp.compile()
         for a in [0, 1]:
-            e = int(model.energy({'a': a}, var_type='binary'))
+            e = int(model.energy({'a': a}, vartype='BINARY'))
             self.assertEqual(1-a, e)
 
         self.assertEqual(repr(exp), "Not(((Qbit(a)*Num(-1))+Num(1)))")
