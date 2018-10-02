@@ -79,20 +79,20 @@ class TestModel(unittest.TestCase):
 
         # type of solution is dict[label, bit]
         decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': 1.0},
-                                                            var_type="binary")
+                                                            vartype="BINARY")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
         self.assertTrue(energy == 0)
 
         # type of solution is list[bit]
-        decoded_sol, broken, energy = model.decode_solution([1, 1], var_type="binary")
+        decoded_sol, broken, energy = model.decode_solution([1, 1], vartype="BINARY")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
         self.assertTrue(energy == 0)
 
         # type of solution is dict[index_label(int), bit]
         decoded_sol, broken, energy = model.decode_solution({0: 1.0, 1: 1.0},
-                                                            var_type="binary")
+                                                            vartype="BINARY")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 0)
         self.assertTrue(energy == 0)
@@ -101,32 +101,29 @@ class TestModel(unittest.TestCase):
 
         # type of solution is dict[label, bit]
         decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 0.0, 'x[1][1]': 1.0},
-                                                            var_type="binary")
+                                                            vartype="BINARY")
         self.assertTrue(decoded_sol == {'x': {0: {1: 0}, 1: {1: 1}}})
         self.assertTrue(len(broken) == 1)
         self.assertTrue(energy == 1)
 
+        # invalid solution
+        self.assertRaises(ValueError, lambda: model.decode_solution([1, 1, 1], vartype="BINARY"))
+        self.assertRaises(ValueError, lambda: model.decode_solution(
+            {'x[0][2]': 1.0, 'x[1][1]': 0.0}, vartype="BINARY"))
+        self.assertRaises(TypeError, lambda: model.decode_solution((1, 1), vartype="BINARY"))
+
         # type of solution is dict[label, spin]
         decoded_sol, broken, energy = model.decode_solution({'x[0][1]': 1.0, 'x[1][1]': -1.0},
-                                                            var_type="spin")
+                                                            vartype="SPIN")
         self.assertTrue(decoded_sol == {'x': {0: {1: 1}, 1: {1: -1}}})
         self.assertTrue(len(broken) == 1)
         self.assertTrue(energy == 1)
-
-        # invalid solution
-        self.assertRaises(ValueError, lambda: model.decode_solution([1, 1, 1], var_type="binary"))
-        self.assertRaises(ValueError, lambda: model.decode_solution(
-            {'x[0][2]': 1.0, 'x[1][1]': 0.0}, var_type="binary"))
-        self.assertRaises(TypeError, lambda: model.decode_solution((1, 1), var_type="binary"))
-
-        # invalid var_type
-        self.assertRaises(AssertionError, lambda: model.decode_solution([1, 1], var_type="sp"))
 
     def test_decode2(self):
         x = Matrix("x", n_row=2, n_col=2)
         exp = Constraint(-(x[1, 1] - x[0, 1]) ** 2, label="const")
         model = exp.compile()
-        self.assertRaises(ValueError, lambda: model.decode_solution([1, 0], var_type="binary"))
+        self.assertRaises(ValueError, lambda: model.decode_solution([1, 0], vartype="BINARY"))
 
     def test_work_with_dimod(self):
         import numpy as np
@@ -160,9 +157,9 @@ class TestModel(unittest.TestCase):
         model = exp.compile()
         qubo, offset = model.to_qubo(index_label=False, params=params)
         dict_solution = {'a': 1, 'b': 0}
-        dict_energy = model.energy(dict_solution, var_type="binary", params=params)
+        dict_energy = model.energy(dict_solution, vartype="BINARY", params=params)
         list_solution = [1, 0]
-        list_energy = model.energy(list_solution, var_type="binary", params=params)
+        list_energy = model.energy(list_solution, vartype="BINARY", params=params)
         assert_qubo_equal(qubo, {('a', 'b'): 2.0, ('a', 'a'): 2.0, ('b', 'b'): 0.0})
         self.assertEqual(offset, 2.0)
         self.assertTrue(dict_energy, 2.0)

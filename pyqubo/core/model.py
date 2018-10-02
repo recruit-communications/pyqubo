@@ -16,6 +16,7 @@ from operator import or_
 import numpy as np
 import dimod
 from six.moves import reduce
+from dimod.decorators import vartype_argument
 
 
 class Model:
@@ -34,7 +35,7 @@ class Model:
         compiled_qubo (:class:`.CompiledQubo`):
             Half-compiled QUBO. If we want to get the final QUBO, we need to evaluate this QUBO
             by passing :obj:`params`. See :func:`CompiledQubo.eval()`.
-        
+            
         structure (`dict[label, Tuple(key1, key2, key3, ...)]`):
             It defines the mapping of the variable used in :func:`decode_solution`.
             A solution of `label` is mapped to
@@ -45,7 +46,7 @@ class Model:
             It contains constraints of the problem. `label` is each constraint name and
             `polynomial_term` is corresponding polynomial which should be zero when the
             constraint is satisfied.
-    
+        
     Attributes:
         variable_order (list):
             The list of labels. The order is corresponds to the index of QUBO or Ising model.
@@ -69,33 +70,35 @@ class Model:
         from pprint import pformat
         return "Model({}, structure={})".format(repr(self.compiled_qubo), str(pformat(self.structure)))
 
-    def _parse_solution(self, solution, var_type):
+    @vartype_argument('vartype')
+    def _parse_solution(self, solution, vartype):
         """Parse solutions.
         
         Args:
             solution (list[bit]/dict[label, bit]/dict[index, bit]):
                 The solution returned from solvers.
             
-            var_type (str):
-                Specify the variable type. "binary" or "spin".
+            vartype (:class:`dimod.Vartype`/str/set, optional):
+                Variable type of the solution. Accepted input values:
+                * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
+                * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
         
         Returns:
              dict[label, bit]: dictionary of label and binary bit.
         """
-        assert var_type in ("binary", "spin"), "var_type should be either 'binary' or 'spin'."
 
         if isinstance(solution, list) or isinstance(solution, np.ndarray):
             if len(self.variable_order) != len(solution):
                 raise ValueError("Illegal solution. Length of the solution is different from"
                                  "that of self.variable_order.")
-            dict_solution = dict(zip(self.variable_order, solution))
+            dict_binary_solution = dict(zip(self.variable_order, solution))
         elif isinstance(solution, dict):
 
             if set(solution.keys()) == set(self.variable_order):
-                dict_solution = solution
+                dict_binary_solution = solution
 
             elif set(solution.keys()) == set(range(len(self.variable_order))):
-                dict_solution = {self.index2label[index]: v for index, v in solution.items()}
+                dict_binary_solution = {self.index2label[index]: v for index, v in solution.items()}
 
             else:
                 raise ValueError("Illegal solution. The keys of the solution"
@@ -103,20 +106,23 @@ class Model:
         else:
             raise TypeError("Unexpected type of solution.")
 
-        if var_type == "spin":
-            dict_solution = {k: (v + 1) / 2 for k, v in dict_solution.items()}
+        if vartype == dimod.SPIN:
+            dict_binary_solution = {k: (v + 1) / 2 for k, v in dict_binary_solution.items()}
 
-        return dict_solution
+        return dict_binary_solution
 
-    def energy(self, solution, var_type, params=None):
+    @vartype_argument('vartype')
+    def energy(self, solution, vartype, params=None):
         """Returns energy of the solution.
         
         Args:
             solution (list[bit]/dict[label, bit]/dict[index, bit]):
                 The solution returned from solvers.
             
-            var_type (str):
-                Specify the variable type. "binary" or "spin".
+            vartype (:class:`dimod.Vartype`/str/set, optional):
+                Variable type of the solution. Accepted input values:
+                * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
+                * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
             params (dict[str, float]):
                 Specify the parameter values.
@@ -124,22 +130,22 @@ class Model:
         Returns:
             float: energy of the solution. 
         """
-        dict_solution = self._parse_solution(solution, var_type)
-        qubo, offset = self.to_qubo(params=params)
-        s = 0.0
-        for (label1, label2), value in qubo.items():
-            s += dict_solution[label1] * dict_solution[label2] * value
-        return s + offset
+        dict_binary_solution = self._parse_solution(solution, vartype)
+        bqm = self.compiled_qubo.evaluate(params)
+        return bqm.energy(dict_binary_solution)
 
-    def decode_solution(self, solution, var_type, params=None):
+    @vartype_argument('vartype')
+    def decode_solution(self, solution, vartype, params=None):
         """Returns decoded solution.
         
         Args:
             solution (list[bit]/dict[label, bit]/dict[index, bit]):
                 The solution returned from solvers.
             
-            var_type (str):
-                Specify the input and output variable type. "binary" or "spin".
+            vartype (:class:`dimod.Vartype`/str/set, optional):
+                Variable type of the solution. Accepted input values:
+                * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
+                * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
             params (dict[str, float]):
                 Specify the parameter values.
@@ -165,16 +171,14 @@ class Model:
 
         decoded_solution = {}
 
-        dict_bin_solution = self._parse_solution(solution, var_type)
+        dict_bin_solution = self._parse_solution(solution, vartype)
 
         for label, bit in dict_bin_solution.items():
             if label in self.structure:
-                if var_type == "spin":
+                if vartype == dimod.SPIN:
                     out_value = 2 * bit - 1
-                elif var_type == "binary":
+                elif vartype == dimod.BINARY:
                     out_value = bit
-                else:  # pragma: no cover
-                    raise ValueError("var_type should be either 'binary' or 'spin'.")
                 put_value_with_keys(decoded_solution, self.structure[label], out_value)
 
         # Check satisfaction of constraints
@@ -190,7 +194,7 @@ class Model:
                                  "But an energy of constraints should not be negative."
                                  .format(label=label, energy=energy))
 
-        problem_energy = self.energy(dict_bin_solution, "binary", params)
+        problem_energy = self.energy(dict_bin_solution, dimod.BINARY, params)
 
         return decoded_solution, broken_const, problem_energy
 
@@ -216,15 +220,11 @@ class Model:
         if topk:
             top_indices = top_indices[:topk]
 
-        dict_solutions = list(dict(zip(response.variable_labels, sample)) for sample in response.record.sample[top_indices])
-
+        dict_solutions = list(dict(zip(response.variable_labels, sample))
+                              for sample in response.record.sample[top_indices])
         decoded_solutions = []
         for sol in dict_solutions:
-            if response.vartype == dimod.SPIN:
-                var_type = "spin"
-            else:
-                var_type = "binary"
-            decoded_solutions.append(self.decode_solution(sol, var_type))
+            decoded_solutions.append(self.decode_solution(sol, response.vartype))
         return decoded_solutions
 
     def to_dimod_bqm(self, params=None):
@@ -242,7 +242,7 @@ class Model:
         Returns:
             :class:`dimod.BinaryQuadraticModel` with vartype set to `dimod.BINARY`.
         """
-        return self.compiled_qubo.eval(params)
+        return self.compiled_qubo.evaluate(params)
 
     def to_qubo(self, index_label=False, params=None):
         """Returns QUBO and energy offset.
@@ -285,10 +285,10 @@ class Model:
             
         """
 
-        bqm = self.compiled_qubo.eval(params)
+        bqm = self.compiled_qubo.evaluate(params)
         q, offset = bqm.to_qubo()
 
-        # Evaluate values of QUBO
+        # Construct QUBO
         qubo = {}
         for (label1, label2), v in q.items():
             if index_label:
@@ -341,7 +341,7 @@ class Model:
 
         """
 
-        bqm = self.compiled_qubo.eval(params)
+        bqm = self.compiled_qubo.evaluate(params)
         linear, quadratic, offset = bqm.to_ising()
 
         # Construct linear
@@ -365,72 +365,3 @@ class Model:
             new_quadratic[(i, j)] = v
 
         return new_linear, new_quadratic, offset
-
-
-class CompiledQubo:
-    """Half-compiled QUBO.
-    
-    Args:
-        qubo (dict[label, :class:`Coefficient`/float]): QUBO
-        
-        offset (:class:`Coefficient`/float): Offset of QUBO
-    
-    Attributes:
-        qubo (dict[label, :class:`Coefficient`/float]): QUBO
-        
-        offset (:class:`Coefficient`/float): Offset of QUBO
-    
-    This contains QUBO and the offset, but the value of the QUBO
-    has not been evaluated yet. To get the final QUBO, you need to
-    evaluate this QUBO by calling :func:`CompiledQubo.eval`.
-    """
-
-    def __init__(self, qubo, offset):
-        self.qubo = qubo
-        self.offset = offset
-
-    @property
-    def variables(self):
-        """Unique labels contained in keys of QUBO."""
-        return [i for (i, j) in self.qubo.keys() if i == j]
-
-    def eval(self, params):
-        """Returns evaluated QUBO.
-        
-        Args:
-            params (dict[str, float]): Pass the value of the parameter.
-        
-        Returns:
-            :class:`BinaryQuadraticModel`
-        """
-        evaluated_qubo = {}
-        for k, v in self.qubo.items():
-            evaluated_qubo[k] = CompiledQubo._eval_if_not_float(v, params)
-
-        evaluated_offset = CompiledQubo._eval_if_not_float(self.offset, params)
-
-        return dimod.BinaryQuadraticModel.from_qubo(
-            evaluated_qubo, evaluated_offset)
-
-    def __repr__(self):
-        from pprint import pformat
-        return "CompiledQubo({}, offset={})".format(pformat(self.qubo), self.offset)
-
-    @staticmethod
-    def _eval_if_not_float(v, params):
-        """ If v is not float (i.e. v is :class:`Express`), returns an evaluated value.
-
-        Args:
-            v (float/:class:`Coefficient`):
-                The value to be evaluated.
-                
-            params (dict[str, float]):
-                Parameters for evaluation.
-
-        Returns:
-            float: Evaluated value of the input :obj:`v`:
-        """
-        if isinstance(v, float):
-            return v
-        else:
-            return v.eval(params)

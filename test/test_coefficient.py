@@ -20,5 +20,5 @@ class TestCoefficient(unittest.TestCase):
 
     def test_coefficient_exception(self):
         coeff = Coefficient({ParamProd({'a': 1, 'b': 1}): 2.0, ParamProd({}): 2.0})
-        self.assertRaises(ValueError, lambda: coeff.eval({}))
-        self.assertRaises(ValueError, lambda: coeff.eval({'a': 1.0}))
+        self.assertRaises(ValueError, lambda: coeff.evaluate({}))
+        self.assertRaises(ValueError, lambda: coeff.evaluate({'a': 1.0}))

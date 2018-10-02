@@ -27,7 +27,7 @@ class Not(UserDefinedExpress):
         >>> exp = Not(a)
         >>> model = exp.compile()
         >>> for a in (0, 1):
-        ...   print(a, int(model.energy({'a': a}, var_type='binary')))
+        ...   print(a, int(model.energy({'a': a}, vartype='BINARY')))
         0 1
         1 0
     """
@@ -52,7 +52,7 @@ class And(UserDefinedExpress):
         >>> exp = And(a, b)
         >>> model = exp.compile()
         >>> for a, b in itertools.product(*[(0, 1)] * 2):
-        ...   print(a, b, int(model.energy({'a': a, 'b': b}, var_type='binary')))
+        ...   print(a, b, int(model.energy({'a': a, 'b': b}, vartype='BINARY')))
         0 0 0
         0 1 0
         1 0 0
@@ -79,7 +79,7 @@ class Or(UserDefinedExpress):
         >>> exp = Or(a, b)
         >>> model = exp.compile()
         >>> for a, b in itertools.product(*[(0, 1)] * 2):
-        ...   print(a, b, int(model.energy({'a': a, 'b': b}, var_type='binary')))
+        ...   print(a, b, int(model.energy({'a': a, 'b': b}, vartype='BINARY')))
         0 0 0
         0 1 1
         1 0 1
