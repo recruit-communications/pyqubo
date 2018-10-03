@@ -9,5 +9,6 @@ Internal Class
    binaryprod
    paramprod
    compiledqubo
+   compiledconstraint
    coefficient
 
