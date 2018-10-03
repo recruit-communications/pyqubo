@@ -33,9 +33,16 @@ jobs:
           command: |
             . env/bin/activate
             # skip here when local run
-            if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] && [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
+            if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] || [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
               codecov
             fi
+
+      - run:
+          name: test notebooks
+          command: |
+            . env/bin/activate
+            python setup.py install
+            find notebooks/ -name *.ipynb | xargs -L 1 runipy
 
   test-3.4:
     <<: *test-template
