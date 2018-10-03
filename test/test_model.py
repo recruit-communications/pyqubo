@@ -164,3 +164,12 @@ class TestModel(unittest.TestCase):
         self.assertEqual(offset, 2.0)
         self.assertTrue(dict_energy, 2.0)
         self.assertTrue(list_energy, 2.0)
+
+    def test_param_in_constraint(self):
+        a = Qbit("a")
+        exp = Constraint(2 * Param("c") + a, "const1")
+        m = exp.compile()
+        sol, broken, energy = m.decode_solution({"a": 1}, vartype="BINARY", params={"c": 1})
+        self.assertEqual(energy, 3.0)
+        self.assertEqual(broken, {'const1': {'result': {'a': 1}, 'penalty': 3.0}})
+        self.assertEqual(sol, {'a': 1})

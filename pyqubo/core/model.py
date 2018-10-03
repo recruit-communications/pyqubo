@@ -163,12 +163,6 @@ class Model:
                 dict_body = dict_body[key]
             dict_body[keys[-1]] = value
 
-        def evaluate_constraint(constraint, dict_value):
-            e = 0.0
-            for term_key, value in constraint.items():
-                e += term_key.calc_product(dict_value) * value
-            return e
-
         decoded_solution = {}
 
         dict_bin_solution = self._parse_solution(solution, vartype)
@@ -184,10 +178,10 @@ class Model:
         # Check satisfaction of constraints
         broken_const = {}
         for label, const in self.constraints.items():
-            energy = evaluate_constraint(const, dict_bin_solution)
+            energy = const.energy(dict_bin_solution, params)
             if energy > 0.0:
                 result_value = {var: dict_bin_solution[var] for var in
-                                reduce(or_, [k.keys for k in const.keys()])}
+                                reduce(or_, [k.keys for k in const.polynomial.keys()])}
                 broken_const[label] = {"result": result_value, "penalty": energy}
             elif energy < 0.0:
                 raise ValueError("The energy of the constraint \"{label}\" is {energy}."

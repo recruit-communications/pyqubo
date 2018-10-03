@@ -23,6 +23,7 @@ import six
 from .coefficient import Coefficient
 from .model import Model
 from .compiled_qubo import CompiledQubo
+from .compiled_constraint import CompiledConstraint
 from .binaryprod import BinaryProd
 from .paramprod import ParamProd
 
@@ -250,15 +251,17 @@ class Express:
         compiled_qubo = CompiledQubo(compiled_qubo, compile_param_if_express(offset + bqm_offset))
 
         # compile values of constraint
-        #for const_label, const in constraints.items():
-        #    print(const_label, const)
-
+        compiled_constraints = {}
+        for label, constraint in Express._merge_dict(constraints, product_consts).items():
+            compiled_constraints[label] =\
+                CompiledConstraint({prod: compile_param_if_express(value)
+                                    for prod, value in constraint.items()})
 
         # Merge structures
         uniq_variables = Express._unique_vars(self)
         structure = reduce(Express._merge_dict, [var.structure for var in uniq_variables])
 
-        return Model(compiled_qubo, structure, Express._merge_dict(constraints, product_consts))
+        return Model(compiled_qubo, structure, compiled_constraints)
 
     def _compile_param(self):
         expanded, _ = Express._expand_param(self)
