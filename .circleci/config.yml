@@ -42,7 +42,7 @@ jobs:
           command: |
             . env/bin/activate
             python setup.py install
-            find notebooks/ -name *.ipynb | xargs -L 1 runipy
+            find notebooks -name *.ipynb -not -path "*/.ipynb_checkpoints/*" | xargs -L 1 runipy
 
   test-3.4:
     <<: *test-template
