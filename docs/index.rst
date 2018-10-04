@@ -9,10 +9,11 @@
    :caption: Manual:
 
    notebooks/getting_started.ipynb
+   contribution
 
 .. toctree::
    :maxdepth: 1
-   :caption: Reference Document:
+   :caption: Class Reference:
 
    reference/express
    reference/model
