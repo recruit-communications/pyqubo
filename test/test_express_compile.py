@@ -14,16 +14,16 @@
 
 import unittest
 
-from pyqubo import Qbit, Spin, Param, Constraint, Vector, Matrix, Add, Sum
+from pyqubo import Qbit, Spin, Placeholder, Constraint, Vector, Matrix, Add, Sum
 from pyqubo import assert_qubo_equal
 
 
 class TestExpressCompile(unittest.TestCase):
 
     def compile_check(self, exp, expected_qubo, expected_offset, expected_structure,
-                      params=None):
+                      feed_dict=None):
         model = exp.compile(strength=5)
-        qubo, offset = model.to_qubo(params=params)
+        qubo, offset = model.to_qubo(feed_dict=feed_dict)
         assert_qubo_equal(qubo, expected_qubo)
         self.assertEqual(qubo, expected_qubo)
         self.assertEqual(offset, expected_offset)
@@ -96,42 +96,42 @@ class TestExpressCompile(unittest.TestCase):
         expected_structure = {'a': ('a',), 'b': ('b',)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
-    def test_compile_param(self):
-        a, b, w, v = Qbit("a"), Qbit("b"), Param("w"), Param("v")
+    def test_compile_placeholder(self):
+        a, b, w, v = Qbit("a"), Qbit("b"), Placeholder("w"), Placeholder("v")
         exp = w*(a+b-2) + v
         expected_qubo = {('a', 'a'): 3.0, ('b', 'b'): 3.0}
         expected_offset = -1
         expected_structure = {'a': ('a',), 'b': ('b',)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure,
-                           params={"w": 3.0, "v": 5.0})
+                           feed_dict={"w": 3.0, "v": 5.0})
 
-    def test_compile_param2(self):
-        a, b, w, v = Qbit("a"), Qbit("b"), Param("w"), Param("v")
+    def test_compile_placeholder2(self):
+        a, b, w, v = Qbit("a"), Qbit("b"), Placeholder("w"), Placeholder("v")
         exp = v*w*(a+b-2) + v
         expected_qubo = {('a', 'a'): 15.0, ('b', 'b'): 15.0}
         expected_offset = -25
         expected_structure = {'a': ('a',), 'b': ('b',)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure,
-                           params={"w": 3.0, "v": 5.0})
+                           feed_dict={"w": 3.0, "v": 5.0})
 
-    def test_compile_param3(self):
-        a, v = Qbit("a"), Param("v")
+    def test_compile_placeholder3(self):
+        a, v = Qbit("a"), Placeholder("v")
         exp = v*v*a + v
         expected_qubo = {('a', 'a'): 25.0}
         expected_offset = 5
         expected_structure = {'a': ('a',)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure,
-                           params={"v": 5.0})
+                           feed_dict={"v": 5.0})
 
     def test_compile_const(self):
-        a, b, w = Qbit("a"), Qbit("b"), Param("w")
-        exp = Constraint(Constraint(w * (a + b - 1), label="const1") + Constraint((a + b - 1) ** 2, label="const2"),
-                         label="const_all")
+        a, b, w = Qbit("a"), Qbit("b"), Placeholder("w")
+        exp = Constraint(Constraint(w * (a + b - 1), label="const1")
+                         + Constraint((a + b - 1) ** 2, label="const2"), label="const_all")
         expected_qubo = {('a', 'a'): 2.0, ('a', 'b'): 2.0, ('b', 'b'): 2.0}
         expected_offset = -2.0
         expected_structure = {'a': ('a',), 'b': ('b',)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure,
-                           params={"w": 3.0})
+                           feed_dict={"w": 3.0})
 
     def test_compile_vector(self):
         x = Vector("x", n_dim=5)

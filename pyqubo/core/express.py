@@ -25,7 +25,7 @@ from .model import Model
 from .compiled_qubo import CompiledQubo
 from .compiled_constraint import CompiledConstraint
 from .binaryprod import BinaryProd
-from .paramprod import ParamProd
+from .placeholderprod import PlaceholderProd
 
 
 @six.add_metaclass(abc.ABCMeta)
@@ -264,7 +264,7 @@ class Express:
         return Model(compiled_qubo, structure, compiled_constraints)
 
     def _compile_param(self):
-        expanded, _ = Express._expand_param(self)
+        expanded, _ = Express._expand_placeholder(self)
         return Coefficient(expanded)
 
     @staticmethod
@@ -286,7 +286,7 @@ class Express:
             return Express._unique_vars(exp.left) | Express._unique_vars(exp.right)
         elif isinstance(exp, Add):
             return Express._unique_vars(exp.left) | Express._unique_vars(exp.right)
-        elif isinstance(exp, Param):
+        elif isinstance(exp, Placeholder):
             return set()
         elif isinstance(exp, Num):
             return set()
@@ -314,34 +314,34 @@ class Express:
         return r
 
     @staticmethod
-    def _expand_param(exp):
-        """Expand the parameter expression hierarchically into dict format."""
+    def _expand_placeholder(exp):
+        """Expand the placeholder expression hierarchically into dict format."""
 
         if isinstance(exp, AddList):
             expanded, const = reduce(
                 lambda arg1, arg2:
                 (Express._merge_term(arg1[0], arg2[0]), Express._merge_dict_update(arg1[1], arg2[1])),
-                [Express._expand_param(term) for term in exp.terms])
+                [Express._expand_placeholder(term) for term in exp.terms])
             return expanded, const
 
         elif isinstance(exp, Mul):
-            left, left_const = Express._expand_param(exp.left)
-            right, right_const = Express._expand_param(exp.right)
+            left, left_const = Express._expand_placeholder(exp.left)
+            right, right_const = Express._expand_placeholder(exp.right)
             expanded_terms = defaultdict(float)
             for k1, v1 in left.items():
                 for k2, v2 in right.items():
-                    merged_key = ParamProd.merge_term_key(k1, k2)
+                    merged_key = PlaceholderProd.merge_term_key(k1, k2)
                     expanded_terms[merged_key] += v1 * v2
             return expanded_terms, Express._merge_dict_update(left_const, right_const)
 
-        elif isinstance(exp, Param):
+        elif isinstance(exp, Placeholder):
             expanded_terms = defaultdict(float)
-            expanded_terms[ParamProd({exp.label: 1.0})] = 1.0
+            expanded_terms[PlaceholderProd({exp.label: 1.0})] = 1.0
             return expanded_terms, {}
 
         elif isinstance(exp, Num):
             terms = defaultdict(float)
-            terms[ParamProd({})] = exp.value
+            terms[PlaceholderProd({})] = exp.value
             return terms, {}
 
         else:
@@ -402,7 +402,7 @@ class Express:
                     expanded_terms[merged_key] += v1 * v2
             return expanded_terms, Express._merge_dict_update(left_const, right_const)
 
-        elif isinstance(exp, Param):
+        elif isinstance(exp, Placeholder):
             expanded_terms = defaultdict(float)
             expanded_terms[Express.CONST_TERM_KEY] = exp
             return expanded_terms, {}
@@ -471,43 +471,43 @@ class UserDefinedExpress(Express):
         return "{}({})".format(self.__class__.__name__, self.express)
 
 
-class Param(Express):
-    """Parameter expression.
+class Placeholder(Express):
+    """Placeholder expression.
     
-    You can specify the value of the :class:`Param` when creating the QUBO.
-    By using :class:`Param`, you can change the value without compiling again.
+    You can specify the value of the :class:`Placeholder` when creating the QUBO.
+    By using :class:`Placeholder`, you can change the value without compiling again.
     This is useful when you need to update the strength of constraint gradually.
     
     Args:
-        label (str): The label of the parameter.
+        label (str): The label of the placeholder.
     
     Example:
-        The value of the parameter is specified when you call :func:`to_qubo`.
+        The value of the placeholder is specified when you call :func:`to_qubo`.
         
-        >>> from pyqubo import Qbit, Param
-        >>> x, y, a = Qbit('x'), Qbit('y'), Param('a')
+        >>> from pyqubo import Qbit, Placeholder
+        >>> x, y, a = Qbit('x'), Qbit('y'), Placeholder('a')
         >>> exp = a*x*y + 2*x
-        >>> pprint(exp.compile().to_qubo(params={'a': 3}))
+        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 3}))
         ({('x', 'x'): 2.0, ('x', 'y'): 3.0, ('y', 'y'): 0.0}, 0.0)
-        >>> pprint(exp.compile().to_qubo(params={'a': 5}))
+        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 5}))
         ({('x', 'x'): 2.0, ('x', 'y'): 5.0, ('y', 'y'): 0.0}, 0.0)
     """
 
     def __init__(self, label):
-        super(Param, self).__init__()
+        super(Placeholder, self).__init__()
         self.label = label
 
     def __hash__(self):
         return hash(self.label)
 
     def __eq__(self, other):
-        if not isinstance(other, Param):
+        if not isinstance(other, Placeholder):
             return False
         else:
             return self.label == other.label
 
     def __repr__(self):
-        return "Param({})".format(self.label)
+        return "Placeholder({})".format(self.label)
 
 
 class Constraint(Express):

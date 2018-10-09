@@ -7,7 +7,7 @@ Internal Class
    :maxdepth: 2
 
    binaryprod
-   paramprod
+   placeholderprod
    compiledqubo
    compiledconstraint
    coefficient

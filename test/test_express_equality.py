@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Spin, AddList, Mul, Add, Num, Param, Constraint
+from pyqubo import Qbit, Spin, AddList, Mul, Add, Num, Placeholder, Constraint
 
 
 class TestExpressEquality(unittest.TestCase):
@@ -57,10 +57,10 @@ class TestExpressEquality(unittest.TestCase):
         self.assertFalse(Num(1) == Num(2))
         self.assertFalse(Num(1) == Qbit("a"))
 
-    def test_equality_of_param(self):
-        p1 = Param("p1")
-        p2 = Param("p2")
-        p3 = Param("p1")
+    def test_equality_of_placeholder(self):
+        p1 = Placeholder("p1")
+        p2 = Placeholder("p2")
+        p3 = Placeholder("p1")
         self.assertTrue(p1 == p3)
         self.assertTrue(hash(p1) == hash(p3))
         self.assertTrue(p1 != p2)
@@ -114,8 +114,8 @@ class TestExpressEquality(unittest.TestCase):
         expected_exp = AddList([a, Num(-1.0), Mul(b, -1)])
         self.assertTrue(exp == expected_exp)
 
-    def test_equality_of_express_with_param(self):
-        a, b, p = Qbit("a"), Qbit("b"), Param("p")
+    def test_equality_of_express_with_placeholder(self):
+        a, b, p = Qbit("a"), Qbit("b"), Placeholder("p")
         exp = a + b - 1 + a * p
         expected_exp = AddList([a, Num(-1.0), b, Mul(p, a)])
         self.assertTrue(exp == expected_exp)
@@ -127,9 +127,9 @@ class TestExpressEquality(unittest.TestCase):
         self.assertTrue(exp == expected_exp)
 
     def test_repr(self):
-        a, b, p = Qbit("a"), Qbit("b"), Param("p")
+        a, b, p = Qbit("a"), Qbit("b"), Placeholder("p")
         exp = a + p - 1 + Constraint(a * b, label="const")
-        expected = "(Qbit(a)+Param(p)+Num(-1)+Const(const, (Qbit(a)*Qbit(b))))"
+        expected = "(Qbit(a)+Placeholder(p)+Num(-1)+Const(const, (Qbit(a)*Qbit(b))))"
         self.assertTrue(repr(exp) == expected)
 
     def test_express_error(self):

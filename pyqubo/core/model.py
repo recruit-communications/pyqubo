@@ -33,8 +33,8 @@ class Model:
     
     Args:
         compiled_qubo (:class:`.CompiledQubo`):
-            Half-compiled QUBO. If we want to get the final QUBO, we need to evaluate this QUBO
-            by passing :obj:`params`. See :func:`CompiledQubo.eval()`.
+            Compiled QUBO. If we want to get the final QUBO, we need to evaluate this QUBO
+            by specifying the value of placeholders. See :func:`CompiledQubo.eval()`.
             
         structure (`dict[label, Tuple(key1, key2, key3, ...)]`):
             It defines the mapping of the variable used in :func:`decode_solution`.
@@ -112,7 +112,7 @@ class Model:
         return dict_binary_solution
 
     @vartype_argument('vartype')
-    def energy(self, solution, vartype, params=None):
+    def energy(self, solution, vartype, feed_dict=None):
         """Returns energy of the solution.
         
         Args:
@@ -124,18 +124,18 @@ class Model:
                 * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
                 * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
-            params (dict[str, float]):
-                Specify the parameter values.
+            feed_dict (dict[str, float]):
+                Specify the placeholder values.
         
         Returns:
             float: energy of the solution. 
         """
         dict_binary_solution = self._parse_solution(solution, vartype)
-        bqm = self.compiled_qubo.evaluate(params)
+        bqm = self.compiled_qubo.evaluate(feed_dict)
         return bqm.energy(dict_binary_solution)
 
     @vartype_argument('vartype')
-    def decode_solution(self, solution, vartype, params=None):
+    def decode_solution(self, solution, vartype, feed_dict=None):
         """Returns decoded solution.
         
         Args:
@@ -147,8 +147,8 @@ class Model:
                 * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
                 * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
-            params (dict[str, float]):
-                Specify the parameter values.
+            feed_dict (dict[str, float]):
+                Specify the placeholder values.
                 
         Returns:
             tuple(dict, dict, float): Tuple of the decoded solution,
@@ -178,7 +178,7 @@ class Model:
         # Check satisfaction of constraints
         broken_const = {}
         for label, const in self.constraints.items():
-            energy = const.energy(dict_bin_solution, params)
+            energy = const.energy(dict_bin_solution, feed_dict)
             if energy > 0.0:
                 result_value = {var: dict_bin_solution[var] for var in
                                 reduce(or_, [k.keys for k in const.polynomial.keys()])}
@@ -188,7 +188,7 @@ class Model:
                                  "But an energy of constraints should not be negative."
                                  .format(label=label, energy=energy))
 
-        problem_energy = self.energy(dict_bin_solution, dimod.BINARY, params)
+        problem_energy = self.energy(dict_bin_solution, dimod.BINARY, feed_dict)
 
         return decoded_solution, broken_const, problem_energy
 
@@ -221,7 +221,7 @@ class Model:
             decoded_solutions.append(self.decode_solution(sol, response.vartype))
         return decoded_solutions
 
-    def to_dimod_bqm(self, params=None):
+    def to_dimod_bqm(self, feed_dict=None):
         """Returns :class:`dimod.BinaryQuadraticModel`.
         
         For more details about :class:`dimod.BinaryQuadraticModel`,
@@ -229,25 +229,25 @@ class Model:
         <https://dimod.readthedocs.io/en/latest/reference/binary_quadratic_model.html>`_.
         
         Args:
-            params (dict[str, float]):
-                If the expression contains :class:`Param` objects,
-                you have to specify the value of them by :obj:`params`.
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
         
         Returns:
             :class:`dimod.BinaryQuadraticModel` with vartype set to `dimod.BINARY`.
         """
-        return self.compiled_qubo.evaluate(params)
+        return self.compiled_qubo.evaluate(feed_dict)
 
-    def to_qubo(self, index_label=False, params=None):
+    def to_qubo(self, index_label=False, feed_dict=None):
         """Returns QUBO and energy offset.
         
         Args:
             index_label (bool):
                 If true, the keys of returned QUBO are indexed with a positive integer number.
             
-            params (dict[str, float]):
-                If the expression contains :class:`Param` objects,
-                you have to specify the value of them by :obj:`params`.
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
         
         Returns:
             tuple(QUBO, float): Tuple of QUBO and energy offset.
@@ -279,7 +279,7 @@ class Model:
             
         """
 
-        bqm = self.compiled_qubo.evaluate(params)
+        bqm = self.compiled_qubo.evaluate(feed_dict)
         q, offset = bqm.to_qubo()
 
         # Construct QUBO
@@ -295,7 +295,7 @@ class Model:
 
         return qubo, offset
 
-    def to_ising(self, index_label=False, params=None):
+    def to_ising(self, index_label=False, feed_dict=None):
         """Returns Ising Model and energy offset.
 
         Args:
@@ -303,9 +303,9 @@ class Model:
                 If true, the keys of returned Ising model are
                 indexed with a positive integer number.
             
-            params (dict[str, float]):
-                If the expression contains :class:`Param` objects,
-                you have to specify the value of them by :obj:`params`.
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
 
         Returns:
             tuple(linear, quadratic, float):
@@ -335,7 +335,7 @@ class Model:
 
         """
 
-        bqm = self.compiled_qubo.evaluate(params)
+        bqm = self.compiled_qubo.evaluate(feed_dict)
         linear, quadratic, offset = bqm.to_ising()
 
         # Construct linear

@@ -14,29 +14,30 @@
 
 
 class Coefficient:
-    """The value of QUBO as a function of :class:`Param`.
+    """The value of QUBO as a function of :class:`Placeholder`.
     
     Energy of QUBO is defined as :math:`E(\\mathbf{x}) = \\sum_{ij} a_{ij}x_{i}x_{j}`.
     
-    If the expression contains :class:`Param`, QUBO in :class:`Model` is `half-compiled`.
-    `Half-compiled` means you need to specify the value of parameters to get the final QUBO.
-    Each coefficient :math:`a_{ij}` of half-compiled QUBO is defined as :class:`Coefficient`.
-    If you want to get the final value of :math:`a_{ij}`, you need to evaluate with `params`.
+    If the expression contains :class:`Placeholder`,
+    you need to specify the value of placeholders to get the final QUBO.
+    Each coefficient :math:`a_{ij}` of compiled QUBO is defined as :class:`Coefficient`.
+    If you want to get the final value of :math:`a_{ij}`, you need to evaluate it with `feed_dict`.
     
     Args:
-        terms (dict[:class:`ParamProd`, float]): polynomial function of :class:`Param`.
-            The labels in :class:`ParamProd` corresponds to labels of :class:`Param`.
-            
+        terms (dict[:class:`PlaceholderProd`, float]): polynomial function of :class:`Placeholder`.
+            The labels in :class:`PlaceholderProd` corresponds to labels of :class:`Placeholder`.
+    
     Example:
         
         For example, a polynomial :math:`2ab+2` is represented as
         
-        >>> from pyqubo import Coefficient, ParamProd
-        >>> coeff = Coefficient({ParamProd({'a': 1, 'b': 1}): 2.0, ParamProd({}): 2.0})
+        >>> from pyqubo import Coefficient, PlaceholderProd
+        >>> coeff = Coefficient({PlaceholderProd({'a': 1, 'b': 1}): 2.0, PlaceholderProd({}): 2.0})
         
-        If we specify the params as :math:`a=2, b=3`, then the evaluated value will be 14.0.
+        If we specify the value of Placeholder as :math:`a=2, b=3`,
+        then the evaluated value will be 14.0.
         
-        >>> coeff.evaluate(params={'a': 2, 'b': 3})
+        >>> coeff.evaluate(feed_dict={'a': 2, 'b': 3})
         14.0
         
     """
@@ -44,25 +45,25 @@ class Coefficient:
     def __init__(self, terms):
         self.terms = terms
 
-    def evaluate(self, params):
-        """Returns evaluated value with `params`.
+    def evaluate(self, feed_dict):
+        """Returns evaluated value with `feed_dict`.
         
         Args:
-            params (dict[str, float]): Parameters.
+            feed_dict (dict[str, float]): The value of placeholder.
         
         Returns:
             float
         """
-        if not params:
-            raise ValueError("No parameters are given. Specify the parameter.")
+        if not feed_dict:
+            raise ValueError("No feed_dict are given. Specify the feed_dict.")
         result = 0.0
         for term, value in self.terms.items():
             prod = value
             for key, p in term.keys.items():
-                if key in params:
-                    prod *= params[key] ** p
+                if key in feed_dict:
+                    prod *= feed_dict[key] ** p
                 else:
-                    raise ValueError("{key} is not specified in params. "
+                    raise ValueError("{key} is not specified in feed_dict. "
                                      "Set the value of {key}".format(key=key))
             result += prod
         return result

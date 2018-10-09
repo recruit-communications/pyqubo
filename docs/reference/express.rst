@@ -15,9 +15,9 @@ Spin
 ----
 .. autoclass:: Spin
 
-Param
------
-.. autoclass:: Param
+Placeholder
+-----------
+.. autoclass:: Placeholder
     :members:
 
 Constraint

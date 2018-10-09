@@ -17,18 +17,18 @@ from six.moves import reduce
 import copy
 
 
-class ParamProd(object):
-    """A product of parameter variables.
+class PlaceholderProd(object):
+    """A product of placeholder variables.
     This class is used as a key of dictionary when you represent a polynomial as a dictionary.
 
     For example, a polynomial :math:`2a^2 b + 2` is represented as
     
     .. code-block:: python
         
-        {ParamProd({'a': 2, 'b': 1}): 2.0, ParamProd({}): 2.0}
+        {PlaceholderProd({'a': 2, 'b': 1}): 2.0, PlaceholderProd({}): 2.0}
 
     Note:
-        ParamProd initialized with empty key corresponds to constant.
+        PlaceholderProd initialized with empty key corresponds to constant.
 
     Args:
         keys (dict[label, int]):
@@ -54,7 +54,7 @@ class ParamProd(object):
         return self.cached_hash
 
     def __eq__(self, other):
-        if not isinstance(other, ParamProd):
+        if not isinstance(other, PlaceholderProd):
             return False
         else:
             return self.keys == other.keys
@@ -99,4 +99,4 @@ class ParamProd(object):
                 term_key1_copy[k] += v
             else:
                 term_key1_copy[k] = v
-        return ParamProd(term_key1_copy)
+        return PlaceholderProd(term_key1_copy)
