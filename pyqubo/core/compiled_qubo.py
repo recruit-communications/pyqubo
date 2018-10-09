@@ -42,20 +42,20 @@ class CompiledQubo:
         """Unique labels contained in keys of QUBO."""
         return reduce(or_, [{i, j} for (i, j) in self.qubo.keys()])
 
-    def evaluate(self, params):
-        """Returns QUBO where the values are evaluated with parameters.
+    def evaluate(self, feed_dict):
+        """Returns QUBO where the values are evaluated with feed_dict.
 
         Args:
-            params (dict[str, float]): Parameters for evaluation
+            feed_dict (dict[str, float]): The value of :class:`Placeholder`.
 
         Returns:
             :class:`BinaryQuadraticModel`
         """
         evaluated_qubo = {}
         for k, v in self.qubo.items():
-            evaluated_qubo[k] = CompiledQubo._eval_if_not_float(v, params)
+            evaluated_qubo[k] = CompiledQubo._eval_if_not_float(v, feed_dict)
 
-        evaluated_offset = CompiledQubo._eval_if_not_float(self.offset, params)
+        evaluated_offset = CompiledQubo._eval_if_not_float(self.offset, feed_dict)
 
         return dimod.BinaryQuadraticModel.from_qubo(
             evaluated_qubo, evaluated_offset)
@@ -65,14 +65,14 @@ class CompiledQubo:
         return "CompiledQubo({}, offset={})".format(pformat(self.qubo), self.offset)
 
     @staticmethod
-    def _eval_if_not_float(v, params):
+    def _eval_if_not_float(v, feed_dict):
         """ If v is not float (i.e. v is :class:`Express`), returns an evaluated value.
 
         Args:
             v (float/:class:`Coefficient`):
                 The value to be evaluated.
-            params (dict[str, float]):
-                Parameters for evaluation.
+            feed_dict (dict[str, float]):
+                The value of :class:`Placeholder`.
 
         Returns:
             float: Evaluated value of the input :obj:`v`:
@@ -80,4 +80,4 @@ class CompiledQubo:
         if isinstance(v, float):
             return v
         else:
-            return v.evaluate(params)
+            return v.evaluate(feed_dict)

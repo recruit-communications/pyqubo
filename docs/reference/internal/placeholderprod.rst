@@ -1,9 +1,9 @@
-ParamProd
-=========
+PlaceholderProd
+===============
 
 
 .. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
-.. autoclass:: ParamProd
+.. autoclass:: PlaceholderProd
     :members:

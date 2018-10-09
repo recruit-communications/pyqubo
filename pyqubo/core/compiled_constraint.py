@@ -24,35 +24,35 @@ class CompiledConstraint:
     def __init__(self, polynomial):
         self.polynomial = polynomial
 
-    def energy(self, binary_solution, params):
+    def energy(self, binary_solution, feed_dict):
         """Returns the energy of constraint given a solution.
         
         Args:
             binary_solution (dict[label, bit]):
                 Binary solution.
 
-            params (dict[str, float]):
-                Parameters for evaluation
+            feed_dict (dict[str, float]):
+                The value of placeholders.
         
         Returns:
             float: Energy of constraint.
         """
         energy = 0.0
         for binary_prod, coeff in self.polynomial.items():
-            evaluated_value = self._eval_if_not_float(coeff, params)
+            evaluated_value = self._eval_if_not_float(coeff, feed_dict)
             energy += binary_prod.calc_product(binary_solution) * evaluated_value
         return energy
 
     @staticmethod
-    def _eval_if_not_float(v, params):
+    def _eval_if_not_float(v, feed_dict):
         """If v is not float (i.e. v is :class:`Express`), returns an evaluated value.
 
         Args:
             v (float/:class:`Coefficient`):
                 The value to be evaluated.
 
-            params (dict[str, float]):
-                Parameters for evaluation.
+            feed_dict (dict[str, float]):
+                The value of placeholders.
 
         Returns:
             float: Evaluated value of the input :obj:`v`:
@@ -60,4 +60,4 @@ class CompiledConstraint:
         if isinstance(v, float):
             return v
         else:
-            return v.evaluate(params)
+            return v.evaluate(feed_dict)

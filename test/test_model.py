@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Matrix, Constraint, Param, Vector
+from pyqubo import Qbit, Matrix, Constraint, Placeholder, Vector
 from pyqubo import assert_qubo_equal
 
 
@@ -150,26 +150,26 @@ class TestModel(unittest.TestCase):
             assert isinstance(broken, dict)
             assert isinstance(energy, float)
 
-    def test_params(self):
-        a, b, p = Qbit("a"), Qbit("b"), Param("p")
-        params = {'p': 2.0}
+    def test_placeholders(self):
+        a, b, p = Qbit("a"), Qbit("b"), Placeholder("p")
+        feed_dict = {'p': 2.0}
         exp = p * (1 + a * b + a)
         model = exp.compile()
-        qubo, offset = model.to_qubo(index_label=False, params=params)
+        qubo, offset = model.to_qubo(index_label=False, feed_dict=feed_dict)
         dict_solution = {'a': 1, 'b': 0}
-        dict_energy = model.energy(dict_solution, vartype="BINARY", params=params)
+        dict_energy = model.energy(dict_solution, vartype="BINARY", feed_dict=feed_dict)
         list_solution = [1, 0]
-        list_energy = model.energy(list_solution, vartype="BINARY", params=params)
+        list_energy = model.energy(list_solution, vartype="BINARY", feed_dict=feed_dict)
         assert_qubo_equal(qubo, {('a', 'b'): 2.0, ('a', 'a'): 2.0, ('b', 'b'): 0.0})
         self.assertEqual(offset, 2.0)
         self.assertTrue(dict_energy, 2.0)
         self.assertTrue(list_energy, 2.0)
 
-    def test_param_in_constraint(self):
+    def test_placeholder_in_constraint(self):
         a = Qbit("a")
-        exp = Constraint(2 * Param("c") + a, "const1")
+        exp = Constraint(2 * Placeholder("c") + a, "const1")
         m = exp.compile()
-        sol, broken, energy = m.decode_solution({"a": 1}, vartype="BINARY", params={"c": 1})
+        sol, broken, energy = m.decode_solution({"a": 1}, vartype="BINARY", feed_dict={"c": 1})
         self.assertEqual(energy, 3.0)
         self.assertEqual(broken, {'const1': {'result': {'a': 1}, 'penalty': 3.0}})
         self.assertEqual(sol, {'a': 1})

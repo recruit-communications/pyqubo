@@ -16,4 +16,4 @@ from pyqubo.core.express import *
 from pyqubo.core.coefficient import *
 from pyqubo.core.model import *
 from pyqubo.core.binaryprod import *
-from pyqubo.core.paramprod import *
+from pyqubo.core.placeholderprod import *
