@@ -8,7 +8,7 @@
    :maxdepth: 1
    :caption: Manual:
 
-   notebooks/getting_started.ipynb
+   getting_started
    contribution
 
 .. toctree::
