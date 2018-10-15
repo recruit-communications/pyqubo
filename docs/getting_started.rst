@@ -117,10 +117,10 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
 Variable: Qbit and Spin
 -----------------------
 
-When you define the hamiltonian, you can use :class:`Qbit` or :class:`Spin` as a variable.
+When you define a hamiltonian, you can use :class:`Qbit` or :class:`Spin` as a variable.
 
 **Example:**
-If you want to define it with binary variables :math:`x \in \{0, 1\}`, use :class:`Qbit`.
+If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Qbit`.
 
 >>> from pyqubo import Qbit
 >>> x1, x2 = Qbit('x1'), Qbit('x2')
@@ -129,7 +129,7 @@ If you want to define it with binary variables :math:`x \in \{0, 1\}`, use :clas
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
-If you want to define it with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
+If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
 
 >>> from pyqubo import Spin
 >>> s1, s2 = Spin('s1'), Spin('s2')
@@ -198,7 +198,7 @@ If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` w
 >>> qubo, offset = model.to_qubo()
 
 In the code above, you need to compile the hamiltonian repeatedly to get the QUBO with different :math:`M`.
-If you don't want to compile repeatedly to save your time, define :math:`M` by :class:`Placeholder`.
+If you don't want to compile repeatedly, define :math:`M` by :class:`Placeholder`.
 
 >>> a, b = Qbit('a'), Qbit('b')
 >>> M = Placeholder('M')
