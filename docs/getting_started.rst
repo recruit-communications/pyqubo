@@ -30,10 +30,12 @@ The objective function of **QUBO** is defined as:
 
 .. math::
 
-    \sum_{ij}q_{ij}x_{i}x_{j}
+    \sum_{i \le j}q_{ij}x_{i}x_{j}
 
 
 where :math:`x_{i}` represents a binary variable which takes 0 or 1, and :math:`q_{ij}` represents a quadratic coefficient.
+Note that :math:`q_{ii}x_{i}x_{i}=q_{ii}x_{i}`, since :math:`x_{i}^2=x_{i}`.
+Thus, the above expression includes linear terms of :math:`x_{i}`.
 
 The objective function of **Ising model** is defined as:
 
