@@ -19,9 +19,11 @@ PyQUBO
 PyQUBO allows you to create QUBOs or Ising models from flexible mathematical expressions easily.
 Some of the features of PyQUBO are
 
-* **Python-based** (the entire code is written in Python).
-* **QUBO generation (compile) is fast** (due to the JIT like compile mechanism).
-* **Comes with plenty of useful expressions** such as binary integer variables, logical constraints, or matrix/vector variables.
+* **Python-based**.
+* **QUBO generation (compile) is fast.**
+* `Automatic validation of constraints <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#validation-of-constraints>`_.
+* `Placeholder <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#placeholder>`_ for parameter tuning.
+
 
 For more details, see `PyQUBO Documentation <https://pyqubo.readthedocs.io/>`_.
 
@@ -30,7 +32,7 @@ Example Usage
 
 This example constructs a simple expression and compile it to ``model``.
 By calling ``model.to_qubo()``, we get the resulting QUBO.
-(This example solves a number partitioning problem with a set S = {4, 2, 7, 1})
+(This example solves `Number Partitioning Problem <https://en.wikipedia.org/wiki/Partition_problem>`_ with a set S = {4, 2, 7, 1})
 
 >>> from pyqubo import Spin
 >>> s1, s2, s3, s4 = Spin("s1"), Spin("s2"), Spin("s3"), Spin("s4")
@@ -49,6 +51,7 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
  ('s3', 's4'): 56.0,
  ('s4', 's4'): -52.0}
 
+For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/docs/notebooks>`_.
 
 Installation
 ------------
@@ -111,4 +114,4 @@ Released under the Apache License 2.0.
 Contribution
 ------------
 
-We welcome contributions to this project.
+We welcome contributions to this project. See `CONTRIBUTING <./CONTRIBUTING.rst>`_.
