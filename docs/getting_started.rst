@@ -120,22 +120,22 @@ Variable: Qbit and Spin
 When you define the hamiltonian, you can use :class:`Qbit` or :class:`Spin` as a variable.
 
 **Example:**
-If you want to define it with {0, 1} binary variables, use :class:`Qbit`.
+If you want to define it with binary variables :math:`x \in \{0, 1\}`, use :class:`Qbit`.
 
 >>> from pyqubo import Qbit
->>> a, b = Qbit('a'), Qbit('b')
->>> exp = 2*a*b + 3*a
+>>> x1, x2 = Qbit('x1'), Qbit('x2')
+>>> exp = 2*x1*x2 + 3*x1
 >>> pprint(exp.compile().to_qubo())
-({('a', 'a'): 3.0, ('a', 'b'): 2.0, ('b', 'b'): 0.0}, 0.0)
+({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
-If you want to define it with {-1, 1} spin variables, use :class:`Spin`.
+If you want to define it with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
 
 >>> from pyqubo import Spin
->>> a, b = Spin('a'), Spin('b')
->>> exp = 2*a*b + 3*a
+>>> s1, s2 = Spin('s1'), Spin('s2')
+>>> exp = 2*s1*s2 + 3*s1
 >>> pprint(exp.compile().to_qubo())
-({('a', 'a'): 2.0, ('a', 'b'): 8.0, ('b', 'b'): -4.0}, -1.0)
+({('s1', 's1'): 2.0, ('s1', 's2'): 8.0, ('s2', 's2'): -4.0}, -1.0)
 
 Vector and Matrix
 -----------------
