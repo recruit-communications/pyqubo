@@ -54,7 +54,7 @@ With PyQUBO, you can construct QUBOs with 3 steps:
 >>> s1, s2, s3, s4 = Spin("s1"), Spin("s2"), Spin("s3"), Spin("s4")
 >>> H = (4*s1 + 2*s2 + 7*s3 + s4)**2
 
-2. **Compile the expression to get the model.**
+2. **Compile the hamiltonian to get a model.**
 
 >>> model = H.compile()
 
@@ -188,25 +188,31 @@ This means that you don't have to compile repeatedly for getting QUBOs with vari
 It takes longer time to execute a compile when the problem size is bigger. In that case, you can save your time by using :class:`Placeholder`.
 
 **Example:**
-If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to find the penalty strength :math:`M` such that the constraint is satisfied, i.e. you need to create QUBO with different values of :math:`M`.
+If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to find the penalty strength :math:`M` such that the constraint is satisfied. Thus, you need to create QUBO with different values of :math:`M`. In this example, we create QUBO with :math:`M=5.0` and :math:`M=6.0`.
 
->>> from pyqubo import Qbit, Placeholder
+In the first code, we don't use placeholder. In this case, you need to compile the hamiltonian twice to get a QUBO with :math:`M=5.0` and :math:`M=6.0`.
+
+>>> from pyqubo import Qbit
 >>> a, b = Qbit('a'), Qbit('b')
 >>> M = 5.0
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
->>> qubo, offset = model.to_qubo()
+>>> qubo, offset = model.to_qubo() # QUBO with M=5.0
+>>> M = 6.0
+>>> H = 2*a + b + M*(a+b-1)**2
+>>> model = H.compile()
+>>> qubo, offset = model.to_qubo() # QUBO with M=6.0
 
-In the code above, you need to compile the hamiltonian repeatedly to get the QUBO with different :math:`M`.
-If you don't want to compile repeatedly, define :math:`M` by :class:`Placeholder`.
+If you don't want to compile twice, define :math:`M` by :class:`Placeholder`.
 
+>>> from pyqubo import Placeholder
 >>> a, b = Qbit('a'), Qbit('b')
 >>> M = Placeholder('M')
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo(feed_dict={'M': 5.0})
 
-You get the QUBO with different value of M without compile
+You get a QUBO with different value of M without compile
 
 >>> qubo, offset = model.to_qubo(feed_dict={'M': 6.0})
 
@@ -215,7 +221,7 @@ The actual value of the placeholder :math:`M` is specified in calling :obj:`Mode
 Decode Solution
 ---------------
 
-When you get the solution from the Ising solver, :obj:`Model.decode_solution()` decodes the solution and returns dictionary which maps the variable label to the solution.
+When you get a solution from the Ising solver, :obj:`Model.decode_solution()` decodes the solution and returns decoded_solution in dictionary form.
 
 **Example:** You are solving a partitioning problem.
 
@@ -226,7 +232,7 @@ When you get the solution from the Ising solver, :obj:`Model.decode_solution()` 
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
 
-Let's assume that you get the solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0}` from the solver.
+Let's assume that you get a solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0}` from the solver.
 
 >>> raw_solution = {'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0} # solution from the solver
 >>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
@@ -237,7 +243,7 @@ Let's assume that you get the solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, '
 >>> energy
 0.0
 
-You can see that the dictionary of the spin vector solutions is represented in :obj:`decoded_solution`.
+You can see that :obj:`decoded_solution` has the decoded solution of spin vector where :math:`i` th element of the vector is accessed via `s[i]`.
 :obj:`broken` represents broken constraint which will be explained in the following section.
 :obj:`energy` represents energy of the problem.
 
@@ -247,7 +253,7 @@ Validation of Constraints
 
 When the hamiltonian has constraints, you can let the compiler recognize the hamiltonian of the constraint with :class:`Constraint`.
 When you decode the solution, the model let you know which constraints are broken.
-You don't have to write the additional program for validation of the constraints.
+You don't have to write additional programs for validation of the constraints.
 
 **Example:** If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
 
@@ -257,7 +263,7 @@ You don't have to write the additional program for validation of the constraints
 >>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
 >>> model = H.compile()
 
-Let's assume that you get the solution :obj:`{'a': 1, 'b': 1}` from the solver which breaks the constraint :math:`a+b=1`.
+Let's assume that you get a solution :obj:`{'a': 1, 'b': 1}` from the solver which breaks the constraint :math:`a+b=1`.
 
 >>> raw_solution = {'a': 1, 'b': 1}
 >>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
