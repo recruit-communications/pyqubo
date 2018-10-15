@@ -21,9 +21,8 @@ Some of the features of PyQUBO are
 
 * **Python-based**.
 * **QUBO generation (compile) is fast.**
-* `Automatic validation of constraints <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#validation-of-constraints>`_.
-* `Placeholder <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#placeholder>`_ for parameter tuning.
-
+* **Automatic validation of constraints.** (`details <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#validation-of-constraints>`__)
+* **Placeholder** for parameter tuning. (`details <https://pyqubo.readthedocs.io/en/latest/notebooks/getting_started.html#placeholder>`__)
 
 For more details, see `PyQUBO Documentation <https://pyqubo.readthedocs.io/>`_.
 

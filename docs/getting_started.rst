@@ -162,7 +162,7 @@ You can use :class:`Vector` to represent multiple spins in the example of partit
 
 >>> from pyqubo import Vector
 >>> numbers = [4, 2, 7, 1]
->>> s = Vector('s', 4, spin=True)
+>>> s = Vector('s', n_dim=4, spin=True)
 >>> H = sum(n * s for s, n in zip(s, numbers))**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
@@ -188,7 +188,7 @@ This means that you don't have to compile repeatedly for getting QUBOs with vari
 It takes longer time to execute a compile when the problem size is bigger. In that case, you can save your time by using :class:`Placeholder`.
 
 **Example:**
-If you have a objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to find the penalty strength :math:`M` such that the constraint is satisfied, i.e. you need to create QUBO with different values of :math:`M`.
+If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to find the penalty strength :math:`M` such that the constraint is satisfied, i.e. you need to create QUBO with different values of :math:`M`.
 
 >>> from pyqubo import Qbit, Placeholder
 >>> a, b = Qbit('a'), Qbit('b')
@@ -245,11 +245,11 @@ You can see that the dictionary of the spin vector solutions is represented in :
 Validation of Constraints
 -------------------------
 
-When the hamiltonian has constraints, you can let the compiler recognize the constraint with :class:`Constraint`.
+When the hamiltonian has constraints, you can let the compiler recognize the hamiltonian of the constraint with :class:`Constraint`.
 When you decode the solution, the model let you know which constraints are broken.
 You don't have to write the additional program for validation of the constraints.
 
-**Example:** If you have a objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
+**Example:** If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
 
 >>> from pyqubo import Qbit, Constraint
 >>> a, b = Qbit('a'), Qbit('b')
