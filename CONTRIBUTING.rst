@@ -6,7 +6,8 @@ Thank you for contributing to PyQUBO.
 **Propose a new feature and implement**
 
 1. If you have a proposal of new features, send a pull request with your idea and we will discuss it.
-2. Once we agree with the new feature, implement the feature.
+2. Once we agree with the new feature, implement the feature. If you implement a new module on top of PyQUBO,
+create your module inside the ``pyqubo/contrib`` directory.
 
 
 **Implement a feature or bug-fix for an existing issue**
