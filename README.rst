@@ -50,7 +50,7 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
  ('s3', 's4'): 56.0,
  ('s4', 's4'): -52.0}
 
-For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/docs/notebooks>`_.
+For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/notebooks>`_.
 
 Installation
 ------------
