@@ -72,6 +72,12 @@ class Array:
         >>> Array(np.array([[1, 2], [3, 4]]))
         Array([[1, 2],
                [3, 4]])
+        
+        Create an array from list of :class:`Array`.
+        
+        >>> Array([Array([1, 2]), Array([3, 4])])
+        Array([[1, 2],
+               [3, 4]])
     """
 
     def __init__(self, bit_list):
@@ -82,7 +88,7 @@ class Array:
 
         elif isinstance(bit_list, list):
             def get_shape(l):
-                if isinstance(l, list):
+                if isinstance(l, list) or isinstance(l, Array) or isinstance(l, np.ndarray):
                     length = len(l)
                     shape_set = {get_shape(e) for e in l}
                     if len(shape_set) == 1:
@@ -92,8 +98,19 @@ class Array:
                         raise ValueError('Cannot determine the shape of input nested list.')
                 else:
                     return tuple()
+
+            def normalize_type(l):
+                if isinstance(l, list):
+                    return [normalize_type(e) for e in l]
+                elif isinstance(l, Array):
+                    return [normalize_type(e) for e in l.bit_list]
+                elif isinstance(l, np.ndarray):
+                    return [normalize_type(e) for e in l.tolist()]
+                else:
+                    return l
+
             self.shape = get_shape(bit_list)
-            self.bit_list = bit_list
+            self.bit_list = normalize_type(bit_list)
 
         else:
             raise TypeError('argument should be ndarray or list')
@@ -178,7 +195,6 @@ class Array:
     # math operation
     def __neg__(self):
         minus_one = Array.fill(-1, self.shape)
-        #return self._pairwise_op_with_type_check(minus_one, lambda x, y: x * y)
         return self * minus_one
 
     def __radd__(self, other):
@@ -585,3 +601,4 @@ class Array:
             return sum(vector_self * vector_other)
 
         return Array._create_with_generator(new_shape, generator)
+

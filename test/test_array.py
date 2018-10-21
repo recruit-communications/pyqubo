@@ -27,6 +27,8 @@ class TestArray(unittest.TestCase):
         self.assertTrue(array[:, 0] == Array([Qbit('x0'), Qbit('x2')]))
         self.assertTrue(array[[0, 1], 0] == Array([Qbit('x0'), Qbit('x2')]))
         self.assertRaises(TypeError, lambda: Array(1))
+        self.assertTrue(Array([[1, 2], [3, 4]]) == Array([Array([1, 2]), Array([3, 4])]))
+        self.assertTrue(Array([[1, 2], [3, 4]]) == Array([np.array([1, 2]), np.array([3, 4])]))
 
     def test_array_error(self):
         # raise ValueError when the size of the sub lists is not same
