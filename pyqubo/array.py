@@ -17,7 +17,8 @@ from .core import Spin, Qbit, Express
 import dimod
 from dimod.decorators import vartype_argument
 import numpy as np
-
+from operator import mul, add
+from six.moves import reduce
 
 class Array:
     """Multi-dimensional array.
@@ -34,7 +35,7 @@ class Array:
 
     Example:
         
-        Create an Array from a nested list of :class:`Express`.
+        Create an array from a nested list of :class:`Express`.
         
         >>> from pyqubo import Array, Qbit
         >>> array = Array([[Qbit('x0'), Qbit('x1')], [Qbit('x2'), Qbit('x3')]])
@@ -239,6 +240,9 @@ class Array:
     def __rtruediv__(self, other):  # pragma: no cover
         """It is called when `other(number) / self`"""
         return self.__rdiv__(other)
+
+    def __matmul__(self, other):
+        return self.matmul(other)
 
     def add(self, other):
         """Returns a sum of self and other.
@@ -602,3 +606,155 @@ class Array:
 
         return Array._create_with_generator(new_shape, generator)
 
+    def matmul(self, other):
+        """Returns matrix product of two arrays.
+        
+        You can use operator symbol '@' instead of :obj:`matmul()` in Python 3.5 or later version.
+        
+        >>> from pyqubo import Array, Qbit
+        >>> array_a = Array.create('a', shape=(2, 4), vartype='BINARY')
+        >>> array_b = Array.create('b', shape=(4, 3), vartype='BINARY')
+        >>> array_a @ array_b == array_a.matmul(array_b)
+        True
+        
+        Args:
+            other (:class:`Array`/:class:`numpy.ndarray`/list): 
+        
+        Returns:
+            :class:`Array`/:class:`Express`
+        
+        Example:
+        
+            Matrix product of two arrays falls into 3 patterns.
+            
+            1. If either of the arguments is 1-D array, it is treated as a matrix by adding one to its dimension.
+            
+            >>> from pyqubo import Array, Qbit
+            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
+            >>> array_b = Array([Qbit('e'), Qbit('f')])
+            >>> array_a.matmul(array_b)
+            Array([((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(f))), ((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(f)))])
+            
+            2. If both arguments are 2-D array, conventional matrix product is calculated.
+            
+            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
+            >>> array_b = Array([[Qbit('e'), Qbit('f')], [Qbit('g'), Qbit('h')]])
+            >>> array_a.matmul(array_b)
+            Array([[((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(g))), ((Qbit(a)*Qbit(f))+(Qbit(b)*Qbit(h)))],
+                   [((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(g))), ((Qbit(c)*Qbit(f))+(Qbit(d)*Qbit(h)))]])
+            
+            3. If either argument is N-D (where N > 2), it is treated as an array whose element is a
+            2-D matrix of last two indices. In this example, `array_a` is treated as if
+            it is a vector whose elements are two matrices of shape (2, 3).
+
+            >>> array_a = Array.create('a', shape=(2, 2, 3), vartype='BINARY')
+            >>> array_b = Array.create('b', shape=(3, 2), vartype='BINARY')
+            >>> (array_a @ array_b)[0] == array_a[0].matmul(array_b)
+            True
+        """
+
+        if isinstance(other, np.ndarray) or isinstance(other, list):
+            other = Array(other)
+        assert isinstance(other, Array), "Type should be Array, not {type}".format(type=type(other))
+
+        # pattern 1 (see docstring)
+        if len(self.shape) == 1 or len(other.shape) == 1:
+            return self.dot(other)
+
+        # pattern 2 and 3
+        else:
+            return self._matmul_matrix(other)
+
+    def _matmul_matrix(self, other):
+
+        assert isinstance(other, Array), "Type should be Array, not {type}".format(type=type(other))
+        assert len(self.shape) >= 2 and len(other.shape) >= 2, "Shape should be greater than 2"
+        assert self.shape[-1] == other.shape[-2], \
+            "self.shape[-1] should be equal other.shape[-2].\n" + \
+            "For more details, see https://pyqubo.readthedocs.io/en/latest/reference/array.html"
+
+        self_shape_len = len(self.shape)
+        other_shape_len = len(other.shape)
+
+        common_len = min(self_shape_len, other_shape_len)
+
+        for s1, s2 in zip(self.shape[-common_len:-2], other.shape[-common_len:-2]):
+            assert s1 == s2, "Shape doesn't match."
+
+        longer_shape = self.shape if self_shape_len > other_shape_len else other.shape
+        new_shape = longer_shape[:-2] + (self.shape[-2], other.shape[-1])
+
+        def generator(index):
+            mat_index_self = tuple(index[-self_shape_len:][:-2])
+            mat_index_other = tuple(index[-other_shape_len:][:-2])
+            mat_self = self[mat_index_self] if mat_index_self != () else self
+            mat_other = other[mat_index_other] if mat_index_other != () else other
+            j = index[-1]
+            i = index[-2]
+            return mat_self[i, :].dot(mat_other[:, j])
+
+        return Array._create_with_generator(new_shape, generator)
+
+    @staticmethod
+    def _calc_steps(shape):
+        """Returns steps of shape.
+        
+        Step is used to create an 1-dim index from n-dim index like
+        
+        >>> steps = Array._calc_steps(shape)
+        >>> one_dim_index = sum(step * i for step, i in zip(steps, n_dim_index))
+        
+        """
+        steps = []
+        tmp_d = 1
+        for d in shape[::-1]:
+            steps.append(tmp_d)
+            tmp_d *= d
+        steps = steps[::-1]
+        return steps
+
+    def reshape(self, new_shape):
+        """Returns reshaped array.
+        
+        Args:
+            new_shape (tuple[int]): New shape.
+        
+        Example:
+            
+            >>> from pyqubo import Array
+            >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
+            >>> array
+            Array([[Qbit(x[0][0]), Qbit(x[0][1]), Qbit(x[0][2])],
+                   [Qbit(x[1][0]), Qbit(x[1][1]), Qbit(x[1][2])]])
+            >>> array.reshape((3, 2, 1))
+            Array([[[Qbit(x[0][0])],
+                    [Qbit(x[0][1])]],\
+            
+                   [[Qbit(x[0][2])],
+                    [Qbit(x[1][0])]],\
+
+                   [[Qbit(x[1][1])],
+                    [Qbit(x[1][2])]]])
+
+        """
+        assert reduce(mul, self.shape) == reduce(mul, new_shape),\
+            "cannot reshape array of size {p} into shape {new_shape}".format(
+                p=reduce(mul, self.shape), new_shape=new_shape)
+
+        def calc_one_dim_array(nested_list):
+            if isinstance(nested_list, list):
+                return reduce(add, [calc_one_dim_array(e) for e in nested_list])
+            else:
+                return [nested_list]
+
+        # create an 1-dim array from the n-dim array
+        one_dim_array = calc_one_dim_array(self.bit_list)
+
+        new_steps = Array._calc_steps(new_shape)
+
+        def generator(index):
+            # create an index for 1-dim array from the given index
+            one_dim_index = sum(step * i for step, i in zip(new_steps, index))
+            return one_dim_array[one_dim_index]
+
+        return Array._create_with_generator(new_shape, generator)

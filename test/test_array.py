@@ -13,7 +13,7 @@
 # limitations under the License.
 
 import unittest
-from pyqubo import Qbit, Spin, Array
+from pyqubo import Qbit, Spin, Array, Num
 
 import numpy as np
 
@@ -175,10 +175,53 @@ class TestArray(unittest.TestCase):
         self.assertTrue(array_a.dot(array_b)[i, j, k, m]
                         == sum(array_a[i, j, :] * array_b[k, :, m]))
 
-        # dot with list
+        # array_a is 1-D array and array_b is a list
         array_a = Array([Qbit('a'), Qbit('b')])
         array_b = [3, 4]
         self.assertTrue((Qbit('a')*3 + (Qbit('b')*4)) == array_a.dot(array_b))
 
-        # test exception
+        # test validation
         self.assertRaises(TypeError, lambda: array_a.dot(1))
+
+    def test_array_matmul(self):
+
+        # the either of the arguments is 1-D array,
+        array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
+        array_b = Array([Qbit('e'), Qbit('f')])
+        expected = Array([((Qbit('a')*Qbit('e'))+(Qbit('b')*Qbit('f'))),
+                          ((Qbit('c')*Qbit('e'))+(Qbit('d')*Qbit('f')))])
+        self.assertTrue(array_a.matmul(array_b) == expected)
+
+        # both arguments are 2-D array
+        array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
+        array_b = Array([[Qbit('e'), Qbit('f')], [Qbit('g'), Qbit('h')]])
+        expected = Array([[((Qbit('a') * Qbit('e')) + (Qbit('b') * Qbit('g'))),
+                           ((Qbit('a') * Qbit('f')) + (Qbit('b') * Qbit('h')))],
+                          [((Qbit('c') * Qbit('e')) + (Qbit('d') * Qbit('g'))),
+                           ((Qbit('c') * Qbit('f')) + (Qbit('d') * Qbit('h')))]])
+        self.assertTrue(array_a.matmul(array_b) == expected)
+
+        # either argument is N-D (where N > 2)
+        array_a = Array.create('a', shape=(2, 2, 3), vartype='BINARY')
+        array_b = Array.create('b', shape=(3, 2), vartype='BINARY')
+        self.assertTrue((array_a.matmul(array_b))[0] == array_a[0].matmul(array_b))
+
+        # array_a is 2-D array and array_b is a list
+        array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
+        array_b = [3, 4]
+        expected = Array([((Qbit('a')*Num(3))+(Qbit('b')*Num(4))), ((Qbit('c')*Num(3))+(Qbit('d')*Num(4)))])
+        self.assertTrue(expected == array_a.matmul(array_b))
+
+        # test validation
+        array_a = Array.create('a', shape=(2, 2, 3), vartype='BINARY')
+        array_b = Array.create('b', shape=(3, 3, 2), vartype='BINARY')
+        self.assertRaises(AssertionError, lambda: array_a.matmul(array_b))
+
+    def test_array_reshape(self):
+        array = Array.create('a', shape=(2, 3), vartype='BINARY')
+        reshaped = array.reshape((3, 2))
+        self.assertTrue(reshaped.shape == (3, 2))
+        expected = Array([[Qbit('a[0][0]'), Qbit('a[0][1]')],
+                          [Qbit('a[0][2]'), Qbit('a[1][0]')],
+                          [Qbit('a[1][1]'), Qbit('a[1][2]')]])
+        self.assertTrue(reshaped == expected)
