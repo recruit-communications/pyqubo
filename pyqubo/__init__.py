@@ -18,11 +18,11 @@ import pyqubo.constraint
 import pyqubo.core
 import pyqubo.func
 import pyqubo.logic
-import pyqubo.tensor
+import pyqubo.array
 import pyqubo.utils
 from pyqubo.constraint import *
 from pyqubo.core import *
 from pyqubo.func import *
 from pyqubo.logic import *
-from pyqubo.tensor import *
+from pyqubo.array import *
 from pyqubo.utils import *

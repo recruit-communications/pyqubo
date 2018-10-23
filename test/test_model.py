@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Matrix, Constraint, Placeholder, Vector
+from pyqubo import Qbit, Constraint, Placeholder, Array
 from pyqubo import assert_qubo_equal
 
 
@@ -55,7 +55,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(offset == -0.25)
 
     def test_decode(self):
-        x = Matrix("x", n_row=2, n_col=2)
+        x = Array.create("x", (2, 2), vartype="BINARY")
         exp = Constraint((x[1, 1] - x[0, 1]) ** 2, label="const")
         model = exp.compile()
 
@@ -69,10 +69,7 @@ class TestModel(unittest.TestCase):
         expected_repr = "Model(CompiledQubo({('x[0][1]', 'x[0][1]'): 1.0,\n"\
                         " ('x[0][1]', 'x[1][1]'): -2.0,\n"\
                         " ('x[1][1]', 'x[1][1]'): 1.0}, offset=0.0), "\
-                        "structure={'x[0][0]': ('x', 0, 0),\n"\
-                        " 'x[0][1]': ('x', 0, 1),\n"\
-                        " 'x[1][0]': ('x', 1, 0),\n"\
-                        " 'x[1][1]': ('x', 1, 1)})"
+                        "structure={'x[0][1]': ('x', 0, 1), 'x[1][1]': ('x', 1, 1)})"
         self.assertEqual(repr(model), expected_repr)
 
         # when the constraint is not broken
@@ -120,7 +117,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(energy == 1)
 
     def test_decode2(self):
-        x = Matrix("x", n_row=2, n_col=2)
+        x = Array.create("x", (2, 2), vartype="BINARY")
         exp = Constraint(-(x[1, 1] - x[0, 1]) ** 2, label="const")
         model = exp.compile()
         self.assertRaises(ValueError, lambda: model.decode_solution([1, 0], vartype="BINARY"))
@@ -130,7 +127,7 @@ class TestModel(unittest.TestCase):
         import dimod
         n = 10
         A = [np.random.randint(-50, 50) for _ in range(n)]
-        S = Vector('S', n)
+        S = Array.create('S', n, "BINARY")
         H = sum(A[i] * S[i] for i in range(n)) ** 2
         model = H.compile()
         binary_bqm = model.to_dimod_bqm()

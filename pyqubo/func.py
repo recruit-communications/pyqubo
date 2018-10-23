@@ -29,8 +29,8 @@ class Sum(UserDefinedExpress):
         func (function): function which takes integer as an argument and returns :class:`Express`.
     
     Example:
-        >>> from pyqubo import Sum, Vector
-        >>> x = Vector('x', n_dim=3)
+        >>> from pyqubo import Sum, Array
+        >>> x = Array.create('x', 3, 'BINARY')
         >>> exp = (Sum(0, 3, lambda i: x[i]) - 1.0)**2
         >>> pprint(exp.compile().to_qubo())
         ({('x[0]', 'x[0]'): -1.0,
