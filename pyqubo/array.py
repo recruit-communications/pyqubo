@@ -20,6 +20,7 @@ import numpy as np
 from operator import mul, add
 from six.moves import reduce
 
+
 class Array:
     """Multi-dimensional array.
 
@@ -27,7 +28,7 @@ class Array:
         bit_list (list/:class:`numpy.ndarray`): The object from which a new array is created.
             Accepted input:
         
-                * (Nested) list of :class:`Express` or int or float.
+                * (Nested) list of :class:`Express`, :class:`Array`, int or float.
                 * numpy.ndarray
 
     Attributes:
@@ -42,6 +43,12 @@ class Array:
         >>> array
         Array([[Qbit(x0), Qbit(x1)],
                [Qbit(x2), Qbit(x3)]])
+        
+        Create an array with Qbits.
+        
+        >>> Array.create('x', shape=(2, 2), vartype='BINARY')
+        Array([[Qbit(x[0][0]), Qbit(x[0][1])],
+               [Qbit(x[1][0]), Qbit(x[1][1])]])
         
         Get the shape of the array.
         
@@ -224,10 +231,7 @@ class Array:
 
     def __div__(self, other):
         """It is called when `self / other(any object)`"""
-        if not isinstance(other, Array):
-            return self * (other ** -1)
-        else:
-            raise ValueError("Expression cannot be divided by Expression.")
+        return self.div(other)
 
     def __rdiv__(self, other):
         """It is called when `other(number) / self`"""
@@ -255,7 +259,8 @@ class Array:
         
         Example:
             
-            >>> from pyqubo import Array
+            >>> from pyqubo import Array, Qbit
+            >>> import numpy as np
             >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
             >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
             >>> array_a.add(array_b)
@@ -290,7 +295,8 @@ class Array:
 
         Example:
 
-            >>> from pyqubo import Array
+            >>> from pyqubo import Array, Qbit
+            >>> import numpy as np
             >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
             >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
             >>> array_a.subtract(array_b)
@@ -325,7 +331,8 @@ class Array:
 
         Example:
 
-            >>> from pyqubo import Array
+            >>> from pyqubo import Array, Qbit
+            >>> import numpy as np
             >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
             >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
             >>> array_a.mul(array_b)
@@ -349,6 +356,28 @@ class Array:
         """
         return self._pairwise_op_with_type_check(other, lambda x, y: x * y)
 
+    def div(self, other):
+        """Returns division of self by other.
+        
+        Args:
+            other (int/float): Divisor.
+        
+        Returns:
+            :class:`Array`
+        
+        Example:
+            
+            >>> from pyqubo import Array, Qbit
+            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
+            >>> array_a / 5
+            Array([[(Qbit(a)*Num(0.2)), (Qbit(b)*Num(0.2))],
+                   [(Qbit(c)*Num(0.2)), 0.4]])
+        """
+        if not isinstance(other, Array):
+            return self * (other ** -1)
+        else:
+            raise ValueError("Expression cannot be divided by Expression.")
+
     @staticmethod
     @vartype_argument('vartype')
     def create(name, shape, vartype):
@@ -359,7 +388,7 @@ class Array:
                 For example, if the name is 'x',
                 the label of `(i, j)` th variable will be ``x[i][j]``.
             
-            shape (int/tuple[int]): Dimension of the array.
+            shape (int/tuple[int]): Dimensions of the array.
             
             vartype (:class:`dimod.Vartype`/str/set, optional):
                 Variable type of the solution.
@@ -386,9 +415,9 @@ class Array:
         else:
             var_class = Spin
 
-        def var_name(name, index):
+        def var_name(_name, index):
             return "{name}{index_repr}".format(
-                name=name, index_repr=''.join(['[%d]' % i for i in index]))
+                name=_name, index_repr=''.join(['[%d]' % i for i in index]))
 
         def create_structure(index):
             return {var_name(name, index): tuple([name] + index)}
@@ -472,7 +501,7 @@ class Array:
         Returns:
             :class:`Array`
         """
-        if not isinstance(other, Array): # pragma: no cover
+        if not isinstance(other, Array):  # pragma: no cover
             raise TypeError('Type of `other` is not a `Array` instance.')
         elif not self.shape == other.shape:
             raise ValueError('Shape of other is not same as that of self.')
@@ -489,6 +518,7 @@ class Array:
         """Returns a transposed array.
         
         Example:
+            >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
             >>> array
             Array([[Qbit(x[0][0]), Qbit(x[0][1]), Qbit(x[0][2])],
@@ -607,11 +637,13 @@ class Array:
         return Array._create_with_generator(new_shape, generator)
 
     def matmul(self, other):
-        """Returns matrix product of two arrays.
+        """Returns a matrix product of two arrays.
         
-        You can use operator symbol '@' instead of :obj:`matmul()` in Python 3.5 or later version.
+        Note:
+            You can use operator symbol '@' instead of :obj:`matmul()`
+            in Python 3.5 or later version.
         
-        >>> from pyqubo import Array, Qbit
+        >>> from pyqubo import Array
         >>> array_a = Array.create('a', shape=(2, 4), vartype='BINARY')
         >>> array_b = Array.create('b', shape=(4, 3), vartype='BINARY')
         >>> array_a @ array_b == array_a.matmul(array_b)
@@ -627,7 +659,8 @@ class Array:
         
             Matrix product of two arrays falls into 3 patterns.
             
-            1. If either of the arguments is 1-D array, it is treated as a matrix by adding one to its dimension.
+            1. If either of the arguments is 1-D array,
+            it is treated as a matrix where one is added to its dimension.
             
             >>> from pyqubo import Array, Qbit
             >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
@@ -703,7 +736,6 @@ class Array:
         
         >>> steps = Array._calc_steps(shape)
         >>> one_dim_index = sum(step * i for step, i in zip(steps, n_dim_index))
-        
         """
         steps = []
         tmp_d = 1
@@ -714,7 +746,7 @@ class Array:
         return steps
 
     def reshape(self, new_shape):
-        """Returns reshaped array.
+        """Returns a reshaped array.
         
         Args:
             new_shape (tuple[int]): New shape.

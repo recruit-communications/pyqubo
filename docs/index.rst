@@ -17,7 +17,7 @@
 
    reference/express
    reference/model
-   reference/tensor
+   reference/array
    reference/constraint
    reference/logic
    reference/func
