@@ -89,3 +89,32 @@ class Or(UserDefinedExpress):
     def __init__(self, bit_a, bit_b):
         express = Not(And(Not(bit_a), Not(bit_b)))
         super(Or, self).__init__(express)
+
+
+class Xor(UserDefinedExpress):
+    """Logical XOR of inputs.
+
+    Args:
+        bit_a (:class:`Express`): expression to be binary
+        bit_b (:class:`Express`): expression to be binary
+
+    Examples:
+
+        >>> from pyqubo import Qbit, Xor
+        >>> import itertools
+        >>> a, b = Qbit('a'), Qbit('b')
+        >>> exp = Xor(a, b)
+        >>> model = exp.compile()
+        >>> for a, b in itertools.product(*[(0, 1)] * 2):
+        ...   print(a, b, int(model.energy({'a': a, 'b': b}, vartype='BINARY')))
+        0 0 0
+        0 1 1
+        1 0 1
+        1 1 0
+    """
+
+    def __init__(self, bit_a, bit_b):
+        nand_ab = Not(And(bit_a, bit_b))
+        or_ab = Or(bit_a, bit_b)
+        express = And(nand_ab, or_ab)
+        super(Xor, self).__init__(express)

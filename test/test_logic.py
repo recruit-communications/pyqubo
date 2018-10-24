@@ -14,7 +14,7 @@
 
 import unittest
 import itertools
-from pyqubo import Qbit, And, Or, Not
+from pyqubo import Qbit, And, Or, Not, Xor
 
 
 class TestLogic(unittest.TestCase):
@@ -44,3 +44,14 @@ class TestLogic(unittest.TestCase):
             self.assertEqual(1-a, e)
 
         self.assertEqual(repr(exp), "Not(((Qbit(a)*Num(-1))+Num(1)))")
+
+    def test_xor(self):
+        a, b = Qbit('a'), Qbit('b')
+        exp = Xor(a, b)
+        model = exp.compile()
+        for a, b in itertools.product(*[(0, 1)] * 2):
+            e = int(model.energy({'a': a, 'b': b}, vartype='BINARY'))
+            if (a == 1 and b == 0) or (a == 0 and b == 1):
+                self.assertTrue(e == 1)
+            else:
+                self.assertTrue(e == 0)
