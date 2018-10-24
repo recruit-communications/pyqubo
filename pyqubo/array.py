@@ -36,19 +36,19 @@ class Array:
 
     Example:
         
-        Create an array from a nested list of :class:`Express`.
+        Create a new array with Qbits.
         
         >>> from pyqubo import Array, Qbit
+        >>> Array.create('x', shape=(2, 2), vartype='BINARY')
+        Array([[Qbit(x[0][0]), Qbit(x[0][1])],
+               [Qbit(x[1][0]), Qbit(x[1][1])]])
+        
+        Create a new array from a nested list of :class:`Express`.
+        
         >>> array = Array([[Qbit('x0'), Qbit('x1')], [Qbit('x2'), Qbit('x3')]])
         >>> array
         Array([[Qbit(x0), Qbit(x1)],
                [Qbit(x2), Qbit(x3)]])
-        
-        Create an array with Qbits.
-        
-        >>> Array.create('x', shape=(2, 2), vartype='BINARY')
-        Array([[Qbit(x[0][0]), Qbit(x[0][1])],
-               [Qbit(x[1][0]), Qbit(x[1][1])]])
         
         Get the shape of the array.
         
@@ -57,12 +57,12 @@ class Array:
         
         Access an element with index.
         
-        >>> array[0, 0]
+        >>> array[0, 0]  # = array[(0, 0)]
         Qbit(x0)
         
         Use slice ":" to select a subset of the array.
         
-        >>> array[:, 1]
+        >>> array[:, 1]  # = array[(slice(None), 1)]
         Array([Qbit(x1), Qbit(x3)])
         >>> sum(array[:, 1])
         (Qbit(x1)+Qbit(x3))

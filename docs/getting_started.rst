@@ -144,8 +144,6 @@ Array of Variables
 
 :class:`Array` class represents a multi-dimensional array of :class:`Qbit` or :class:`Spin`.
 
-**Example:** You can access each element of the vector with an index like:
-
 **Example:** You can access each element of the matrix with an index like:
 
 >>> from pyqubo import Array
@@ -159,21 +157,21 @@ You can use :class:`Array` to represent multiple spins in the example of partiti
 
 >>> from pyqubo import Array
 >>> numbers = [4, 2, 7, 1]
->>> s = Array.create('var', shape=4, vartype='SPIN')
+>>> s = Array.create('s', shape=4, vartype='SPIN')
 >>> H = sum(n * s for s, n in zip(s, numbers))**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
 >>> pprint(qubo)
-{('var[0]', 'var[0]'): -160.0,
- ('var[0]', 'var[1]'): 64.0,
- ('var[0]', 'var[2]'): 224.0,
- ('var[0]', 'var[3]'): 32.0,
- ('var[1]', 'var[1]'): -96.0,
- ('var[1]', 'var[2]'): 112.0,
- ('var[1]', 'var[3]'): 16.0,
- ('var[2]', 'var[2]'): -196.0,
- ('var[2]', 'var[3]'): 56.0,
- ('var[3]', 'var[3]'): -52.0}
+{('s[0]', 's[0]'): -160.0,
+ ('s[0]', 's[1]'): 64.0,
+ ('s[0]', 's[2]'): 224.0,
+ ('s[0]', 's[3]'): 32.0,
+ ('s[1]', 's[1]'): -96.0,
+ ('s[1]', 's[2]'): 112.0,
+ ('s[1]', 's[3]'): 16.0,
+ ('s[2]', 's[2]'): -196.0,
+ ('s[2]', 's[3]'): 56.0,
+ ('s[3]', 's[3]'): -52.0}
 
 
 Placeholder
