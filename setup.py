@@ -17,7 +17,8 @@ package_info = PackageInfo(os.path.join('pyqubo', 'package_info.py'))
 
 install_requires = ['dimod>=0.7.4',
                     'numpy>=1.14.0,<2.0.0',
-                    'six>=1.10.0,<2.0.0']
+                    'six>=1.10.0,<2.0.0',
+                    'dwave-neal>=0.4.2']
 
 packages = ['pyqubo', 'pyqubo.core', 'pyqubo.utils']
 
