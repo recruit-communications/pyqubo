@@ -28,11 +28,11 @@ class TestSolver(unittest.TestCase):
     def test_solve_qubo(self):
         model = TestSolver.create_number_partition_model()
         qubo, offset = model.to_qubo()
-        solution = solve_qubo(qubo, num_reads=1, num_sweeps=10)
+        solution = solve_qubo(qubo, num_reads=1, sweeps=10)
         self.assertTrue(solution == {'s1': 0, 's2': 0, 's3': 1} or {'s1': 1, 's2': 1, 's3': 0})
 
     def test_solve_ising(self):
         model = TestSolver.create_number_partition_model()
         linear, quad, offset = model.to_ising()
-        solution = solve_ising(linear, quad, num_reads=1, num_sweeps=10)
+        solution = solve_ising(linear, quad, num_reads=1, sweeps=10)
         self.assertTrue(solution == {'s1': -1, 's2': -1, 's3': 1} or {'s1': 1, 's2': 1, 's3': -1})
