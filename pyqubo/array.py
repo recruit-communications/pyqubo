@@ -245,7 +245,7 @@ class Array:
         """It is called when `other(number) / self`"""
         return self.__rdiv__(other)
 
-    def __matmul__(self, other):
+    def __matmul__(self, other):  # pragma: no cover
         return self.matmul(other)
 
     def add(self, other):
