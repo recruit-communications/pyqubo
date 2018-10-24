@@ -60,13 +60,14 @@ To generate coverage reports, execute
 
 You will see html files of the report in ``htmlcov`` directory.
 
-Second option is to run test with circleci locally.
+Second option is to run test using docker container with circleci CLI locally.
 To run test with circleci CLI, execute
 
 .. code-block:: shell
 
     circleci build --job $JOBNAME
 
+$JOBNAME needs to be replaced with a job name such as `test-3.6`, listed in ``.circleci/config.yml``.
 To install circleci CLI, refer to https://circleci.com/docs/2.0/local-cli/.
 
 

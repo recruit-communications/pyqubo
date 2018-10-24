@@ -139,32 +139,25 @@ If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`,
 >>> pprint(exp.compile().to_qubo())
 ({('s1', 's1'): 2.0, ('s1', 's2'): 8.0, ('s2', 's2'): -4.0}, -1.0)
 
-Vector and Matrix
------------------
+Array of Variables
+------------------
 
-:class:`Vector` is a 1-dim array and :class:`Matrix` is a 2-dim array of :class:`Qbit` or :class:`Spin`.
-
-**Example:** You can access each element of the vector with an index like:
-
->>> from pyqubo import Vector
->>> x = Vector('x', n_dim=3)
->>> x[0] + x[2]
-(Qbit(x[0])+Qbit(x[2]))
+:class:`Array` class represents a multi-dimensional array of :class:`Qbit` or :class:`Spin`.
 
 **Example:** You can access each element of the matrix with an index like:
 
->>> from pyqubo import Matrix
->>> x = Matrix('x', n_row=2, n_col=3)
+>>> from pyqubo import Array
+>>> x = Array.create('x', shape=(2, 3), vartype='BINARY')
 >>> x[0, 1] + x[1, 2]
 (Qbit(x[0][1])+Qbit(x[1][2]))
 
 
 **Example:**
-You can use :class:`Vector` to represent multiple spins in the example of partitioning problem above.
+You can use :class:`Array` to represent multiple spins in the example of partitioning problem above.
 
->>> from pyqubo import Vector
+>>> from pyqubo import Array
 >>> numbers = [4, 2, 7, 1]
->>> s = Vector('s', n_dim=4, spin=True)
+>>> s = Array.create('s', shape=4, vartype='SPIN')
 >>> H = sum(n * s for s, n in zip(s, numbers))**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
@@ -227,9 +220,9 @@ When you get a solution from the Ising solver, :obj:`Model.decode_solution()` de
 
 **Example:** You are solving a partitioning problem.
 
->>> from pyqubo import Vector
+>>> from pyqubo import Array
 >>> numbers = [4, 2, 7, 1]
->>> s = Vector('s', 4, spin=True)
+>>> s = Array.create('s', 4, 'SPIN')
 >>> H = sum(n * s_i for s_i, n in zip(s, numbers))**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()

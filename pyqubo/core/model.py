@@ -72,16 +72,16 @@ class Model:
 
     @vartype_argument('vartype')
     def _parse_solution(self, solution, vartype):
-        """Parse solutions.
+        """Parse solution.
         
         Args:
             solution (list[bit]/dict[label, bit]/dict[index, bit]):
                 The solution returned from solvers.
             
             vartype (:class:`dimod.Vartype`/str/set, optional):
-                Variable type of the solution. Accepted input values:
-                * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
-                * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
+                Variable type of the solution. Accepted input values
+                    * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
+                    * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
         
         Returns:
              dict[label, bit]: dictionary of label and binary bit.
@@ -120,7 +120,9 @@ class Model:
                 The solution returned from solvers.
             
             vartype (:class:`dimod.Vartype`/str/set, optional):
-                Variable type of the solution. Accepted input values:
+                Variable type of the solution.
+                Accepted input values:
+                
                 * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
                 * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
@@ -143,7 +145,9 @@ class Model:
                 The solution returned from solvers.
             
             vartype (:class:`dimod.Vartype`/str/set, optional):
-                Variable type of the solution. Accepted input values:
+                Variable type of the solution.
+                Accepted input values:
+                
                 * :class:`.Vartype.SPIN`, ``'SPIN'``, ``{-1, 1}``
                 * :class:`.Vartype.BINARY`, ``'BINARY'``, ``{0, 1}``
             
@@ -282,7 +286,7 @@ class Model:
         bqm = self.compiled_qubo.evaluate(feed_dict)
         q, offset = bqm.to_qubo()
 
-        # Construct QUBO
+        # Convert label to index if index_label is true
         qubo = {}
         for (label1, label2), v in q.items():
             if index_label:
@@ -338,7 +342,7 @@ class Model:
         bqm = self.compiled_qubo.evaluate(feed_dict)
         linear, quadratic, offset = bqm.to_ising()
 
-        # Construct linear
+        # Convert label to index if index_label is true
         new_linear = {}
         for label, v in linear.items():
             if index_label:
@@ -347,7 +351,6 @@ class Model:
                 i = label
             new_linear[i] = v
 
-        # Construct quadratic
         new_quadratic = {}
         for (label1, label2), v in quadratic.items():
             if index_label:

@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Spin, Placeholder, Constraint, Vector, Matrix, Add, Sum
+from pyqubo import Qbit, Spin, Placeholder, Constraint, Array, Add, Sum
 from pyqubo import assert_qubo_equal
 
 
@@ -134,8 +134,8 @@ class TestExpressCompile(unittest.TestCase):
                            feed_dict={"w": 3.0})
 
     def test_compile_vector(self):
-        x = Vector("x", n_dim=5)
-        a = Qbit("a")
+        x = Array.create('x', 5, 'BINARY')
+        a = Qbit('a')
         exp = x[1] * (x[0] + 2*a + 1)
         expected_qubo = {
             ('a', 'a'): 0.0,
@@ -147,14 +147,11 @@ class TestExpressCompile(unittest.TestCase):
         expected_structure = {
              'a': ('a',),
              'x[0]': ('x', 0),
-             'x[1]': ('x', 1),
-             'x[2]': ('x', 2),
-             'x[3]': ('x', 3),
-             'x[4]': ('x', 4)}
+             'x[1]': ('x', 1)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_vector_spin(self):
-        x = Vector("x", n_dim=2, spin=True)
+        x = Array.create('x', 2, 'SPIN')
         exp = x[1] * x[0] + x[0]
         expected_qubo = {('x[1]', 'x[1]'): -2.0, ('x[0]', 'x[0]'): 0.0, ('x[0]', 'x[1]'): 4.0}
         expected_offset = 0.0
@@ -164,7 +161,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_matrix(self):
-        x = Matrix("x", n_row=2, n_col=2)
+        x = Array.create("x", shape=(2, 2), vartype="BINARY")
         a = Qbit("a")
         exp = x[0, 1] * (x[1, 1] + 2*a + 1)
         expected_qubo = {
@@ -176,34 +173,30 @@ class TestExpressCompile(unittest.TestCase):
         expected_offset = 0.0
         expected_structure = {
              'a': ('a',),
-             'x[0][0]': ('x', 0, 0),
              'x[0][1]': ('x', 0, 1),
-             'x[1][0]': ('x', 1, 0),
              'x[1][1]': ('x', 1, 1)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_matrix_spin(self):
-        x = Matrix("x", 2, 2, spin=True)
+        x = Array.create("x", (2, 2), "SPIN")
         exp = x[1, 1] * x[0, 0] + x[0, 0]
         expected_qubo = {('x[1][1]', 'x[1][1]'): -2.0, ('x[0][0]', 'x[0][0]'): 0.0,
                          ('x[0][0]', 'x[1][1]'): 4.0}
         expected_offset = 0.0
         expected_structure = {
              'x[0][0]': ('x', 0, 0),
-             'x[0][1]': ('x', 0, 1),
-             'x[1][0]': ('x', 1, 0),
              'x[1][1]': ('x', 1, 1)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_index_error_vector(self):
-        x = Vector("x", n_dim=2)
+        x = Array.create("x", 2, "BINARY")
         self.assertRaises(IndexError, lambda: x[2])
 
-        x = Matrix("x", 2, 1)
+        x = Array.create("x", (2, 1), "BINARY")
         self.assertRaises(IndexError, lambda: x[2, 2])
 
     def test_sum(self):
-        x = Vector('x', 2)
+        x = Array.create('x', 2, "BINARY")
         exp = (Sum(0, 2, lambda i: x[i]) - 1) ** 2
 
         expected_qubo = {('x[0]', 'x[0]'): -1.0, ('x[1]', 'x[1]'): -1.0, ('x[0]', 'x[1]'): 2.0}

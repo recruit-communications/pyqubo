@@ -206,3 +206,5 @@ doctest_global_setup = "from pprint import pprint"
 todo_include_todos = True
 
 add_module_names = False
+
+autosummary_generate = True
