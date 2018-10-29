@@ -232,6 +232,8 @@ class Express:
         product_consts = {}
         for (a, b), v in bqm.info['reduction'].items():
             prod = normalize_label(v['product'])
+            a = normalize_label(a)
+            b = normalize_label(b)
             product_consts["AND({},{})={}".format(a, b, prod)]\
                 = binary_product(a, b, prod, strength)
 
