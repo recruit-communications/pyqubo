@@ -196,7 +196,7 @@ class Model:
 
         return decoded_solution, broken_const, problem_energy
 
-    def decode_dimod_response(self, response, topk=None):
+    def decode_dimod_response(self, response, topk=None, feed_dict=None):
         """Decode the solution of :class:`dimod.Response`.
         
         For more details about :class:`dimod.Response`,
@@ -208,7 +208,9 @@ class Model:
                 The solution returned from dimod sampler.
             topk (int, default=None):
                 Decode only top-k (energy is smaller) solutions.
-        
+            feed_dict (dict[str, float]):
+                Specify the placeholder values. Default=None
+
         Returns:
             list[tuple(dict, dict, float)]: List of tuple of the decoded solution and
             broken constraints and energy. Solutions are sorted by energy.
@@ -222,7 +224,7 @@ class Model:
                               for sample in response.record.sample[top_indices])
         decoded_solutions = []
         for sol in dict_solutions:
-            decoded_solutions.append(self.decode_solution(sol, response.vartype))
+            decoded_solutions.append(self.decode_solution(sol, response.vartype, feed_dict=feed_dict))
         return decoded_solutions
 
     def to_dimod_bqm(self, feed_dict=None):
