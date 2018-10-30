@@ -162,6 +162,26 @@ class TestModel(unittest.TestCase):
         self.assertTrue(dict_energy, 2.0)
         self.assertTrue(list_energy, 2.0)
 
+        # Test that `decode_dimod_response` accepts the `feed_dict` arg
+        import numpy as np
+        import dimod
+        n = 10
+        p = Placeholder("p")
+        feed_dict = {'p': 2}
+        A = [np.random.randint(-50, 50) for _ in range(n)]
+        S = Array.create('S', n, "BINARY")
+        H = sum(p * A[i] * S[i] for i in range(n)) ** 2
+        model = H.compile()
+        binary_bqm = model.to_dimod_bqm(feed_dict=feed_dict)
+        sa = dimod.reference.SimulatedAnnealingSampler()
+        response = sa.sample(binary_bqm, num_reads=10, num_sweeps=5)
+        # Confirm that decode_dimod_response() accecpts a feed_dict. Test of accuracy delegated to decode_solution()
+        decoded_solutions = model.decode_dimod_response(response, topk=2, feed_dict=feed_dict)
+        for (decoded_solution, broken, energy) in decoded_solutions:
+            assert isinstance(decoded_solution, dict)
+            assert isinstance(broken, dict)
+            assert isinstance(energy, float)
+
     def test_placeholder_in_constraint(self):
         a = Qbit("a")
         exp = Constraint(2 * Placeholder("c") + a, "const1")
