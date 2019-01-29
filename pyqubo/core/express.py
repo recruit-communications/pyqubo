@@ -177,7 +177,7 @@ class Express:
             >>> from pyqubo import Qbit
             >>> a, b, c, d = Qbit("a"), Qbit("b"), Qbit("c"), Qbit("d")
             >>> model = (a*b*c + a*b*d).compile()
-            >>> pprint(model.to_qubo())
+            >>> pprint(model.to_qubo()) # doctest: +SKIP
             ({('a', 'a'): 0.0,
               ('a', 'a*b'): -10.0,
               ('a', 'b'): 5.0,
@@ -186,8 +186,8 @@ class Express:
               ('a*b', 'c'): 1.0,
               ('a*b', 'd'): 1.0,
               ('b', 'b'): 0.0,
-              ('c', 'c'): 0.0,
-              ('d', 'd'): 0.0},
+              ('c', 'c'): 0,
+              ('d', 'd'): 0},
              0.0)
         """
         def compile_param_if_express(val):
@@ -488,11 +488,11 @@ class Placeholder(Express):
         
         >>> from pyqubo import Qbit, Placeholder
         >>> x, y, a = Qbit('x'), Qbit('y'), Placeholder('a')
-        >>> exp = a*x*y + 2*x
-        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 3}))
-        ({('x', 'x'): 2.0, ('x', 'y'): 3.0, ('y', 'y'): 0.0}, 0.0)
-        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 5}))
-        ({('x', 'x'): 2.0, ('x', 'y'): 5.0, ('y', 'y'): 0.0}, 0.0)
+        >>> exp = a*x*y + 2.0*x
+        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 3.0})) # doctest: +SKIP
+        ({('x', 'x'): 2.0, ('x', 'y'): 3.0, ('y', 'y'): 0}, 0.0)
+        >>> pprint(exp.compile().to_qubo(feed_dict={'a': 5.0})) # doctest: +SKIP
+        ({('x', 'x'): 2.0, ('x', 'y'): 5.0, ('y', 'y'): 0}, 0.0)
     """
 
     def __init__(self, label):
@@ -570,7 +570,7 @@ class Spin(Express):
         >>> from pyqubo import Spin
         >>> a, b = Spin('a'), Spin('b')
         >>> exp = 2*a*b + 3*a
-        >>> pprint(exp.compile().to_qubo())
+        >>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
         ({('a', 'a'): 2.0, ('a', 'b'): 8.0, ('b', 'b'): -4.0}, -1.0)
     """
 
@@ -611,8 +611,8 @@ class Qbit(Express):
         >>> from pyqubo import Qbit
         >>> a, b = Qbit('a'), Qbit('b')
         >>> exp = 2*a*b + 3*a
-        >>> pprint(exp.compile().to_qubo())
-        ({('a', 'a'): 3.0, ('a', 'b'): 2.0, ('b', 'b'): 0.0}, 0.0)
+        >>> pprint(exp.compile().to_qubo())   # doctest: +SKIP
+        ({('a', 'a'): 3.0, ('a', 'b'): 2.0, ('b', 'b'): 0}, 0.0)
     """
 
     def __init__(self, label, structure=None):

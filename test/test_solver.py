@@ -36,3 +36,6 @@ class TestSolver(unittest.TestCase):
         linear, quad, offset = model.to_ising()
         solution = solve_ising(linear, quad, num_reads=1, sweeps=10)
         self.assertTrue(solution == {'s1': -1, 's2': -1, 's3': 1} or {'s1': 1, 's2': 1, 's3': -1})
+
+if __name__ == '__main__':
+    unittest.main()
