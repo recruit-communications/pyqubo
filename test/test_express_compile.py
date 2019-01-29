@@ -205,3 +205,6 @@ class TestExpressCompile(unittest.TestCase):
              'x[0]': ('x', 0),
              'x[1]': ('x', 1)}
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
+
+if __name__ == '__main__':
+    unittest.main()

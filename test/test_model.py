@@ -190,3 +190,6 @@ class TestModel(unittest.TestCase):
         self.assertEqual(energy, 3.0)
         self.assertEqual(broken, {'const1': {'result': {'a': 1}, 'penalty': 3.0}})
         self.assertEqual(sol, {'a': 1})
+
+if __name__ == '__main__':
+    unittest.main()
