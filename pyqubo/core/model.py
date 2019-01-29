@@ -220,7 +220,7 @@ class Model:
         if topk:
             top_indices = top_indices[:topk]
 
-        dict_solutions = list(dict(zip(response.variable_labels, sample))
+        dict_solutions = list(dict(zip(response.variables, sample))
                               for sample in response.record.sample[top_indices])
         decoded_solutions = []
         for sol in dict_solutions:
@@ -244,6 +244,12 @@ class Model:
         """
         return self.compiled_qubo.evaluate(feed_dict)
 
+    def _normalize_index(self, i, j):
+        if i < j:
+            return i, j
+        else:
+            return j, i
+
     def to_qubo(self, index_label=False, feed_dict=None):
         """Returns QUBO and energy offset.
         
@@ -266,7 +272,7 @@ class Model:
             >>> from pyqubo import Qbit
             >>> x, y, z = Qbit("x"), Qbit("y"), Qbit("z")
             >>> model = (x*y + y*z + 3*z).compile()
-            >>> pprint(model.to_qubo())
+            >>> pprint(model.to_qubo()) # doctest: +SKIP
             ({('x', 'x'): 0.0,
               ('x', 'y'): 1.0,
               ('y', 'y'): 0.0,
@@ -278,7 +284,7 @@ class Model:
             The mapping of the indices and the corresponding labels is
             stored in :obj:`model.variable_order`.
             
-            >>> pprint(model.to_qubo(index_label=True))
+            >>> pprint(model.to_qubo(index_label=True)) # doctest: +SKIP
             ({(0, 0): 0.0, (0, 1): 1.0, (1, 1): 0.0, (1, 2): 1.0, (2, 2): 3.0}, 0.0)
             >>> model.variable_order
             ['x', 'y', 'z']
@@ -297,7 +303,7 @@ class Model:
             else:
                 i = label1
                 j = label2
-            qubo[(i, j)] = v
+            qubo[self._normalize_index(i, j)] = v
 
         return qubo, offset
 
@@ -326,15 +332,15 @@ class Model:
             >>> from pyqubo import Qbit
             >>> x, y, z = Qbit("x"), Qbit("y"), Qbit("z")
             >>> model = (x*y + y*z + 3*z).compile()
-            >>> pprint(model.to_ising())
+            >>> pprint(model.to_ising()) # doctest: +SKIP
             ({'x': 0.25, 'y': 0.5, 'z': 1.75}, {('x', 'y'): 0.25, ('y', 'z'): 0.25}, 2.0)
             
             If you want a Ising model which has index labels,
             specify the argument ``index_label=True``.
             The mapping of the indices and the corresponding labels is
-            stored in :obj:`model.variable_order`.
+            stored in :obj:`model.variables`.
             
-            >>> pprint(model.to_ising(index_label=True))
+            >>> pprint(model.to_ising(index_label=True)) # doctest: +SKIP
             ({0: 0.25, 1: 0.5, 2: 1.75}, {(0, 1): 0.25, (1, 2): 0.25}, 2.0)
             >>> model.variable_order
             ['x', 'y', 'z']
@@ -361,6 +367,6 @@ class Model:
             else:
                 i = label1
                 j = label2
-            new_quadratic[(i, j)] = v
+            new_quadratic[self._normalize_index(i, j)] = v
 
         return new_linear, new_quadratic, offset
