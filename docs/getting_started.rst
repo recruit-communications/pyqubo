@@ -63,7 +63,7 @@ With PyQUBO, you can construct QUBOs with 3 steps:
 3. **Call ‘to_qubo()’ to get QUBO coefficients.**
 
 >>> qubo, offset = model.to_qubo()
->>> pprint(qubo)
+>>> pprint(qubo) # doctest: +SKIP
 {('s1', 's1'): -160.0,
  ('s1', 's2'): 64.0,
  ('s1', 's3'): 224.0,
@@ -97,9 +97,9 @@ In PyQUBO, spin variables are internally converted to binary variables via the r
 If you want to get the coefficient of the Ising model, just call :obj:`Model.to_ising()` method like below.
 
 >>> linear, quadratic, offset = model.to_ising()
->>> pprint(linear)
+>>> pprint(linear) # doctest: +SKIP
 {'s1': 0.0, 's2': 0.0, 's3': 0.0, 's4': 0.0}
->>> pprint(quadratic)
+>>> pprint(quadratic) # doctest: +SKIP
 {('s1', 's2'): 16.0,
  ('s1', 's3'): 56.0,
  ('s1', 's4'): 8.0,
@@ -127,7 +127,7 @@ If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`
 >>> from pyqubo import Qbit
 >>> x1, x2 = Qbit('x1'), Qbit('x2')
 >>> exp = 2*x1*x2 + 3*x1
->>> pprint(exp.compile().to_qubo())
+>>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
@@ -136,7 +136,7 @@ If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`,
 >>> from pyqubo import Spin
 >>> s1, s2 = Spin('s1'), Spin('s2')
 >>> exp = 2*s1*s2 + 3*s1
->>> pprint(exp.compile().to_qubo())
+>>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
 ({('s1', 's1'): 2.0, ('s1', 's2'): 8.0, ('s2', 's2'): -4.0}, -1.0)
 
 Array of Variables
@@ -161,7 +161,7 @@ You can use :class:`Array` to represent multiple spins in the example of partiti
 >>> H = sum(n * s for s, n in zip(s, numbers))**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
->>> pprint(qubo)
+>>> pprint(qubo) # doctest: +SKIP
 {('s[0]', 's[0]'): -160.0,
  ('s[0]', 's[1]'): 64.0,
  ('s[0]', 's[2]'): 224.0,
