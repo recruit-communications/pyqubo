@@ -12,19 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
+import abc
+import six
+from .integer import Integer
 
-import pyqubo.constraint
-import pyqubo.core
-import pyqubo.func
-import pyqubo.logic
-import pyqubo.array
-import pyqubo.utils
-import pyqubo.order_enc_integer
-from pyqubo.constraint import *
-from pyqubo.core import *
-from pyqubo.func import *
-from pyqubo.logic import *
-from pyqubo.array import *
-from pyqubo.utils import *
-from pyqubo.order_enc_integer import *
+
+@six.add_metaclass(abc.ABCMeta)
+class ConstrainedInteger(Integer):
+
+    def __init__(self):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def constraint(self):
+        pass
