@@ -45,7 +45,7 @@ def solve_qubo(qubo, num_reads=10, sweeps=1000, beta_range=(1.0, 50.0)):
                                     sweeps=sweeps, beta_range=beta_range)
     best = np.argmin(sa_computation.record.energy)
     best_solution = list(sa_computation.record.sample[best])
-    return dict(zip(sa_computation.variable_labels, best_solution))
+    return dict(zip(sa_computation.variables, best_solution))
 
 
 def solve_ising(linear, quad, num_reads=10, sweeps=1000, beta_range=(1.0, 50.0)):
@@ -80,4 +80,4 @@ def solve_ising(linear, quad, num_reads=10, sweeps=1000, beta_range=(1.0, 50.0))
                                      sweeps=sweeps, beta_range=beta_range)
     best = np.argmin(sa_computation.record.energy)
     best_solution = list(sa_computation.record.sample[best])
-    return dict(zip(sa_computation.variable_labels, best_solution))
+    return dict(zip(sa_computation.variables, best_solution))
