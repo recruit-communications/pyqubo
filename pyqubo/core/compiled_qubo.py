@@ -53,9 +53,9 @@ class CompiledQubo:
         """
         evaluated_qubo = {}
         for k, v in self.qubo.items():
-            evaluated_qubo[k] = CompiledQubo._eval_if_not_float(v, feed_dict)
+            evaluated_qubo[k] = CompiledQubo._eval_if_not_number(v, feed_dict)
 
-        evaluated_offset = CompiledQubo._eval_if_not_float(self.offset, feed_dict)
+        evaluated_offset = CompiledQubo._eval_if_not_number(self.offset, feed_dict)
 
         return dimod.BinaryQuadraticModel.from_qubo(
             evaluated_qubo, evaluated_offset)
@@ -65,11 +65,11 @@ class CompiledQubo:
         return "CompiledQubo({}, offset={})".format(pformat(self.qubo), self.offset)
 
     @staticmethod
-    def _eval_if_not_float(v, feed_dict):
+    def _eval_if_not_number(v, feed_dict):
         """ If v is not float (i.e. v is :class:`Express`), returns an evaluated value.
 
         Args:
-            v (float/:class:`Coefficient`):
+            v (float/int/:class:`Coefficient`):
                 The value to be evaluated.
             feed_dict (dict[str, float]):
                 The value of :class:`Placeholder`.
@@ -77,7 +77,7 @@ class CompiledQubo:
         Returns:
             float: Evaluated value of the input :obj:`v`:
         """
-        if isinstance(v, float):
+        if isinstance(v, float) or isinstance(v, int):
             return v
         else:
             return v.evaluate(feed_dict)
