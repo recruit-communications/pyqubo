@@ -14,13 +14,13 @@
 
 import unittest
 import itertools
-from pyqubo import Qbit, And, Or, Not, Xor
+from pyqubo import Binary, And, Or, Not, Xor
 
 
 class TestLogic(unittest.TestCase):
 
     def test_and(self):
-        a, b = Qbit('a'), Qbit('b')
+        a, b = Binary('a'), Binary('b')
         exp = And(a, b)
         model = exp.compile()
         for a, b in itertools.product(*[(0, 1)] * 2):
@@ -28,7 +28,7 @@ class TestLogic(unittest.TestCase):
             self.assertEqual(a*b, e)
 
     def test_or(self):
-        a, b = Qbit('a'), Qbit('b')
+        a, b = Binary('a'), Binary('b')
         exp = Or(a, b)
         model = exp.compile()
         for a, b in itertools.product(*[(0, 1)] * 2):
@@ -36,17 +36,17 @@ class TestLogic(unittest.TestCase):
             self.assertEqual(int(a+b > 0), e)
 
     def test_not(self):
-        a = Qbit('a')
+        a = Binary('a')
         exp = Not(a)
         model = exp.compile()
         for a in [0, 1]:
             e = int(model.energy({'a': a}, vartype='BINARY'))
             self.assertEqual(1-a, e)
 
-        self.assertEqual(repr(exp), "Not(((Qbit(a)*Num(-1))+Num(1)))")
+        self.assertEqual(repr(exp), "Not(((Binary(a)*Num(-1))+Num(1)))")
 
     def test_xor(self):
-        a, b = Qbit('a'), Qbit('b')
+        a, b = Binary('a'), Binary('b')
         exp = Xor(a, b)
         model = exp.compile()
         for a, b in itertools.product(*[(0, 1)] * 2):

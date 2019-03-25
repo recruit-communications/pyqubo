@@ -22,8 +22,8 @@ class Not(UserDefinedExpress):
         bit (:class:`Express`): expression to be binary
     
     Examples:
-        >>> from pyqubo import Qbit, Not
-        >>> a = Qbit('a')
+        >>> from pyqubo import Binary, Not
+        >>> a = Binary('a')
         >>> exp = Not(a)
         >>> model = exp.compile()
         >>> for a in (0, 1):
@@ -46,9 +46,9 @@ class And(UserDefinedExpress):
         bit_b (:class:`Express`): expression to be binary
     
     Examples:
-        >>> from pyqubo import Qbit, And
+        >>> from pyqubo import Binary, And
         >>> import itertools
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = And(a, b)
         >>> model = exp.compile()
         >>> for a, b in itertools.product(*[(0, 1)] * 2):
@@ -73,9 +73,9 @@ class Or(UserDefinedExpress):
     
     Examples:
         
-        >>> from pyqubo import Qbit, Or
+        >>> from pyqubo import Binary, Or
         >>> import itertools
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = Or(a, b)
         >>> model = exp.compile()
         >>> for a, b in itertools.product(*[(0, 1)] * 2):
@@ -100,9 +100,9 @@ class Xor(UserDefinedExpress):
 
     Examples:
 
-        >>> from pyqubo import Qbit, Xor
+        >>> from pyqubo import Binary, Xor
         >>> import itertools
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = Xor(a, b)
         >>> model = exp.compile()
         >>> for a, b in itertools.product(*[(0, 1)] * 2):

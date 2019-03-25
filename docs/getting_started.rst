@@ -116,16 +116,24 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
     16 s_{1}s_{2} + 56 s_{1}s_{3} + 8 s_{1}s_{4} + 28 s_{2}s_{3} + 4 s_{2}s_{4} + 14 s_{3}s_{4} + 70
 
 
-Variable: Qbit and Spin
+Variable: Binary and Spin
 -----------------------
 
-When you define a hamiltonian, you can use :class:`Qbit` or :class:`Spin` as a variable.
+When you define a hamiltonian, you can use :class:`Binary` or :class:`Spin` as a variable.
 
 **Example:**
-If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Qbit`.
+If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
 
->>> from pyqubo import Qbit
->>> x1, x2 = Qbit('x1'), Qbit('x2')
+>>> from pyqubo import Binary
+>>> x1, x2 = Binary('x1'), Binary('x2')
+>>> exp = 2
+
+>>> from pyqubo import Binary
+>>> x1, x2 = Binary('x1'), Binary('x2')
+>>> exp = 2
+
+>>> from pyqubo import Binary
+>>> x1, x2 = Binary('x1'), Binary('x2')
 >>> exp = 2*x1*x2 + 3*x1
 >>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
@@ -142,14 +150,14 @@ If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`,
 Array of Variables
 ------------------
 
-:class:`Array` class represents a multi-dimensional array of :class:`Qbit` or :class:`Spin`.
+:class:`Array` class represents a multi-dimensional array of :class:`Binary` or :class:`Spin`.
 
 **Example:** You can access each element of the matrix with an index like:
 
 >>> from pyqubo import Array
 >>> x = Array.create('x', shape=(2, 3), vartype='BINARY')
 >>> x[0, 1] + x[1, 2]
-(Qbit(x[0][1])+Qbit(x[1][2]))
+(Binary(x[0][1])+Binary(x[1][2]))
 
 
 **Example:**
@@ -187,8 +195,18 @@ If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` w
 
 In the first code, we don't use placeholder. In this case, you need to compile the hamiltonian twice to get a QUBO with :math:`M=5.0` and :math:`M=6.0`.
 
->>> from pyqubo import Qbit
->>> a, b = Qbit('a'), Qbit('b')
+>>> from pyqubo import Binary
+>>> a, b = Binary('a'), Binary('b')
+>>> M = 5.0
+>>> H = 2
+
+>>> from pyqubo import Binary
+>>> a, b = Binary('a'), Binary('b')
+>>> M = 5.0
+>>> H = 2
+
+>>> from pyqubo import Binary
+>>> a, b = Binary('a'), Binary('b')
 >>> M = 5.0
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
@@ -201,7 +219,7 @@ In the first code, we don't use placeholder. In this case, you need to compile t
 If you don't want to compile twice, define :math:`M` by :class:`Placeholder`.
 
 >>> from pyqubo import Placeholder
->>> a, b = Qbit('a'), Qbit('b')
+>>> a, b = Binary('a'), Binary('b')
 >>> M = Placeholder('M')
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
@@ -252,8 +270,24 @@ You don't have to write additional programs for validation of the constraints.
 
 **Example:** If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
 
->>> from pyqubo import Qbit, Constraint
->>> a, b = Qbit('a'), Qbit('b')
+>>> from pyqubo import Binary, Constraint
+>>> a, b = Binary('a'), Binary('b')
+>>> M = 5.0 # strength of the constraint
+>>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
+>>> model = H.compile()
+
+Let's assume that you get a solution
+
+>>> from pyqubo import Binary, Constraint
+>>> a, b = Binary('a'), Binary('b')
+>>> M = 5.0 # strength of the constraint
+>>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
+>>> model = H.compile()
+
+Let's assume that you get a solution
+
+>>> from pyqubo import Binary, Constraint
+>>> a, b = Binary('a'), Binary('b')
 >>> M = 5.0 # strength of the constraint
 >>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
 >>> model = H.compile()

@@ -7,9 +7,9 @@ Expression
 .. autoclass:: Express
     :members:
 
-Qbit
+Binary
 ----
-.. autoclass:: Qbit
+.. autoclass:: Binary
 
 Spin
 ----

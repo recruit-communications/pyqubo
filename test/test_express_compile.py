@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Qbit, Spin, Placeholder, Constraint, Array, Add, Sum
+from pyqubo import Binary, Spin, Placeholder, Constraint, Array, Add, Sum
 from pyqubo import assert_qubo_equal
 
 
@@ -30,7 +30,7 @@ class TestExpressCompile(unittest.TestCase):
         self.assertEqual(model.structure, expected_structure)
 
     def test_compile(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = 1 + a*b + a - 2
         expected_qubo = {('a', 'a'): 1.0, ('a', 'b'): 1.0, ('b', 'b'): 0.0}
         expected_offset = -1
@@ -38,7 +38,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_expand(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = (a+b)*(a-b)
         expected_qubo = {('a', 'a'): 1.0, ('a', 'b'): 0.0, ('b', 'b'): -1.0}
         expected_offset = 0.0
@@ -46,7 +46,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_spin(self):
-        a, b = Qbit("a"), Spin("b")
+        a, b = Binary("a"), Spin("b")
         exp = a * b
         expected_qubo = {('a', 'a'): -1.0, ('a', 'b'): 2.0, ('b', 'b'): 0.0}
         expected_offset = 0.0
@@ -54,7 +54,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_2nd_order(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = (Add(a, b)-3)**2
         expected_qubo = {('a', 'a'): -5.0, ('a', 'b'): 2.0, ('b', 'b'): -5.0}
         expected_offset = 9.0
@@ -62,7 +62,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_3rd_order(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = (a+b-2)**3
         expected_qubo = {('a', 'a'): 7.0, ('a', 'b'): -6.0, ('b', 'b'): 7.0}
         expected_offset = -8.0
@@ -70,7 +70,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_reduce_degree(self):
-        a, b, c, d = Qbit("a"), Qbit("b"), Qbit("c"), Qbit("d")
+        a, b, c, d = Binary("a"), Binary("b"), Binary("c"), Binary("d")
         exp = a * b * c + b * c * d
         expected_qubo = {
             ('a', 'a'): 0.0,
@@ -89,7 +89,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_div(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = (a+b-2)/2
         expected_qubo = {('a', 'a'): 0.5, ('b', 'b'): 0.5}
         expected_offset = -1
@@ -97,7 +97,7 @@ class TestExpressCompile(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, expected_structure)
 
     def test_compile_placeholder(self):
-        a, b, w, v = Qbit("a"), Qbit("b"), Placeholder("w"), Placeholder("v")
+        a, b, w, v = Binary("a"), Binary("b"), Placeholder("w"), Placeholder("v")
         exp = w*(a+b-2) + v
         expected_qubo = {('a', 'a'): 3.0, ('b', 'b'): 3.0}
         expected_offset = -1
@@ -106,7 +106,7 @@ class TestExpressCompile(unittest.TestCase):
                            feed_dict={"w": 3.0, "v": 5.0})
 
     def test_compile_placeholder2(self):
-        a, b, w, v = Qbit("a"), Qbit("b"), Placeholder("w"), Placeholder("v")
+        a, b, w, v = Binary("a"), Binary("b"), Placeholder("w"), Placeholder("v")
         exp = v*w*(a+b-2) + v
         expected_qubo = {('a', 'a'): 15.0, ('b', 'b'): 15.0}
         expected_offset = -25
@@ -115,7 +115,7 @@ class TestExpressCompile(unittest.TestCase):
                            feed_dict={"w": 3.0, "v": 5.0})
 
     def test_compile_placeholder3(self):
-        a, v = Qbit("a"), Placeholder("v")
+        a, v = Binary("a"), Placeholder("v")
         exp = v*v*a + v
         expected_qubo = {('a', 'a'): 25.0}
         expected_offset = 5
@@ -124,7 +124,7 @@ class TestExpressCompile(unittest.TestCase):
                            feed_dict={"v": 5.0})
 
     def test_compile_const(self):
-        a, b, w = Qbit("a"), Qbit("b"), Placeholder("w")
+        a, b, w = Binary("a"), Binary("b"), Placeholder("w")
         exp = Constraint(Constraint(w * (a + b - 1), label="const1")
                          + Constraint((a + b - 1) ** 2, label="const2"), label="const_all")
         expected_qubo = {('a', 'a'): 2.0, ('a', 'b'): 2.0, ('b', 'b'): 2.0}
@@ -135,7 +135,7 @@ class TestExpressCompile(unittest.TestCase):
 
     def test_compile_vector(self):
         x = Array.create('x', 5, 'BINARY')
-        a = Qbit('a')
+        a = Binary('a')
         exp = x[1] * (x[0] + 2*a + 1)
         expected_qubo = {
             ('a', 'a'): 0.0,
@@ -162,7 +162,7 @@ class TestExpressCompile(unittest.TestCase):
 
     def test_compile_matrix(self):
         x = Array.create("x", shape=(2, 2), vartype="BINARY")
-        a = Qbit("a")
+        a = Binary("a")
         exp = x[0, 1] * (x[1, 1] + 2*a + 1)
         expected_qubo = {
           ('a', 'a'): 0.0,

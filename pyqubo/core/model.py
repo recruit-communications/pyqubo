@@ -269,8 +269,8 @@ class Model:
             This example creates the :obj:`model` from the expression, and
             we get the resulting QUBO by calling :func:`model.to_qubo()`.
             
-            >>> from pyqubo import Qbit
-            >>> x, y, z = Qbit("x"), Qbit("y"), Qbit("z")
+            >>> from pyqubo import Binary
+            >>> x, y, z = Binary("x"), Binary("y"), Binary("z")
             >>> model = (x*y + y*z + 3*z).compile()
             >>> pprint(model.to_qubo()) # doctest: +SKIP
             ({('x', 'x'): 0.0,
@@ -329,8 +329,8 @@ class Model:
             This example creates the :obj:`model` from the expression, and
             we get the resulting Ising model by calling :func:`model.to_ising()`.
             
-            >>> from pyqubo import Qbit
-            >>> x, y, z = Qbit("x"), Qbit("y"), Qbit("z")
+            >>> from pyqubo import Binary
+            >>> x, y, z = Binary("x"), Binary("y"), Binary("z")
             >>> model = (x*y + y*z + 3*z).compile()
             >>> pprint(model.to_ising()) # doctest: +SKIP
             ({'x': 0.25, 'y': 0.5, 'z': 1.75}, {('x', 'y'): 0.25, ('y', 'z'): 0.25}, 2.0)
