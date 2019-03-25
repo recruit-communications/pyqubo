@@ -14,14 +14,14 @@
 
 import unittest
 
-from pyqubo import Qbit, Constraint, Placeholder, Array
+from pyqubo import Binary, Constraint, Placeholder, Array
 from pyqubo import assert_qubo_equal
 
 
 class TestModel(unittest.TestCase):
 
     def test_to_qubo(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = 1 + a * b + a - 2
         model = exp.compile()
         qubo, offset = model.to_qubo()
@@ -29,7 +29,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(offset == -1)
 
     def test_to_qubo_with_index(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = 1 + a * b + a - 2
         model = exp.compile()
         qubo, offset = model.to_qubo(index_label=True)
@@ -37,7 +37,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(offset == -1)
 
     def test_to_ising(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = 1 + a * b + a - 2
         model = exp.compile()
         linear, quad, offset = model.to_ising()
@@ -46,7 +46,7 @@ class TestModel(unittest.TestCase):
         self.assertTrue(offset == -0.25)
 
     def test_to_ising_with_index(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = 1 + a * b + a - 2
         model = exp.compile()
         linear, quad, offset = model.to_ising(index_label=True)
@@ -148,7 +148,7 @@ class TestModel(unittest.TestCase):
             assert isinstance(energy, float)
 
     def test_placeholders(self):
-        a, b, p = Qbit("a"), Qbit("b"), Placeholder("p")
+        a, b, p = Binary("a"), Binary("b"), Placeholder("p")
         feed_dict = {'p': 2.0}
         exp = p * (1 + a * b + a)
         model = exp.compile()
@@ -183,7 +183,7 @@ class TestModel(unittest.TestCase):
             assert isinstance(energy, float)
 
     def test_placeholder_in_constraint(self):
-        a = Qbit("a")
+        a = Binary("a")
         exp = Constraint(2 * Placeholder("c") + a, "const1")
         m = exp.compile()
         sol, broken, energy = m.decode_solution({"a": 1}, vartype="BINARY", feed_dict={"c": 1})
