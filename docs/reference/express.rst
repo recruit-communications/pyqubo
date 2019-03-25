@@ -8,7 +8,7 @@ Expression
     :members:
 
 Binary
-----
+------
 .. autoclass:: Binary
 
 Spin

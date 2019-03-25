@@ -117,7 +117,7 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
 
 
 Variable: Binary and Spin
------------------------
+-------------------------
 
 When you define a hamiltonian, you can use :class:`Binary` or :class:`Spin` as a variable.
 
