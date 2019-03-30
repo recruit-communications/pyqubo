@@ -283,7 +283,9 @@ class Express:
 
     @staticmethod
     def _unique_vars(exp):
-        if isinstance(exp, AddList):
+        if isinstance(exp, WithPenalty):
+            return Express._unique_vars(exp.express) | Express._unique_vars(exp.penalty)
+        elif isinstance(exp, AddList):
             return reduce(or_, [Express._unique_vars(term) for term in exp.terms])
         elif isinstance(exp, Mul):
             return Express._unique_vars(exp.left) | Express._unique_vars(exp.right)
@@ -301,8 +303,6 @@ class Express:
             return {exp}
         elif isinstance(exp, UserDefinedExpress):
             return Express._unique_vars(exp.express)
-        elif isinstance(exp, WithPenalty):
-            return Express._unique_vars(exp.express) | Express._unique_vars(exp.penalty)
         else:
             raise TypeError("Unexpected input type {}.".format(type(exp)))  # pragma: no cover
 
@@ -464,12 +464,12 @@ class WithPenalty(Express):
 
     @property
     @abc.abstractmethod
-    def express(self):
+    def express(self):  # pragma: no cover
         pass
 
     @property
     @abc.abstractmethod
-    def penalty(self):
+    def penalty(self):  # pragma: no cover
         pass
 
     def __hash__(self):
@@ -481,7 +481,7 @@ class WithPenalty(Express):
         else:
             return self.express == other.express and self.penalty == other.penalty
 
-    def __repr__(self):
+    def __repr__(self):  # pragma: no cover
         return "WithPenalty(value={},penalty={})".format(self.express, self.penalty)
 
 
@@ -506,7 +506,7 @@ class UserDefinedExpress(Express):
 
     @property
     @abc.abstractmethod
-    def express(self):
+    def express(self):  # pragma: no cover
         """
         :class:`Express`: Expression of the Hamiltonian defined by the user.
         """

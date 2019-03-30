@@ -18,7 +18,7 @@ from pyqubo.integer import Integer
 from pyqubo.core.express import WithPenalty, Placeholder
 
 
-class OneHotEncInteger(Integer, WithPenalty):
+class OneHotEncInteger(WithPenalty, Integer):
     """One-hot encoded integer. The value that take :math:`[0, n]` is represented by :math:`\sum_{i=1}^{n}ix_{i}`.
     Also we have the penalty function :math:`strength \\times (\sum_{i=1}^{n}x_{i}-1)^2` in the Hamiltonian.
     

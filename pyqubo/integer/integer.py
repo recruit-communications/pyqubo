@@ -24,7 +24,7 @@ class Integer(UserDefinedExpress):
 
     @property
     @abc.abstractmethod
-    def interval(self):
+    def interval(self):  # pragma: no cover
         """
         (int, int): Tuple of minimum value and maximum value.
         """

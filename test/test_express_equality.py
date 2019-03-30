@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Binary, Spin, AddList, Mul, Add, Num, Placeholder, Constraint
+from pyqubo import Binary, Spin, AddList, Mul, Add, Num, Placeholder, Constraint, OneHotEncInteger
 
 
 class TestExpressEquality(unittest.TestCase):
@@ -97,6 +97,18 @@ class TestExpressEquality(unittest.TestCase):
 
     def test_equality_of_express(self):
         a, b = Binary("a"), Binary("b")
+        exp = a * b + 2*a - 1
+        expected_exp = AddList([Mul(a, b), Num(-1.0), Mul(a, 2)])
+        self.assertTrue(exp == expected_exp)
+
+    def test_equality_of_with_penalty(self):
+        M = 2.0
+        a, aa, b = OneHotEncInteger("a", 0, 3, M), OneHotEncInteger("a", 0, 3, M),\
+                   OneHotEncInteger("b", 0, 3, M)
+        self.assertTrue(a == aa)
+        self.assertTrue(a != 1)
+        self.assertTrue(hash(a) != hash(b))
+
         exp = a * b + 2*a - 1
         expected_exp = AddList([Mul(a, b), Num(-1.0), Mul(a, 2)])
         self.assertTrue(exp == expected_exp)

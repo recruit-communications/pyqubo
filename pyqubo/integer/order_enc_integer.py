@@ -18,7 +18,7 @@ from pyqubo.integer import Integer
 from pyqubo.core.express import WithPenalty, Placeholder
 
 
-class OrderEncInteger(Integer, WithPenalty):
+class OrderEncInteger(WithPenalty, Integer):
     """
     Order encoded integer. This encoding is useful when you want to know
     whether the integer is more than k or not.
@@ -85,11 +85,6 @@ class OrderEncInteger(Integer, WithPenalty):
     @property
     def interval(self):
         return self.lower, self.upper
-
-    def __repr__(self):
-        string = "OrderEncInteger(label={label}, interval=({lower_value}, {upper_value}))"\
-            .format(label=self.label, lower_value=self.lower, upper_value=self.upper)
-        return string
 
     def more_than(self, k):
         """Binary variable that represents whether the value is equal to or more than `k`.

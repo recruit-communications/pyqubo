@@ -44,6 +44,22 @@ class TestInteger(unittest.TestCase):
         self.assertTrue(a.interval == (0, 4))
         assert_qubo_equal(q, expected_q)
 
+    def test_order_enc_integer_more_than(self):
+        a = OrderEncInteger("a", 0, 4, strength=5.0)
+        b = OrderEncInteger("b", 0, 4, strength=5.0)
+        model = ((a - b) ** 2 + (1 - a.more_than(1)) ** 2 + (1 - b.less_than(3)) ** 2).compile()
+        q, offset = model.to_qubo()
+        sampleset = dimod.ExactSolver().sample_qubo(q)
+        response, broken, e = model.decode_dimod_response(sampleset, topk=1)[0]
+        self.assertTrue(response["a"][0] == 1)
+        self.assertTrue(response["a"][1] == 1)
+        self.assertTrue(response["a"][2] == 0)
+        self.assertTrue(response["a"][3] == 0)
+        self.assertTrue(response["b"][0] == 1)
+        self.assertTrue(response["b"][1] == 1)
+        self.assertTrue(response["b"][2] == 0)
+        self.assertTrue(response["b"][3] == 0)
+
     def test_one_hot_enc_integer(self):
         a = OneHotEncInteger("a", 0, 4, strength=Placeholder("s"))
         H = (a - 3) ** 2
@@ -75,6 +91,22 @@ class TestInteger(unittest.TestCase):
              ('a[3]', 'a[3]'): -29.0,
              ('a[4]', 'a[4]'): -28.0}
         assert_qubo_equal(q, expected_q)
+
+    def test_one_hot_enc_integer_equal(self):
+        a = OneHotEncInteger("a", 0, 4, strength=Placeholder("s"))
+        b = OneHotEncInteger("b", 0, 4, strength=Placeholder("s"))
+        M = 2.0
+        H = (a + b - 5) ** 2 + M*(a.equal_to(3)-1)**2
+        model = H.compile()
+        q, offset = model.to_qubo(feed_dict={"s": 10.0})
+        sampleset = dimod.ExactSolver().sample_qubo(q)
+        response, broken, e = model.decode_dimod_response(
+            sampleset, topk=1, feed_dict={"s": 10.0})[0]
+        self.assertTrue(response["a"][0] == 0)
+        self.assertTrue(response["a"][1] == 0)
+        self.assertTrue(response["a"][2] == 0)
+        self.assertTrue(response["a"][3] == 1)
+        self.assertTrue(response["a"][4] == 0)
 
     def test_unary_enc_integer(self):
         a = UnaryEncInteger("a", 0, 3)
