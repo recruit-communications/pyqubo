@@ -14,37 +14,18 @@
 
 import abc
 import six
+from pyqubo.core.express import UserDefinedExpress
 
 
 @six.add_metaclass(abc.ABCMeta)
-class Integer(object):
-
-    def __init__(self):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def value(self):
-        pass
-
-    @property
-    @abc.abstractmethod
-    def num_bits(self):
-        """
-        Returns number of bits used to represent integer.
-        
-        Returns:
-             int
-        """
-        pass
+class Integer(UserDefinedExpress):
+    """Binary encoded integer
+    """
 
     @property
     @abc.abstractmethod
     def interval(self):
         """
-        Returns interval of integer.
-        
-        Returns:
-            (int, int): Tuple of minimum value and maximum value.
+        (int, int): Tuple of minimum value and maximum value.
         """
         pass
