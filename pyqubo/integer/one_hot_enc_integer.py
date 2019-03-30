@@ -36,7 +36,7 @@ class OneHotEncInteger(WithPenalty, Integer):
         
         .. math::
         
-            H = \\left(\\left(\sum_{i=1}^{3}ia_{i}+1\\right) - 2\\right) + strength \\times \\left(\sum_{i=1}^{3}a_{i}-1\\right)^2
+            H = \\left(\\left(\sum_{i=1}^{3}ia_{i}+1\\right) - 2\\right)^2 + strength \\times \\left(\sum_{i=1}^{3}a_{i}-1\\right)^2
         
         >>> from pyqubo import OneHotEncInteger
         >>> a = OneHotEncInteger("a", 1, 3, strength=5)
