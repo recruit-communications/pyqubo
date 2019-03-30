@@ -215,7 +215,8 @@ class Express:
                 return label
 
         # Expand the expression to polynomial
-        expanded, constraints = Express._expand(self)
+        expanded, constraints, penalties = Express._expand(self)
+        expanded = Express._merge_term(expanded, penalties)
 
         # Make polynomials quadratic
         offset = 0.0
@@ -300,6 +301,8 @@ class Express:
             return {exp}
         elif isinstance(exp, UserDefinedExpress):
             return Express._unique_vars(exp.express)
+        elif isinstance(exp, WithPenalty):
+            return Express._unique_vars(exp.express) | Express._unique_vars(exp.penalty)
         else:
             raise TypeError("Unexpected input type {}.".format(type(exp)))  # pragma: no cover
 
@@ -380,55 +383,65 @@ class Express:
                 Constraints takes the form of ``dict[label, expanded_terms]``.
         
         """
+        if isinstance(exp, WithPenalty):
+            val, val_const, val_penalty = Express._expand(exp.express)
+            penalty, penalty_const, penalty_penalty = Express._expand(exp.penalty)
+            combined_penalty = Express._merge_term(val_penalty, penalty_penalty)
+            combined_penalty = Express._merge_term(combined_penalty, penalty)
+            return val, Express._merge_dict_update(val_const, penalty_const), combined_penalty
 
-        if isinstance(exp, Add):
-            left, left_const = Express._expand(exp.left)
-            right, right_const = Express._expand(exp.right)
+        elif isinstance(exp, Add):
+            left, left_const, left_p = Express._expand(exp.left)
+            right, right_const, right_p = Express._expand(exp.right)
             result = Express._merge_term(right, left)
-            return result, Express._merge_dict_update(left_const, right_const)
+            return result, Express._merge_dict_update(left_const, right_const),\
+                   Express._merge_term(left_p, right_p)
 
         elif isinstance(exp, AddList):
-            expanded, const = reduce(
+            expanded, const, penalty = reduce(
                 lambda arg1, arg2:
-                (Express._merge_term(arg1[0], arg2[0]), Express._merge_dict_update(arg1[1], arg2[1])),
+                (Express._merge_term(arg1[0], arg2[0]),
+                 Express._merge_dict_update(arg1[1], arg2[1]),
+                 Express._merge_term(arg1[2], arg2[2])),
                 [Express._expand(term) for term in exp.terms])
-            return expanded, const
+            return expanded, const, penalty
 
         elif isinstance(exp, Mul):
-            left, left_const = Express._expand(exp.left)
-            right, right_const = Express._expand(exp.right)
+            left, left_const, left_p = Express._expand(exp.left)
+            right, right_const, right_p = Express._expand(exp.right)
             expanded_terms = defaultdict(float)
             for k1, v1 in left.items():
                 for k2, v2 in right.items():
                     merged_key = BinaryProd.merge_term_key(k1, k2)
                     expanded_terms[merged_key] += v1 * v2
-            return expanded_terms, Express._merge_dict_update(left_const, right_const)
+            return expanded_terms, Express._merge_dict_update(left_const, right_const),\
+                   Express._merge_term(left_p, right_p)
 
         elif isinstance(exp, Placeholder):
             expanded_terms = defaultdict(float)
             expanded_terms[Express.CONST_TERM_KEY] = exp
-            return expanded_terms, {}
+            return expanded_terms, {}, {}
 
         elif isinstance(exp, Constraint):
-            child, child_const = Express._expand(exp.child)
+            child, child_const, child_p = Express._expand(exp.child)
             child_const[exp.label] = copy.copy(child)
-            return child, child_const
+            return child, child_const, child_p
 
         elif isinstance(exp, Num):
             terms = defaultdict(float)
             terms[Express.CONST_TERM_KEY] = exp.value
-            return terms, {}
+            return terms, {}, {}
 
         elif isinstance(exp, Binary):
             terms = defaultdict(float)
             terms[BinaryProd({exp.label})] = 1.0
-            return terms, {}
+            return terms, {}, {}
 
         elif isinstance(exp, Spin):
             terms = defaultdict(float)
             terms[BinaryProd({exp.label})] = 2.0
             terms[Express.CONST_TERM_KEY] = -1.0
-            return terms, {}
+            return terms, {}, {}
 
         elif isinstance(exp, UserDefinedExpress):
             return Express._expand(exp.express)
@@ -437,28 +450,67 @@ class Express:
             raise TypeError("Unexpected input type {}.".format(type(exp)))  # pragma: no cover
 
 
+@six.add_metaclass(abc.ABCMeta)
+class WithPenalty(Express):
+    """Express with penalty terms.
+    
+    def __init__(self, express, penalty):
+        assert isinstance(express, Express)
+        assert isinstance(penalty, Express)
+        super(WithPenalty, self).__init__()
+        self.express = express
+        self.penalty = penalty
+    """
+
+    @property
+    @abc.abstractmethod
+    def express(self):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def penalty(self):
+        pass
+
+    def __hash__(self):
+        return hash(self.express) ^ hash(self.penalty)
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        else:
+            return self.express == other.express and self.penalty == other.penalty
+
+    def __repr__(self):
+        return "WithPenalty(value={},penalty={})".format(self.express, self.penalty)
+
+
+@six.add_metaclass(abc.ABCMeta)
 class UserDefinedExpress(Express):
-    """User Defined Express.
+    """User defined express.
     
-    User can define her/his own expression by inheriting :class:`UserDefinedExpress`.
-    
-    Attributes:
-        express (Express): User can define an original expression by defining this member.
-        
+    User can define their own expression by inheriting :class:`UserDefinedExpress`.
+
     Example:
         Define the :class:`LogicalAnd` class by inheriting :class:`UserDefinedExpress`.
         
         >>> from pyqubo import UserDefinedExpress
         >>> class LogicalAnd(UserDefinedExpress):
         ...     def __init__(self, bit_a, bit_b):
-        ...         express = bit_a * bit_b
-        ...         super(LogicalAnd, self).__init__(express)
+        ...         self._express = bit_a * bit_b
+        ...     
+        ...     @property
+        ...     def express(self):
+        ...         return self._express
     """
 
-    def __init__(self, express):
-        assert isinstance(express, Express)
-        super(UserDefinedExpress, self).__init__()
-        self.express = express
+    @property
+    @abc.abstractmethod
+    def express(self):
+        """
+        :class:`Express`: Expression of the Hamiltonian defined by the user.
+        """
+        pass
 
     def __hash__(self):
         return hash(self.express)

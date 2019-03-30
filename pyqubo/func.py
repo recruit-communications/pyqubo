@@ -43,5 +43,8 @@ class Sum(UserDefinedExpress):
     """
 
     def __init__(self, start_index, end_index, func):
-        express = sum(func(i) for i in range(start_index, end_index))
-        super(Sum, self).__init__(express)
+        self._express = sum(func(i) for i in range(start_index, end_index))
+
+    @property
+    def express(self):
+        return self._express
