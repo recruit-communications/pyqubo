@@ -33,8 +33,11 @@ class Not(UserDefinedExpress):
     """
 
     def __init__(self, bit):
-        express = 1 - bit
-        super(Not, self).__init__(express)
+        self._express = 1 - bit
+
+    @property
+    def express(self):
+        return self._express
 
 
 class And(UserDefinedExpress):
@@ -60,8 +63,11 @@ class And(UserDefinedExpress):
     """
 
     def __init__(self, bit_a, bit_b):
-        express = bit_a * bit_b
-        super(And, self).__init__(express)
+        self._express = bit_a * bit_b
+
+    @property
+    def express(self):
+        return self._express
 
 
 class Or(UserDefinedExpress):
@@ -87,8 +93,11 @@ class Or(UserDefinedExpress):
     """
 
     def __init__(self, bit_a, bit_b):
-        express = Not(And(Not(bit_a), Not(bit_b)))
-        super(Or, self).__init__(express)
+        self._express = Not(And(Not(bit_a), Not(bit_b)))
+
+    @property
+    def express(self):
+        return self._express
 
 
 class Xor(UserDefinedExpress):
@@ -116,5 +125,8 @@ class Xor(UserDefinedExpress):
     def __init__(self, bit_a, bit_b):
         nand_ab = Not(And(bit_a, bit_b))
         or_ab = Or(bit_a, bit_b)
-        express = And(nand_ab, or_ab)
-        super(Xor, self).__init__(express)
+        self._express = And(nand_ab, or_ab)
+
+    @property
+    def express(self):
+        return self._express

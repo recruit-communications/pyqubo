@@ -20,7 +20,7 @@ install_requires = ['dimod>=0.7.4',
                     'six>=1.10.0,<2.0.0',
                     'dwave-neal>=0.4.2']
 
-packages = ['pyqubo', 'pyqubo.core', 'pyqubo.utils']
+packages = ['pyqubo', 'pyqubo.core', 'pyqubo.integer', 'pyqubo.utils']
 
 python_requires = '>=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*'
 

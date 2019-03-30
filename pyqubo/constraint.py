@@ -41,8 +41,11 @@ class NotConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, label):
-        express = Constraint(2 * a * b - a - b + 1, label=label)
-        super(NotConst, self).__init__(express)
+        self._express = Constraint(2 * a * b - a - b + 1, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class AndConst(UserDefinedExpress):
@@ -73,8 +76,11 @@ class AndConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        express = Constraint(a * b - 2 * (a + b) * c + 3 * c, label=label)
-        super(AndConst, self).__init__(express)
+        self._express = Constraint(a * b - 2 * (a + b) * c + 3 * c, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class OrConst(UserDefinedExpress):
@@ -105,8 +111,11 @@ class OrConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        express = Constraint(a * b + (a + b) * (1 - 2 * c) + c, label=label)
-        super(OrConst, self).__init__(express)
+        self._express = Constraint(a * b + (a + b) * (1 - 2 * c) + c, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class XorConst(UserDefinedExpress):
@@ -138,5 +147,9 @@ class XorConst(UserDefinedExpress):
 
     def __init__(self, a, b, c, label):
         aux = Binary("aux_" + label)
-        express = Constraint(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux + 4 * aux * c + a + b + c + 4 * aux, label=label)
-        super(XorConst, self).__init__(express)
+        self._express = Constraint(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux +\
+                                   4 * aux * c + a + b + c + 4 * aux, label=label)
+
+    @property
+    def express(self):
+        return self._express

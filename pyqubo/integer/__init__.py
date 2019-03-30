@@ -12,19 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
-
-import pyqubo.array
-import pyqubo.constraint
-import pyqubo.core
-import pyqubo.func
-import pyqubo.integer
-import pyqubo.logic
-import pyqubo.utils
-from pyqubo.array import *
-from pyqubo.constraint import *
-from pyqubo.core import *
-from pyqubo.func import *
-from pyqubo.integer import *
-from pyqubo.logic import *
-from pyqubo.utils import *
+from pyqubo.integer.integer import *
+from pyqubo.integer.order_enc_integer import *
+from pyqubo.integer.one_hot_enc_integer import *
+from pyqubo.integer.unary_encoded_integer import *
+from pyqubo.integer.log_encoded_integer import *
