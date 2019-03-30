@@ -32,7 +32,7 @@ from .placeholderprod import PlaceholderProd
 class Express:
     """Abstract class of pyqubo expression.
     
-    All basic component class such as :class:`.Qbit`, :class:`.Spin` or :class:`.Add`
+    All basic component class such as :class:`.Binary`, :class:`.Spin` or :class:`.Add`
     inherits :class:`.Express`.
     
     .. graphviz::
@@ -41,8 +41,8 @@ class Express:
             graph [size="2.5, 2.5"]
             node [shape=rl]
             add [label=AddList]
-            qbit_a [label="Qbit(a)"]
-            qbit_b [label="Qbit(b)"]
+            qbit_a [label="Binary(a)"]
+            qbit_b [label="Binary(b)"]
             mul_1 [label="Mul"]
             mul_2 [label="Mul"]
             num_1 [label="Num(1)"]
@@ -55,20 +55,20 @@ class Express:
             mul_2 -> num_2
         }
     
-    For example, an expression :math:`2ab+1` (where :math:`a, b` is :class:`Qbit` variable) is
+    For example, an expression :math:`2ab+1` (where :math:`a, b` is :class:`Binary` variable) is
     represented by the binary tree above.
     
     Note:
         This class is an abstract class of all component of expressions.
     
     Example:
-        We write mathematical expressions with objects such as :class:`Qbit` or :class:`Spin`
+        We write mathematical expressions with objects such as :class:`Binary` or :class:`Spin`
         which inherit :class:`.Express`.
         
-        >>> from pyqubo import Qbit
-        >>> a, b = Qbit("a"), Qbit("b")
+        >>> from pyqubo import Binary
+        >>> a, b = Binary("a"), Binary("b")
         >>> 2*a*b + 1
-        (((Qbit(a)*Num(2))*Qbit(b))+Num(1))
+        (((Binary(a)*Num(2))*Binary(b))+Num(1))
 
     """
 
@@ -174,8 +174,8 @@ class Express:
             [[``a*d``, ``c``], ``b``] hierarchically and converted into QUBO.
             By calling :func:`to_qubo()` of the :obj:`model`, we get the resulting QUBO.
             
-            >>> from pyqubo import Qbit
-            >>> a, b, c, d = Qbit("a"), Qbit("b"), Qbit("c"), Qbit("d")
+            >>> from pyqubo import Binary
+            >>> a, b, c, d = Binary("a"), Binary("b"), Binary("c"), Binary("d")
             >>> model = (a*b*c + a*b*d).compile()
             >>> pprint(model.to_qubo()) # doctest: +SKIP
             ({('a', 'a'): 0.0,
@@ -294,7 +294,7 @@ class Express:
             return set()
         elif isinstance(exp, Constraint):
             return Express._unique_vars(exp.child)
-        elif isinstance(exp, Qbit):
+        elif isinstance(exp, Binary):
             return {exp}
         elif isinstance(exp, Spin):
             return {exp}
@@ -353,19 +353,19 @@ class Express:
     def _expand(exp):
         """Expand the expression hierarchically into dict format.
         
-        For example, ``2*Qbit(a)*Qbit(b) + 1`` is represented as
+        For example, ``2*Binary(a)*Binary(b) + 1`` is represented as
         dict format ``{BinaryProd(ab): 2.0, CONST_TERM_KEY: 1.0}``.
         
         Let's see how this dict is created step by step.
-        First, focus on `2*Qbit(a)*Qbit(b)` in which each expression is expanded as
+        First, focus on `2*Binary(a)*Binary(b)` in which each expression is expanded as
         _expand(Num(2)) # => {CONST_TERM_KEY: 2.0}
-        _expand(Qbit("a")) # => {BinaryProd(a): 1.0}
-        _expand(Qbit("b")) # => {BinaryProd(b): 1.0}
+        _expand(Binary("a")) # => {BinaryProd(a): 1.0}
+        _expand(Binary("b")) # => {BinaryProd(b): 1.0}
         respectively.
         
         :class:`Mul` combines the expression in the following way
-        _expand(Mul(Num(2), Qbit("a"))) # => {BinaryProd(a): 2.0}
-        _expand(Mul(Qbit("b"), Mul(Num(2), Qbit("a")))) # => {BinaryProd(ab): 2.0}
+        _expand(Mul(Num(2), Binary("a"))) # => {BinaryProd(a): 2.0}
+        _expand(Mul(Binary("b"), Mul(Num(2), Binary("a")))) # => {BinaryProd(ab): 2.0}
         
         Finally, :class:`Add` combines the ``{BinaryProd(ab): 2.0}`` and `{CONST_TERM_KEY: 1.0}`,
         and we get the final form {BinaryProd(ab): 2.0, CONST_TERM_KEY: 1.0}
@@ -419,7 +419,7 @@ class Express:
             terms[Express.CONST_TERM_KEY] = exp.value
             return terms, {}
 
-        elif isinstance(exp, Qbit):
+        elif isinstance(exp, Binary):
             terms = defaultdict(float)
             terms[BinaryProd({exp.label})] = 1.0
             return terms, {}
@@ -486,8 +486,8 @@ class Placeholder(Express):
     Example:
         The value of the placeholder is specified when you call :func:`to_qubo`.
         
-        >>> from pyqubo import Qbit, Placeholder
-        >>> x, y, a = Qbit('x'), Qbit('y'), Placeholder('a')
+        >>> from pyqubo import Binary, Placeholder
+        >>> x, y, a = Binary('x'), Binary('y'), Placeholder('a')
         >>> exp = a*x*y + 2.0*x
         >>> pprint(exp.compile().to_qubo(feed_dict={'a': 3.0})) # doctest: +SKIP
         ({('x', 'x'): 2.0, ('x', 'y'): 3.0, ('y', 'y'): 0}, 0.0)
@@ -526,8 +526,8 @@ class Constraint(Express):
         When the solution is broken, `decode_solution` can detect it.
         In this example, we introduce a constraint :math:`a+b=1`.
         
-        >>> from pyqubo import Qbit, Constraint
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import Binary, Constraint
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
         >>> model = exp.compile()
         >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
@@ -599,7 +599,7 @@ class Spin(Express):
             return self.label == other.label
 
 
-class Qbit(Express):
+class Binary(Express):
     """Binary variable i.e. {0, 1}.
     
     Args:
@@ -608,8 +608,8 @@ class Qbit(Express):
         structure (dict/optional): Variable structure.
     
     Example:
-        >>> from pyqubo import Qbit
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import Binary
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = 2*a*b + 3*a
         >>> pprint(exp.compile().to_qubo())   # doctest: +SKIP
         ({('a', 'a'): 3.0, ('a', 'b'): 2.0, ('b', 'b'): 0}, 0.0)
@@ -618,7 +618,7 @@ class Qbit(Express):
     def __init__(self, label, structure=None):
         assert isinstance(label, str), "Label should be string."
         assert Express.PROD_SYM not in label, "label should not contain {}".format(Express.PROD_SYM)
-        super(Qbit, self).__init__()
+        super(Binary, self).__init__()
         if not structure:
             # if no structure is given
             self.structure = {label: (label,)}
@@ -627,14 +627,14 @@ class Qbit(Express):
         self.label = label
 
     def __repr__(self):
-        return "Qbit({})".format(self.label)
+        return "Binary({})".format(self.label)
 
     def __hash__(self):
         return hash(self.label)
 
     def __eq__(self, other):
         """Returns whether the label is same or not."""
-        if not isinstance(other, Qbit):
+        if not isinstance(other, Binary):
             return False
         else:
             return self.label == other.label
@@ -651,12 +651,12 @@ class Mul(Express):
     Example:        
         You can multiply expressions with either the built-in operator or :class:`Mul`.
         
-        >>> from pyqubo import Qbit, Mul
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import Binary, Mul
+        >>> a, b = Binary('a'), Binary('b')
         >>> a * b
-        (Qbit(a)*Qbit(b))
+        (Binary(a)*Binary(b))
         >>> Mul(a, b)
-        (Qbit(a)*Qbit(b))
+        (Binary(a)*Binary(b))
     """
 
     def __init__(self, left, right):
@@ -701,12 +701,12 @@ class Add(Express):
     Example:
         You can add expressions with either the built-in operator or :class:`Add`.
         
-        >>> from pyqubo import Qbit, Add
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import Binary, Add
+        >>> a, b = Binary('a'), Binary('b')
         >>> a + b
-        (Qbit(a)+Qbit(b))
+        (Binary(a)+Binary(b))
         >>> Add(a, b)
-        (Qbit(a)+Qbit(b))
+        (Binary(a)+Binary(b))
     
     """
 
@@ -750,12 +750,12 @@ class AddList(Express):
     Example:
         You can add expressions with either the built-in operator or :class:`AddList`.
         
-        >>> from pyqubo import Qbit, AddList
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import Binary, AddList
+        >>> a, b = Binary('a'), Binary('b')
         >>> a + b
-        (Qbit(a)+Qbit(b))
+        (Binary(a)+Binary(b))
         >>> AddList([a, b])
-        (Qbit(a)+Qbit(b))
+        (Binary(a)+Binary(b))
     """
 
     def __init__(self, terms):
@@ -804,12 +804,12 @@ class Num(Express):
         value (float): the value of the number.
     
     Example:
-        >>> from pyqubo import Qbit, Num
-        >>> a = Qbit('a')
+        >>> from pyqubo import Binary, Num
+        >>> a = Binary('a')
         >>> a + 1
-        (Qbit(a)+Num(1))
+        (Binary(a)+Num(1))
         >>> a + Num(1)
-        (Qbit(a)+Num(1))
+        (Binary(a)+Num(1))
     """
     def __init__(self, value):
         super(Num, self).__init__()

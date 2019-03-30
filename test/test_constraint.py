@@ -14,13 +14,13 @@
 
 import unittest
 
-from pyqubo import Qbit, AndConst, OrConst, XorConst, NotConst
+from pyqubo import Binary, AndConst, OrConst, XorConst, NotConst
 
 
 class TestConstraint(unittest.TestCase):
 
     def test_not(self):
-        a, b = Qbit("a"), Qbit("b")
+        a, b = Binary("a"), Binary("b")
         exp = NotConst(a, b, label="not")
         model = exp.compile()
         self.assertTrue(model.energy({"a": 1, "b": 0}, vartype="BINARY") == 0)
@@ -29,7 +29,7 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(model.energy({"a": 0, "b": 0}, vartype="BINARY") > 0)
 
     def test_and(self):
-        a, b, c = Qbit("a"), Qbit("b"), Qbit("c")
+        a, b, c = Binary("a"), Binary("b"), Binary("c")
         exp = AndConst(a, b, c, label="and")
         model = exp.compile()
         self.assertTrue(model.energy({"a": 1, "b": 1, "c": 1}, vartype="BINARY") == 0)
@@ -42,7 +42,7 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(model.energy({"a": 0, "b": 1, "c": 1}, vartype="BINARY") > 0)
 
     def test_or(self):
-        a, b, c = Qbit("a"), Qbit("b"), Qbit("c")
+        a, b, c = Binary("a"), Binary("b"), Binary("c")
         exp = OrConst(a, b, c, label="or")
         model = exp.compile()
         self.assertTrue(model.energy({"a": 1, "b": 1, "c": 1}, vartype="BINARY") == 0)
@@ -55,7 +55,7 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(model.energy({"a": 0, "b": 0, "c": 1}, vartype="BINARY") > 0)
 
     def test_xor(self):
-        a, b, c = Qbit("a"), Qbit("b"), Qbit("c")
+        a, b, c = Binary("a"), Binary("b"), Binary("c")
         exp = XorConst(a, b, c, label="xor")
         model = exp.compile()
         self.assertTrue(model.energy({"a": 1, "b": 1, "c": 0, "aux_xor": 1}, vartype="BINARY") == 0)
@@ -66,10 +66,10 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(model.energy({"a": 1, "b": 1, "c": 1, "aux_xor": 1}, vartype="BINARY") > 0)
 
     def test_equality(self):
-        xor1 = XorConst(Qbit("a"), Qbit("b"), Qbit("c"), label="xor")
-        xor2 = XorConst(Qbit("a"), Qbit("b"), Qbit("c"), label="xor")
-        xor3 = XorConst(Qbit("b"), Qbit("c"), Qbit("a"), label="xor")
-        or1 = OrConst(Qbit("a"), Qbit("b"), Qbit("c"), label="xor")
+        xor1 = XorConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
+        xor2 = XorConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
+        xor3 = XorConst(Binary("b"), Binary("c"), Binary("a"), label="xor")
+        or1 = OrConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
         self.assertTrue(xor1 + 1 == xor2 + 1)
         self.assertTrue(xor1 == xor2)
         self.assertFalse(xor1 == or1)
