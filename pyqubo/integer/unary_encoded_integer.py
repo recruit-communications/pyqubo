@@ -17,7 +17,7 @@ from pyqubo.integer import Integer
 
 
 class UnaryEncInteger(Integer):
-    """Unary encoded integer. The value that take :math:`[0, n]` is
+    """Unary encoded integer. The value that takes :math:`[0, n]` is
     represented by :math:`\sum_{i=1}^{n}x_{i}` without any constraint.
 
     Args:
