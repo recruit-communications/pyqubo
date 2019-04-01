@@ -22,7 +22,7 @@ class OrderEncInteger(WithPenalty, Integer):
     """
     Order encoded integer. This encoding is useful when you want to know
     whether the integer is more than k or not.
-    The value that take :math:`[0, n]` is represented by :math:`\sum_{i=1}^{n}x_{i}`.
+    The value that takes :math:`[0, n]` is represented by :math:`\sum_{i=1}^{n}x_{i}`.
     Also we have the penalty function :math:`strength \\times \\left(\sum_{i=1}^{n-1}\
     \\left(x_{i+1}-x_{i}x_{i+1}\\right)\\right)` in the Hamiltonian.
     See the reference [TaTK09]_ for more details.
@@ -87,7 +87,7 @@ class OrderEncInteger(WithPenalty, Integer):
         return self.lower, self.upper
 
     def more_than(self, k):
-        """Binary variable that represents whether the value is equal to or more than `k`.
+        """Binary variable that represents whether the value is more than `k`.
         
         Note:
             You cannot use this method alone. You should use this variable with the entire integer.
@@ -121,7 +121,7 @@ class OrderEncInteger(WithPenalty, Integer):
         return self.array[k-self.lower]
 
     def less_than(self, k):
-        """Binary variable that represents whether the value is equal to or less than `k`.
+        """Binary variable that represents whether the value is less than `k`.
 
         Note:
             You cannot use this method alone. You should use this variable with the entire integer.

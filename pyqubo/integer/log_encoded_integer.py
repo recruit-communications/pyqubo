@@ -18,7 +18,7 @@ import numpy as np
 
 
 class LogEncInteger(Integer):
-    """Log encoded integer. The value that take :math:`[0, n]` is
+    """Log encoded integer. The value that takes :math:`[0, n]` is
     represented by :math:`\\sum_{i=1}^{\\lceil\\log_{2}n\\rceil}2^ix_{i}` without any constraint.
 
     Args:
