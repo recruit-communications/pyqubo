@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .core import Spin, Qbit, Express
+from .core import Spin, Binary, Express
 
 import dimod
 from dimod.decorators import vartype_argument
@@ -36,19 +36,19 @@ class Array:
 
     Example:
         
-        Create a new array with Qbits.
+        Create a new array with Binary.
         
-        >>> from pyqubo import Array, Qbit
+        >>> from pyqubo import Array, Binary
         >>> Array.create('x', shape=(2, 2), vartype='BINARY')
-        Array([[Qbit(x[0][0]), Qbit(x[0][1])],
-               [Qbit(x[1][0]), Qbit(x[1][1])]])
+        Array([[Binary(x[0][0]), Binary(x[0][1])],
+               [Binary(x[1][0]), Binary(x[1][1])]])
         
         Create a new array from a nested list of :class:`Express`.
         
-        >>> array = Array([[Qbit('x0'), Qbit('x1')], [Qbit('x2'), Qbit('x3')]])
+        >>> array = Array([[Binary('x0'), Binary('x1')], [Binary('x2'), Binary('x3')]])
         >>> array
-        Array([[Qbit(x0), Qbit(x1)],
-               [Qbit(x2), Qbit(x3)]])
+        Array([[Binary(x0), Binary(x1)],
+               [Binary(x2), Binary(x3)]])
         
         Get the shape of the array.
         
@@ -58,21 +58,21 @@ class Array:
         Access an element with index.
         
         >>> array[0, 0]  # = array[(0, 0)]
-        Qbit(x0)
+        Binary(x0)
         
         Use slice ":" to select a subset of the array.
         
         >>> array[:, 1]  # = array[(slice(None), 1)]
-        Array([Qbit(x1), Qbit(x3)])
+        Array([Binary(x1), Binary(x3)])
         >>> sum(array[:, 1])
-        (Qbit(x1)+Qbit(x3))
+        (Binary(x1)+Binary(x3))
         
         Use list or tuple to select a subset of the array.
 
         >>> array[[0, 1], 1]
-        Array([Qbit(x1), Qbit(x3)])
+        Array([Binary(x1), Binary(x3)])
         >>> array[(0, 1), 1]
-        Array([Qbit(x1), Qbit(x3)])
+        Array([Binary(x1), Binary(x3)])
         
         Create an array from numpy array.
         
@@ -138,15 +138,15 @@ class Array:
         Example:
             >>> array = Array.create('x', (2, 3, 2), 'BINARY')
             >>> array
-            Array([[[Qbit(x[0][0][0]), Qbit(x[0][0][1])],
-                    [Qbit(x[0][1][0]), Qbit(x[0][1][1])],
-                    [Qbit(x[0][2][0]), Qbit(x[0][2][1])]],
+            Array([[[Binary(x[0][0][0]), Binary(x[0][0][1])],
+                    [Binary(x[0][1][0]), Binary(x[0][1][1])],
+                    [Binary(x[0][2][0]), Binary(x[0][2][1])]],
             
-                   [[Qbit(x[1][0][0]), Qbit(x[1][0][1])],
-                    [Qbit(x[1][1][0]), Qbit(x[1][1][1])],
-                    [Qbit(x[1][2][0]), Qbit(x[1][2][1])]]])
+                   [[Binary(x[1][0][0]), Binary(x[1][0][1])],
+                    [Binary(x[1][1][0]), Binary(x[1][1][1])],
+                    [Binary(x[1][2][0]), Binary(x[1][2][1])]]])
             >>> array[0, 1, 1]
-            Qbit(x[0][1][1])
+            Binary(x[0][1][1])
             >>> array[:, :, 1]
             
         """
@@ -259,28 +259,28 @@ class Array:
         
         Example:
             
-            >>> from pyqubo import Array, Qbit
+            >>> from pyqubo import Array, Binary
             >>> import numpy as np
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
-            >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
+            >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
             >>> array_a.add(array_b)
-            Array([[(Qbit(a)+Qbit(d)), (Qbit(b)+Num(1))],
-                   [(Qbit(c)+Qbit(f)), (Qbit(g)+Num(2))]])
+            Array([[(Binary(a)+Binary(d)), (Binary(b)+Num(1))],
+                   [(Binary(c)+Binary(f)), (Binary(g)+Num(2))]])
             >>> array_a + array_b
-            Array([[(Qbit(a)+Qbit(d)), (Qbit(b)+Num(1))],
-                   [(Qbit(c)+Qbit(f)), (Qbit(g)+Num(2))]])
+            Array([[(Binary(a)+Binary(d)), (Binary(b)+Num(1))],
+                   [(Binary(c)+Binary(f)), (Binary(g)+Num(2))]])
 
             Sum of self and scalar value.
             
             >>> array_a + 5
-            Array([[(Qbit(a)+Num(5)), (Qbit(b)+Num(5))],
-                   [(Qbit(c)+Num(5)), 7]])
+            Array([[(Binary(a)+Num(5)), (Binary(b)+Num(5))],
+                   [(Binary(c)+Num(5)), 7]])
             
             Sum of self and numpy ndarray.
             
             >>> array_a + np.array([[1, 2], [3, 4]])
-            Array([[(Qbit(a)+Num(1)), (Qbit(b)+Num(2))],
-                   [(Qbit(c)+Num(3)), 6]])
+            Array([[(Binary(a)+Num(1)), (Binary(b)+Num(2))],
+                   [(Binary(c)+Num(3)), 6]])
         """
         return self._pairwise_op_with_type_check(other, lambda x, y: x + y)
 
@@ -295,28 +295,28 @@ class Array:
 
         Example:
 
-            >>> from pyqubo import Array, Qbit
+            >>> from pyqubo import Array, Binary
             >>> import numpy as np
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
-            >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
+            >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
             >>> array_a.subtract(array_b)
-            Array([[(Qbit(a)+(Qbit(d)*Num(-1))), (Qbit(b)+Num(-1))],
-                   [(Qbit(c)+(Qbit(f)*Num(-1))), ((Qbit(g)*Num(-1))+Num(2))]])
+            Array([[(Binary(a)+(Binary(d)*Num(-1))), (Binary(b)+Num(-1))],
+                   [(Binary(c)+(Binary(f)*Num(-1))), ((Binary(g)*Num(-1))+Num(2))]])
             >>> array_a - array_b
-            Array([[(Qbit(a)+(Qbit(d)*Num(-1))), (Qbit(b)+Num(-1))],
-                   [(Qbit(c)+(Qbit(f)*Num(-1))), ((Qbit(g)*Num(-1))+Num(2))]])
+            Array([[(Binary(a)+(Binary(d)*Num(-1))), (Binary(b)+Num(-1))],
+                   [(Binary(c)+(Binary(f)*Num(-1))), ((Binary(g)*Num(-1))+Num(2))]])
 
             Difference of self and scalar value.
             
             >>> array_a - 5
-            Array([[(Qbit(a)+Num(-5)), (Qbit(b)+Num(-5))],
-                   [(Qbit(c)+Num(-5)), -3]])
+            Array([[(Binary(a)+Num(-5)), (Binary(b)+Num(-5))],
+                   [(Binary(c)+Num(-5)), -3]])
             
             Difference of self and numpy ndarray.
             
             >>> array_a - np.array([[1, 2], [3, 4]])
-            Array([[(Qbit(a)+Num(-1)), (Qbit(b)+Num(-2))],
-                   [(Qbit(c)+Num(-3)), -2]])
+            Array([[(Binary(a)+Num(-1)), (Binary(b)+Num(-2))],
+                   [(Binary(c)+Num(-3)), -2]])
         """
         return self._pairwise_op_with_type_check(other, lambda x, y: x - y)
 
@@ -331,28 +331,28 @@ class Array:
 
         Example:
 
-            >>> from pyqubo import Array, Qbit
+            >>> from pyqubo import Array, Binary
             >>> import numpy as np
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
-            >>> array_b = Array([[Qbit('d'), 1], [Qbit('f'), Qbit('g')]])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
+            >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
             >>> array_a.mul(array_b)
-            Array([[(Qbit(a)*Qbit(d)), (Qbit(b)*Num(1))],
-                   [(Qbit(c)*Qbit(f)), (Qbit(g)*Num(2))]])
+            Array([[(Binary(a)*Binary(d)), (Binary(b)*Num(1))],
+                   [(Binary(c)*Binary(f)), (Binary(g)*Num(2))]])
             >>> array_a * array_b
-            Array([[(Qbit(a)*Qbit(d)), (Qbit(b)*Num(1))],
-                   [(Qbit(c)*Qbit(f)), (Qbit(g)*Num(2))]])
+            Array([[(Binary(a)*Binary(d)), (Binary(b)*Num(1))],
+                   [(Binary(c)*Binary(f)), (Binary(g)*Num(2))]])
 
             Product of self and scalar value.
 
             >>> array_a * 5
-            Array([[(Qbit(a)*Num(5)), (Qbit(b)*Num(5))],
-                   [(Qbit(c)*Num(5)), 10]])
+            Array([[(Binary(a)*Num(5)), (Binary(b)*Num(5))],
+                   [(Binary(c)*Num(5)), 10]])
 
             Product of self and numpy ndarray.
             
             >>> array_a * np.array([[1, 2], [3, 4]])
-            Array([[(Qbit(a)*Num(1)), (Qbit(b)*Num(2))],
-                   [(Qbit(c)*Num(3)), 8]])
+            Array([[(Binary(a)*Num(1)), (Binary(b)*Num(2))],
+                   [(Binary(c)*Num(3)), 8]])
         """
         return self._pairwise_op_with_type_check(other, lambda x, y: x * y)
 
@@ -367,11 +367,11 @@ class Array:
         
         Example:
             
-            >>> from pyqubo import Array, Qbit
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), 2]])
+            >>> from pyqubo import Array, Binary
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
             >>> array_a / 5
-            Array([[(Qbit(a)*Num(0.2)), (Qbit(b)*Num(0.2))],
-                   [(Qbit(c)*Num(0.2)), 0.4]])
+            Array([[(Binary(a)*Num(0.2)), (Binary(b)*Num(0.2))],
+                   [(Binary(c)*Num(0.2)), 0.4]])
         """
         if not isinstance(other, Array):
             return self * (other ** -1)
@@ -381,7 +381,7 @@ class Array:
     @staticmethod
     @vartype_argument('vartype')
     def create(name, shape, vartype):
-        """Create a new array with Spins or Qbits.
+        """Create a new array with Spins or Binary.
 
         Args:
             name (str): Name of the matrix. It is used as a part of the label of variables.
@@ -401,17 +401,17 @@ class Array:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 2), vartype='BINARY')
             >>> array
-            Array([[Qbit(x[0][0]), Qbit(x[0][1])],
-                   [Qbit(x[1][0]), Qbit(x[1][1])]])
+            Array([[Binary(x[0][0]), Binary(x[0][1])],
+                   [Binary(x[1][0]), Binary(x[1][1])]])
             >>> array[0]
-            Array([Qbit(x[0][0]), Qbit(x[0][1])])
+            Array([Binary(x[0][0]), Binary(x[0][1])])
         """
 
         if isinstance(shape, int):
             shape = shape,
 
         if vartype == dimod.BINARY:
-            var_class = Qbit
+            var_class = Binary
         else:
             var_class = Spin
 
@@ -440,10 +440,10 @@ class Array:
         
         Example:
             
-            >>> from pyqubo import Array, Qbit
-            >>> Array.fill(Qbit('a'), shape=(2, 3))
-            Array([[Qbit(a), Qbit(a), Qbit(a)],
-                   [Qbit(a), Qbit(a), Qbit(a)]])
+            >>> from pyqubo import Array, Binary
+            >>> Array.fill(Binary('a'), shape=(2, 3))
+            Array([[Binary(a), Binary(a), Binary(a)],
+                   [Binary(a), Binary(a), Binary(a)]])
         """
         return Array._create_with_generator(shape, lambda _: obj)
 
@@ -521,12 +521,12 @@ class Array:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
             >>> array
-            Array([[Qbit(x[0][0]), Qbit(x[0][1]), Qbit(x[0][2])],
-                   [Qbit(x[1][0]), Qbit(x[1][1]), Qbit(x[1][2])]])
+            Array([[Binary(x[0][0]), Binary(x[0][1]), Binary(x[0][2])],
+                   [Binary(x[1][0]), Binary(x[1][1]), Binary(x[1][2])]])
             >>> array.T
-            Array([[Qbit(x[0][0]), Qbit(x[1][0])],
-                   [Qbit(x[0][1]), Qbit(x[1][1])],
-                   [Qbit(x[0][2]), Qbit(x[1][2])]])
+            Array([[Binary(x[0][0]), Binary(x[1][0])],
+                   [Binary(x[0][1]), Binary(x[1][1])],
+                   [Binary(x[0][2]), Binary(x[1][2])]])
         """
 
         def generator(index):
@@ -549,27 +549,30 @@ class Array:
             
             1. If both `self` and `other` are 1-D arrays, it is inner product of vectors.
             
-            >>> from pyqubo import Array, Qbit
-            >>> array_a = Array([Qbit('a'), Qbit('b')])
-            >>> array_b = Array([Qbit('c'), Qbit('d')])
+            >>> from pyqubo import Array, Binary
+            >>> array_a = Array([Binary('a'), Binary('b')])
+            >>> array_b = Array([Binary('c'), Binary('d')])
             >>> array_a.dot(array_b)
-            ((Qbit(a)*Qbit(c))+(Qbit(b)*Qbit(d)))
+            ((Binary(a)*Binary(c))+(Binary(b)*Binary(d)))
             
             2. If `self` is an N-D array and `other` is a 1-D array,\
                 it is a sum product over the last axis of `self` and `other`.
             
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
-            >>> array_b = Array([Qbit('e'), Qbit('f')])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
+            >>> array_b = Array([Binary('e'), Binary('f')])
             >>> array_a.dot(array_b)
-            Array([((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(f))), ((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(f)))])
+            Array([((Binary(a)*Binary(e))+(Binary(b)*Binary(f))), \
+                ((Binary(c)*Binary(e))+(Binary(d)*Binary(f)))])
             
             3. If both `self` and `other` are 2-D arrays, it is matrix multiplication.
             
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
-            >>> array_b = Array([[Qbit('e'), Qbit('f')], [Qbit('g'), Qbit('h')]])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
+            >>> array_b = Array([[Binary('e'), Binary('f')], [Binary('g'), Binary('h')]])
             >>> array_a.dot(array_b)
-            Array([[((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(g))), ((Qbit(a)*Qbit(f))+(Qbit(b)*Qbit(h)))],
-                   [((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(g))), ((Qbit(c)*Qbit(f))+(Qbit(d)*Qbit(h)))]])
+            Array([[((Binary(a)*Binary(e))+(Binary(b)*Binary(g))), \
+                ((Binary(a)*Binary(f))+(Binary(b)*Binary(h)))],
+                   [((Binary(c)*Binary(e))+(Binary(d)*Binary(g))), \
+                ((Binary(c)*Binary(f))+(Binary(d)*Binary(h)))]])
             
             4. If `self` is an N-D array and `other` is an M-D array (where N, M>=2),\
                 it is a sum product over the last axis of `self` and\
@@ -592,10 +595,10 @@ class Array:
             
             Dot product with list.
             
-            >>> array_a = Array([Qbit('a'), Qbit('b')])
+            >>> array_a = Array([Binary('a'), Binary('b')])
             >>> array_b = [3, 4]
             >>> array_a.dot(array_b)
-            ((Qbit(a)*Num(3))+(Qbit(b)*Num(4)))
+            ((Binary(a)*Num(3))+(Binary(b)*Num(4)))
         """
         if isinstance(other, np.ndarray) or isinstance(other, list):
             other = Array(other)
@@ -662,19 +665,22 @@ class Array:
             1. If either of the arguments is 1-D array,
             it is treated as a matrix where one is added to its dimension.
             
-            >>> from pyqubo import Array, Qbit
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
-            >>> array_b = Array([Qbit('e'), Qbit('f')])
+            >>> from pyqubo import Array, Binary
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
+            >>> array_b = Array([Binary('e'), Binary('f')])
             >>> array_a.matmul(array_b)
-            Array([((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(f))), ((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(f)))])
+            Array([((Binary(a)*Binary(e))+(Binary(b)*Binary(f))), \
+                ((Binary(c)*Binary(e))+(Binary(d)*Binary(f)))])
             
             2. If both arguments are 2-D array, conventional matrix product is calculated.
             
-            >>> array_a = Array([[Qbit('a'), Qbit('b')], [Qbit('c'), Qbit('d')]])
-            >>> array_b = Array([[Qbit('e'), Qbit('f')], [Qbit('g'), Qbit('h')]])
+            >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
+            >>> array_b = Array([[Binary('e'), Binary('f')], [Binary('g'), Binary('h')]])
             >>> array_a.matmul(array_b)
-            Array([[((Qbit(a)*Qbit(e))+(Qbit(b)*Qbit(g))), ((Qbit(a)*Qbit(f))+(Qbit(b)*Qbit(h)))],
-                   [((Qbit(c)*Qbit(e))+(Qbit(d)*Qbit(g))), ((Qbit(c)*Qbit(f))+(Qbit(d)*Qbit(h)))]])
+            Array([[((Binary(a)*Binary(e))+(Binary(b)*Binary(g))), \
+                ((Binary(a)*Binary(f))+(Binary(b)*Binary(h)))],
+                   [((Binary(c)*Binary(e))+(Binary(d)*Binary(g))), \
+                ((Binary(c)*Binary(f))+(Binary(d)*Binary(h)))]])
             
             3. If either argument is N-D (where N > 2), it is treated as an array whose element is a
             2-D matrix of last two indices. In this example, `array_a` is treated as if
@@ -756,17 +762,17 @@ class Array:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
             >>> array
-            Array([[Qbit(x[0][0]), Qbit(x[0][1]), Qbit(x[0][2])],
-                   [Qbit(x[1][0]), Qbit(x[1][1]), Qbit(x[1][2])]])
+            Array([[Binary(x[0][0]), Binary(x[0][1]), Binary(x[0][2])],
+                   [Binary(x[1][0]), Binary(x[1][1]), Binary(x[1][2])]])
             >>> array.reshape((3, 2, 1))
-            Array([[[Qbit(x[0][0])],
-                    [Qbit(x[0][1])]],\
+            Array([[[Binary(x[0][0])],
+                    [Binary(x[0][1])]],\
             
-                   [[Qbit(x[0][2])],
-                    [Qbit(x[1][0])]],\
+                   [[Binary(x[0][2])],
+                    [Binary(x[1][0])]],\
 
-                   [[Qbit(x[1][1])],
-                    [Qbit(x[1][2])]]])
+                   [[Binary(x[1][1])],
+                    [Binary(x[1][2])]]])
 
         """
         assert reduce(mul, self.shape) == reduce(mul, new_shape),\

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .core import Constraint, UserDefinedExpress, Qbit
+from .core import Constraint, UserDefinedExpress, Binary
 
 
 class NotConst(UserDefinedExpress):
@@ -30,8 +30,8 @@ class NotConst(UserDefinedExpress):
         the energy is 0.0. On the other hand, when they break the constraint,
         the energy is 1.0 > 0.0.
         
-        >>> from pyqubo import NotConst, Qbit
-        >>> a, b = Qbit('a'), Qbit('b')
+        >>> from pyqubo import NotConst, Binary
+        >>> a, b = Binary('a'), Binary('b')
         >>> exp = NotConst(a, b, 'not')
         >>> model = exp.compile()
         >>> model.energy({'a': 1, 'b': 0}, vartype='BINARY')
@@ -41,8 +41,11 @@ class NotConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, label):
-        express = Constraint(2 * a * b - a - b + 1, label=label)
-        super(NotConst, self).__init__(express)
+        self._express = Constraint(2 * a * b - a - b + 1, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class AndConst(UserDefinedExpress):
@@ -62,8 +65,8 @@ class AndConst(UserDefinedExpress):
         the energy is 0.0. On the other hand, when they break the constraint,
         the energy is 1.0 > 0.0.
         
-        >>> from pyqubo import AndConst, Qbit
-        >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
+        >>> from pyqubo import AndConst, Binary
+        >>> a, b, c = Binary('a'), Binary('b'), Binary('c')
         >>> exp = AndConst(a, b, c, 'and')
         >>> model = exp.compile()
         >>> model.energy({'a': 1, 'b': 0, 'c': 0}, vartype='BINARY')
@@ -73,8 +76,11 @@ class AndConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        express = Constraint(a * b - 2 * (a + b) * c + 3 * c, label=label)
-        super(AndConst, self).__init__(express)
+        self._express = Constraint(a * b - 2 * (a + b) * c + 3 * c, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class OrConst(UserDefinedExpress):
@@ -94,8 +100,8 @@ class OrConst(UserDefinedExpress):
         the energy is 0.0. On the other hand, when they break the constraint,
         the energy is 1.0 > 0.0.
         
-        >>> from pyqubo import OrConst, Qbit
-        >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
+        >>> from pyqubo import OrConst, Binary
+        >>> a, b, c = Binary('a'), Binary('b'), Binary('c')
         >>> exp = OrConst(a, b, c, 'or')
         >>> model = exp.compile()
         >>> model.energy({'a': 1, 'b': 0, 'c': 1}, vartype='BINARY')
@@ -105,8 +111,11 @@ class OrConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        express = Constraint(a * b + (a + b) * (1 - 2 * c) + c, label=label)
-        super(OrConst, self).__init__(express)
+        self._express = Constraint(a * b + (a + b) * (1 - 2 * c) + c, label=label)
+
+    @property
+    def express(self):
+        return self._express
 
 
 class XorConst(UserDefinedExpress):
@@ -126,8 +135,8 @@ class XorConst(UserDefinedExpress):
         the energy is 0.0. On the other hand, when they break the constraint,
         the energy is 1.0 > 0.0.
         
-        >>> from pyqubo import XorConst, Qbit
-        >>> a, b, c = Qbit('a'), Qbit('b'), Qbit('c')
+        >>> from pyqubo import XorConst, Binary
+        >>> a, b, c = Binary('a'), Binary('b'), Binary('c')
         >>> exp = XorConst(a, b, c, 'xor')
         >>> model = exp.compile()
         >>> model.energy({'a': 1, 'b': 0, 'c': 1, 'aux_xor': 0}, vartype='BINARY')
@@ -137,6 +146,10 @@ class XorConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        aux = Qbit("aux_"+label)
-        express = Constraint(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux + 4 * aux * c + a + b + c + 4 * aux, label=label)
-        super(XorConst, self).__init__(express)
+        aux = Binary("aux_" + label)
+        self._express = Constraint(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux +\
+                                   4 * aux * c + a + b + c + 4 * aux, label=label)
+
+    @property
+    def express(self):
+        return self._express
