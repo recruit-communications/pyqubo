@@ -58,10 +58,11 @@ class Model:
             The dictionary which maps a label to an index.
     """
 
-    def __init__(self, compiled_qubo, structure, constraints):
+    def __init__(self, compiled_qubo, structure, constraints, namespaces):
         self.compiled_qubo = compiled_qubo
         self.structure = structure
         self.constraints = constraints
+        self.namespaces = namespaces
         self.variable_order = sorted(self.compiled_qubo.variables)
         self.index2label = dict(enumerate(self.variable_order))
         self.label2index = {v: k for k, v in self.index2label.items()}

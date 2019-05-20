@@ -217,6 +217,7 @@ class Express:
         # Expand the expression to polynomial
         expanded, constraints, penalties = Express._expand(self)
         expanded = Express._merge_term(expanded, penalties)
+        names = Express._ext_varnames(self)
 
         # Make polynomials quadratic
         offset = 0.0
@@ -264,7 +265,7 @@ class Express:
         uniq_variables = Express._unique_vars(self)
         structure = reduce(Express._merge_dict, [var.structure for var in uniq_variables])
 
-        return Model(compiled_qubo, structure, compiled_constraints)
+        return Model(compiled_qubo, structure, compiled_constraints, names)
 
     def _compile_param(self):
         expanded, _ = Express._expand_placeholder(self)
@@ -295,7 +296,9 @@ class Express:
             return set()
         elif isinstance(exp, Num):
             return set()
-        elif isinstance(exp, Constraint):
+        # elif isinstance(exp, Constraint):
+        #     return Express._unique_vars(exp.child)
+        elif isinstance(exp, SubH):
             return Express._unique_vars(exp.child)
         elif isinstance(exp, Binary):
             return {exp}
@@ -422,10 +425,18 @@ class Express:
             expanded_terms[Express.CONST_TERM_KEY] = exp
             return expanded_terms, {}, {}
 
-        elif isinstance(exp, Constraint):
-            child, child_const, child_p = Express._expand(exp.child)
-            child_const[exp.label] = copy.copy(child)
-            return child, child_const, child_p
+        # elif isinstance(exp, Constraint):
+        #     child, child_const, child_p = Express._expand(exp.child)
+        #     child_const[exp.label] = copy.copy(child)
+        #     return child, child_const, child_p
+
+        elif isinstance(exp, SubH):
+            if exp.as_constraint:
+                child, child_const, child_p = Express._expand(exp.child)
+                child_const[exp.label] = copy.copy(child)
+                return child, child_const, child_p
+            else:
+                return Express._expand(exp.child)
 
         elif isinstance(exp, Num):
             terms = defaultdict(float)
@@ -449,6 +460,35 @@ class Express:
         else:
             raise TypeError("Unexpected input type {}.".format(type(exp)))  # pragma: no cover
 
+    @staticmethod
+    def _ext_varnames(exp):
+        if isinstance(exp, SubH):
+            c_dict, c_set = Express._ext_varnames(exp.child)
+            c_dict.update({exp.label: c_set})
+            return c_dict, c_set
+
+        elif isinstance(exp, Spin) or isinstance(exp, Binary):
+            return {}, {exp.label}
+
+        elif isinstance(exp, AddList):
+            merged_dict, merged_set  = reduce(
+                lambda arg1, arg2:
+                (Express._merge_dict_update(arg1[0], arg2[0]), arg1[1] | arg2[1]),
+                [Express._ext_varnames(term) for term in exp.terms])
+            return merged_dict, merged_set
+
+        elif isinstance(exp, Add) or isinstance(exp, Mul):
+            left_dict, left_set = Express._ext_varnames(exp.left)
+            right_dict, right_set = Express._ext_varnames(exp.right)
+            merged_dict = Express._merge_dict_update(left_dict, right_dict)
+            merged_set = left_set | right_set
+            return merged_dict, merged_set
+
+        elif isinstance(exp, Num) or isinstance(exp, UserDefinedExpress) or isinstance(exp, Placeholder):
+            return {}, set()
+
+        else:
+            raise TypeError("Unexpected input type {}.".format(type(exp)))
 
 @six.add_metaclass(abc.ABCMeta)
 class WithPenalty(Express):
@@ -564,50 +604,72 @@ class Placeholder(Express):
         return "Placeholder({})".format(self.label)
 
 
-class Constraint(Express):
-    """Constraint expression.
-    
-    You can specify the constraint part in your expression.
-    
-    Args:
-        child (:class:`Express`): The expression you want to specify as a constraint.
-        
-        label (str): The label of the constraint. You can identify constraints by the label.
-    
-    Example:
-        When the solution is broken, `decode_solution` can detect it.
-        In this example, we introduce a constraint :math:`a+b=1`.
-        
-        >>> from pyqubo import Binary, Constraint
-        >>> a, b = Binary('a'), Binary('b')
-        >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
-        >>> model = exp.compile()
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
-        >>> pprint(broken)
-        {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
-        >>> pprint(broken)
-        {}
-    """
+# class Constraint(Express):
+#     """Constraint expression.
+#
+#     You can specify the constraint part in your expression.
+#
+#     Args:
+#         child (:class:`Express`): The expression you want to specify as a constraint.
+#
+#         label (str): The label of the constraint. You can identify constraints by the label.
+#
+#     Example:
+#         When the solution is broken, `decode_solution` can detect it.
+#         In this example, we introduce a constraint :math:`a+b=1`.
+#
+#         >>> from pyqubo import Binary, Constraint
+#         >>> a, b = Binary('a'), Binary('b')
+#         >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
+#         >>> model = exp.compile()
+#         >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
+#         >>> pprint(broken)
+#         {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
+#         >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
+#         >>> pprint(broken)
+#         {}
+#     """
+#
+#     def __init__(self, child, label):
+#         assert isinstance(label, str), "label should be string."
+#         assert isinstance(child, Express), "child should be an Express instance."
+#         super(Constraint, self).__init__()
+#         self.child = child
+#         self.label = label
+#
+#     def __hash__(self):
+#         return hash(self.label) ^ hash(self.child)
+#
+#     def __eq__(self, other):
+#         if not isinstance(other, Constraint):
+#             return False
+#         else:
+#             return self.label == other.label and self.child == other.child
+#
+#     def __repr__(self):
+#         return "Const({}, {})".format(self.label, repr(self.child))
 
-    def __init__(self, child, label):
+class SubH(Express):
+    def __init__(self, child, label, as_constraint):
         assert isinstance(label, str), "label should be string."
         assert isinstance(child, Express), "child should be an Express instance."
-        super(Constraint, self).__init__()
+        assert isinstance(as_constraint, bool), "as_constraint should be boolean."
+        super(SubH, self).__init__()
         self.child = child
         self.label = label
+        self.as_constraint = as_constraint
 
     def __hash__(self):
         return hash(self.label) ^ hash(self.child)
 
     def __eq__(self, other):
-        if not isinstance(other, Constraint):
+        if not isinstance(other, SubH):
             return False
         else:
             return self.label == other.label and self.child == other.child
 
     def __repr__(self):
-        return "Const({}, {})".format(self.label, repr(self.child))
+        return "SubH({}, {})".format(self.label, repr(self.child))
 
 
 class Spin(Express):

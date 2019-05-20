@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyqubo.array import Array
-from pyqubo.core import Constraint
+from pyqubo.core import SubH
 from pyqubo.integer import Integer
 from pyqubo.core.express import WithPenalty, Placeholder
 
@@ -62,7 +62,7 @@ class OneHotEncInteger(WithPenalty, Integer):
         self.array = Array.create(label, shape=self._num_variables, vartype='BINARY')
         self.label = label
 
-        self.constraint = Constraint((sum(self.array)-1)**2, label=self.label+"_const")
+        self.constraint = SubH((sum(self.array)-1)**2, label=self.label+"_const", as_constraint=True)
 
         self._express = lower + sum(i*x for i, x in enumerate(self.array))
         self._penalty = self.constraint * strength
