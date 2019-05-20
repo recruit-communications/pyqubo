@@ -12,19 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from __future__ import absolute_import
+import abc
+import six
+from pyqubo.core.express import UserDefinedExpress
 
-import pyqubo.array
-import pyqubo.constraint
-import pyqubo.core
-import pyqubo.func
-import pyqubo.integer
-import pyqubo.logic
-import pyqubo.utils
-from pyqubo.array import *
-from pyqubo.constraint import *
-from pyqubo.core import *
-from pyqubo.func import *
-from pyqubo.integer import *
-from pyqubo.logic import *
-from pyqubo.utils import *
+
+@six.add_metaclass(abc.ABCMeta)
+class Integer(UserDefinedExpress):
+    """Binary encoded integer
+    """
+
+    @property
+    @abc.abstractmethod
+    def interval(self):  # pragma: no cover
+        """
+        (int, int): Tuple of minimum value and maximum value.
+        """
+        pass

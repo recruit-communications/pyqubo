@@ -18,6 +18,7 @@
    reference/express
    reference/model
    reference/array
+   reference/integer
    reference/constraint
    reference/logic
    reference/func
