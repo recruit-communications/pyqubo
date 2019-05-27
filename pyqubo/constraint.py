@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .core import SubH, UserDefinedExpress, Binary
+from .core import Constraint, UserDefinedExpress, Binary
 
 
 class NotConst(UserDefinedExpress):
@@ -41,7 +41,7 @@ class NotConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, label):
-        self._express = SubH(2 * a * b - a - b + 1, label=label, as_constraint=True)
+        self._express = Constraint(2 * a * b - a - b + 1, label=label)
 
     @property
     def express(self):
@@ -76,7 +76,7 @@ class AndConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        self._express = SubH(a * b - 2 * (a + b) * c + 3 * c, label=label, as_constraint=True)
+        self._express = Constraint(a * b - 2 * (a + b) * c + 3 * c, label=label)
 
     @property
     def express(self):
@@ -111,7 +111,7 @@ class OrConst(UserDefinedExpress):
     """
 
     def __init__(self, a, b, c, label):
-        self._express = SubH(a * b + (a + b) * (1 - 2 * c) + c, label=label, as_constraint=True)
+        self._express = Constraint(a * b + (a + b) * (1 - 2 * c) + c, label=label)
 
     @property
     def express(self):
@@ -147,8 +147,8 @@ class XorConst(UserDefinedExpress):
 
     def __init__(self, a, b, c, label):
         aux = Binary("aux_" + label)
-        self._express = SubH(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux +\
-                                   4 * aux * c + a + b + c + 4 * aux, label=label, as_constraint=True)
+        self._express = Constraint(2 * a * b - 2 * (a + b) * c - 4 * (a + b) * aux +\
+                                   4 * aux * c + a + b + c + 4 * aux, label=label)
 
     @property
     def express(self):

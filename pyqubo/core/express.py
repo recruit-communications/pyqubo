@@ -296,8 +296,8 @@ class Express:
             return set()
         elif isinstance(exp, Num):
             return set()
-        # elif isinstance(exp, Constraint):
-        #     return Express._unique_vars(exp.child)
+        elif isinstance(exp, Constraint):
+             return Express._unique_vars(exp.child)
         elif isinstance(exp, SubH):
             return Express._unique_vars(exp.child)
         elif isinstance(exp, Binary):
@@ -425,10 +425,10 @@ class Express:
             expanded_terms[Express.CONST_TERM_KEY] = exp
             return expanded_terms, {}, {}
 
-        # elif isinstance(exp, Constraint):
-        #     child, child_const, child_p = Express._expand(exp.child)
-        #     child_const[exp.label] = copy.copy(child)
-        #     return child, child_const, child_p
+        elif isinstance(exp, Constraint):
+            child, child_const, child_p = Express._expand(exp.child)
+            child_const[exp.label] = copy.copy(child)
+            return child, child_const, child_p
 
         elif isinstance(exp, SubH):
             if exp.as_constraint:
@@ -604,53 +604,8 @@ class Placeholder(Express):
         return "Placeholder({})".format(self.label)
 
 
-# class Constraint(Express):
-#     """Constraint expression.
-#
-#     You can specify the constraint part in your expression.
-#
-#     Args:
-#         child (:class:`Express`): The expression you want to specify as a constraint.
-#
-#         label (str): The label of the constraint. You can identify constraints by the label.
-#
-#     Example:
-#         When the solution is broken, `decode_solution` can detect it.
-#         In this example, we introduce a constraint :math:`a+b=1`.
-#
-#         >>> from pyqubo import Binary, Constraint
-#         >>> a, b = Binary('a'), Binary('b')
-#         >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
-#         >>> model = exp.compile()
-#         >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
-#         >>> pprint(broken)
-#         {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-#         >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
-#         >>> pprint(broken)
-#         {}
-#     """
-#
-#     def __init__(self, child, label):
-#         assert isinstance(label, str), "label should be string."
-#         assert isinstance(child, Express), "child should be an Express instance."
-#         super(Constraint, self).__init__()
-#         self.child = child
-#         self.label = label
-#
-#     def __hash__(self):
-#         return hash(self.label) ^ hash(self.child)
-#
-#     def __eq__(self, other):
-#         if not isinstance(other, Constraint):
-#             return False
-#         else:
-#             return self.label == other.label and self.child == other.child
-#
-#     def __repr__(self):
-#         return "Const({}, {})".format(self.label, repr(self.child))
-
 class SubH(Express):
-    def __init__(self, child, label, as_constraint):
+    def __init__(self, child, label, as_constraint=False):
         assert isinstance(label, str), "label should be string."
         assert isinstance(child, Express), "child should be an Express instance."
         assert isinstance(as_constraint, bool), "as_constraint should be boolean."
@@ -670,6 +625,54 @@ class SubH(Express):
 
     def __repr__(self):
         return "SubH({}, {})".format(self.label, repr(self.child))
+
+
+class Constraint(SubH):  # How do I write this so that it inherits from SubH?
+    """Constraint expression.
+
+    You can specify the constraint part in your expression.
+
+    Args:
+        child (:class:`Express`): The expression you want to specify as a constraint.
+
+        label (str): The label of the constraint. You can identify constraints by the label.
+
+    Example:
+        When the solution is broken, `decode_solution` can detect it.
+        In this example, we introduce a constraint :math:`a+b=1`.
+
+        >>> from pyqubo import Binary, Constraint
+        >>> a, b = Binary('a'), Binary('b')
+        >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
+        >>> model = exp.compile()
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
+        >>> pprint(broken)
+        {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
+        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
+        >>> pprint(broken)
+        {}
+    """
+
+    def __init__(self, child, label):
+        assert isinstance(label, str), "label should be string."
+        assert isinstance(child, Express), "child should be an Express instance."
+        super(Constraint, self).__init__(child=child, label=label, as_constraint=True)
+        self.child = child
+        self.label = label
+
+# If super, do I need self.child, self.label, __hash__ if they're also in SubH? 
+
+    def __hash__(self):
+        return hash(self.label) ^ hash(self.child)
+
+    def __eq__(self, other):
+        if not isinstance(other, Constraint):
+            return False
+        else:
+            return self.label == other.label and self.child == other.child
+
+    def __repr__(self):
+        return "Const({}, {})".format(self.label, repr(self.child))
 
 
 class Spin(Express):

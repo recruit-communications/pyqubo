@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from pyqubo.array import Array
-from pyqubo.core import SubH
+from pyqubo.core import Constraint
 from pyqubo.integer import Integer
 from pyqubo.core.express import WithPenalty, Placeholder
 
@@ -69,7 +69,7 @@ class OrderEncInteger(WithPenalty, Integer):
             a = self.array[i]
             b = self.array[i + 1]
             label = self.label + "_order_" + str(i)
-            self.constraint += SubH(b-a*b, label, as_constraint=True)
+            self.constraint += Constraint(b-a*b, label)
 
         self._express = lower + sum(self.array)
         self._penalty = self.constraint * strength
