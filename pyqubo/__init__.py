@@ -21,6 +21,7 @@ import pyqubo.func
 import pyqubo.integer
 import pyqubo.logic
 import pyqubo.utils
+import pyqubo.varset
 from pyqubo.array import *
 from pyqubo.constraint import *
 from pyqubo.core import *
@@ -28,3 +29,4 @@ from pyqubo.func import *
 from pyqubo.integer import *
 from pyqubo.logic import *
 from pyqubo.utils import *
+from pyqubo.varset import *
