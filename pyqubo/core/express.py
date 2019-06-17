@@ -605,6 +605,30 @@ class Placeholder(Express):
 
 
 class SubH(Express):
+    """SubH expression.
+
+    The parent class of Constraint. You can specify smaller sub-hamiltonians in your expression.
+
+    Args:
+        child (:class:`Express`): The expression you want to specify as a sub-hamiltonian.
+
+        label (str): The label of the sub-hamiltonian. Sub-hamiltonians can be identified
+        by their labels.
+
+        as_constraint (boolean): Whether or not the sub-hamiltonian should also be treated
+        as a constraint. False by default.
+
+    Example:
+        You can call namespaces to identify the labels defined in a model.
+
+        >>> from pyqubo import Spin, SubH
+        >>> s1, s2, s3 = Spin('s1'), Spin('s2'), Spin('s3')
+        >>> exp = (SubH(s1 + s2, 'n1'))**2 + (SubH(s1 + s3, 'n2'))**2
+        >>> model = exp.compile()
+        >>> model.namespaces
+        >>> {'n1': {'s1', 's2'}, 'n2': {'s1', 's3'}, {'s1', 's2', 's3'}}
+
+    """
     def __init__(self, child, label, as_constraint=False):
         assert isinstance(label, str), "label should be string."
         assert isinstance(child, Express), "child should be an Express instance."
@@ -627,7 +651,7 @@ class SubH(Express):
         return "SubH({}, {})".format(self.label, repr(self.child))
 
 
-class Constraint(SubH):  # How do I write this so that it inherits from SubH?
+class Constraint(SubH):
     """Constraint expression.
 
     You can specify the constraint part in your expression.
@@ -659,8 +683,6 @@ class Constraint(SubH):  # How do I write this so that it inherits from SubH?
         super(Constraint, self).__init__(child=child, label=label, as_constraint=True)
         self.child = child
         self.label = label
-
-# If super, do I need self.child, self.label, __hash__ if they're also in SubH? 
 
     def __hash__(self):
         return hash(self.label) ^ hash(self.child)

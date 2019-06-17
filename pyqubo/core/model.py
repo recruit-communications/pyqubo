@@ -17,6 +17,7 @@ import numpy as np
 import dimod
 from six.moves import reduce
 from dimod.decorators import vartype_argument
+from collections import defaultdict
 
 
 class Model:
@@ -371,3 +372,99 @@ class Model:
             new_quadratic[self._normalize_index(i, j)] = v
 
         return new_linear, new_quadratic, offset
+
+    def sub_bqm(self, var_set, sample, feed_dict=None):
+        """Returns BQM object using a sub-set of variables from a QUBO expression.
+
+        Args:
+            var_set (VarSet object):
+                A VarSet class instance containing variables to include in a new QUBO expression.
+
+            sample (dict[str, float]):
+                The solution returned from a QUBO solver.
+
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
+
+         Returns:
+            :class:`dimod.BinaryQuadraticModel`
+
+        Examples:
+
+        """
+
+        var_names = var_set.var_names(self)
+        namespaces = self.namespaces[1]
+
+        qubo, offset = self.to_qubo(feed_dict=feed_dict)
+
+        replacements = namespaces.difference(var_names)
+        new_qubo = defaultdict(float)
+        new_offset = offset
+
+        for (k1, k2), value in qubo.items():
+            k1_flag = k1 in replacements
+            k2_flag = k2 in replacements
+            if sample[k1] == 0 or sample[k2] == 0:
+                continue
+            if k1_flag is True and k2_flag is False and sample[k1] == 1:
+                new_qubo[(k2, k2)] += value
+            elif k1_flag is False and k2_flag is True and sample[k2] == 1:
+                new_qubo[(k1, k2)] += value
+            elif k1_flag is True and k2_flag is True and sample[k1] == sample[k2] == 1:
+                new_offset += value
+            else:
+                new_qubo[(k1, k2)] += value
+
+        bqm = dimod.BinaryQuadraticModel.from_qubo(Q=new_qubo, offset=offset)
+
+        return bqm
+
+    def sub_qubo(self, var_set, sample, feed_dict=None):
+        """Returns QUBO using a sub-set of variables from another QUBO expression.
+
+        Args:
+            var_set (VarSet object):
+                A VarSet class instance containing variables to include in a new QUBO expression.
+
+            sample (dict[str, float]):
+                The solution returned from a QUBO solver.
+
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
+
+        Returns:
+            tuple(QUBO, float): Tuple of QUBO and energy offset.
+            QUBO takes the form of ``dict[(label, label), value]``.
+        """
+
+        bqm = self.sub_bqm(var_set, sample, feed_dict)
+        qubo = bqm.to_qubo()
+        return qubo
+
+    def sub_ising(self, var_set, sample, feed_dict=None):
+        """Returns Ising expression using a sub-set of variables from another QUBO expression.
+
+        Args:
+            var_set (VarSet object):
+                A VarSet class instance containing variables to include in a new QUBO expression.
+
+            sample (dict[str, float]):
+                The solution returned from a QUBO solver.
+
+            feed_dict (dict[str, float]):
+                If the expression contains :class:`Placeholder` objects,
+                you have to specify the value of them by :obj:`Placeholder`.
+
+        Returns:
+            tuple(linear, quadratic, float):
+                Tuple of Ising Model and energy offset. Where `linear` takes the form of
+                ``(dict[label, value])``, and `quadratic` takes the form of
+                ``dict[(label, label), value]``.
+        """
+
+        bqm = self.sub_bqm(var_set, sample, feed_dict)
+        ising = bqm.to_ising()
+        return ising
