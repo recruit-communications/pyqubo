@@ -15,8 +15,8 @@ class TestVarSet(unittest.TestCase):
         exp = (SubH(a + b, 'n1') + SubH(b + c, 'n2'))**2
         model = exp.compile()
 
-        set_x = VarSetFromSubH('n1')
-        set_y = VarSetFromSubH('n2')
+        set_x = VarSetFromSubH(['n1'])
+        set_y = VarSetFromSubH(['n2'])
         set_z = AndVars(set_x, set_y)
 
         self.assertTrue(set_x.var_names(model) == {'a', 'b'})
@@ -41,8 +41,8 @@ class TestVarSet(unittest.TestCase):
         exp = (SubH(a + b, 'n1') + SubH(b + c, 'n2'))**2
         model = exp.compile()
 
-        set_x = VarSetFromSubH('n1')
-        set_y = VarSetFromSubH('n2')
+        set_x = VarSetFromSubH(['n1'])
+        set_y = VarSetFromSubH(['n2'])
         set_z = OrVars(set_x, set_y)
 
         self.assertTrue(set_x.var_names(model) == {'a', 'b'})
