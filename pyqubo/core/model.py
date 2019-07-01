@@ -377,7 +377,7 @@ class Model:
         """Returns BQM object using a sub-set of variables from a QUBO expression.
 
         Args:
-            var_set (VarSet object):
+            var_set (:class:`VarSet`):
                 A VarSet class instance containing variables to include in a new QUBO expression.
 
             sample (dict[str, float]):
