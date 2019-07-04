@@ -1,6 +1,5 @@
 :orphan:
 
-.. automodule:: pyqubo.integer
 .. currentmodule:: pyqubo
 
 Integer

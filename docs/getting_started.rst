@@ -1,5 +1,3 @@
-.. automodule:: pyqubo
-
 Getting Started
 ===============
 
