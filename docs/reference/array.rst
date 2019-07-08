@@ -1,6 +1,5 @@
 :orphan:
 
-.. automodule:: pyqubo.array
 .. currentmodule:: pyqubo
 
 Array
