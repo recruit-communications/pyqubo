@@ -1,7 +1,6 @@
 Utils
 =====
 
-.. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
 

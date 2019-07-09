@@ -2,7 +2,6 @@ Logical Constraint
 ==================
 
 
-.. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
 NOT Constraint

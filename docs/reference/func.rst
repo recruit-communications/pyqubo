@@ -2,7 +2,6 @@ Functions
 =========
 
 
-.. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
 Sum over indices
