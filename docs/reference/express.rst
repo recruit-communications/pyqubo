@@ -1,7 +1,6 @@
 Expression
 ==========
 
-.. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
 .. autoclass:: Express

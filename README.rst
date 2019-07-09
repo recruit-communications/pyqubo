@@ -100,6 +100,25 @@ Run doctest.
 
     make doctest
 
+Citation
+--------
+
+If you use PyQUBO in your research, please cite `this paper <https://journals.jps.jp/doi/full/10.7566/JPSJ.88.061010>`_.
+
+::
+
+    @article{tanahashi2019application,
+      title={Application of Ising Machines and a Software Development for Ising Machines},
+      author={Tanahashi, Kotaro and Takayanagi, Shinichi and Motohashi, Tomomitsu and Tanaka, Shu},
+      journal={Journal of the Physical Society of Japan},
+      volume={88},
+      number={6},
+      pages={061010},
+      year={2019},
+      publisher={The Physical Society of Japan}
+    }
+
+
 Organization
 ------------
 

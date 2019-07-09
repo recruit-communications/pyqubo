@@ -2,7 +2,6 @@ Logical Gate
 ============
 
 
-.. automodule:: pyqubo
 .. currentmodule:: pyqubo
 
 Not
