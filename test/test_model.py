@@ -70,7 +70,7 @@ class TestModel(unittest.TestCase):
         model = exp.compile()
         var_set = VarSetFromVarLabels([a])
         sample = solve_qubo(model.to_qubo(feed_dict={'c': 3.0})[0])
-        linear, quad, offset = model.sub_qubo(var_set, sample, feed_dict={'c': 3.0})
+        linear, quad, offset = model.sub_ising(var_set, sample, feed_dict={'c': 3.0})
         self.assertTrue(linear == {'b': 0.0})
         assert_qubo_equal(quad, {})
         self.assertTrue(offset == -5.0)
