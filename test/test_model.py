@@ -59,8 +59,9 @@ class TestModel(unittest.TestCase):
         exp = 1 + a * b + c * (a - 2)
         model = exp.compile()
         var_set = VarSetFromVarLabels([b])
-        sample = solve_qubo(model.to_qubo(feed_dict={'c': 3.0})[0])
-        sub_qubo, offset = model.sub_qubo(var_set, sample, feed_dict={'c': 3.0})
+        # sample = solve_qubo(model.to_qubo(feed_dict={'c': 3.0})[0])
+        sample_sol = {'a': 0, 'b': 0}
+        sub_qubo, offset = model.sub_qubo(var_set, sample_sol, feed_dict={'c': 3.0})
         assert_qubo_equal(sub_qubo, {("b", "b"): 0.0})
         self.assertTrue(offset == -5.0)
 
@@ -69,8 +70,9 @@ class TestModel(unittest.TestCase):
         exp = 1 + a * b + c * (a - 2)
         model = exp.compile()
         var_set = VarSetFromVarLabels([a])
-        sample = solve_qubo(model.to_qubo(feed_dict={'c': 3.0})[0])
-        linear, quad, offset = model.sub_ising(var_set, sample, feed_dict={'c': 3.0})
+        # sample = solve_qubo(model.to_qubo(feed_dict={'c': 3.0})[0])
+        sample_sol = {'a': 0, 'b': 0}
+        linear, quad, offset = model.sub_ising(var_set, sample_sol, feed_dict={'c': 3.0})
         self.assertTrue(linear == {'b': 0.0})
         assert_qubo_equal(quad, {})
         self.assertTrue(offset == -5.0)
