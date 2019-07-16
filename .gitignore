@@ -127,3 +127,4 @@ pip-selfcheck.json
 
 # ignore gitkeep
 !.gitkeep
+.vscode/settings.json
