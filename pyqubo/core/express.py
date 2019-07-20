@@ -823,7 +823,7 @@ class AddList(Express):
     def __add__(self, other):
         """ Override __add__().
         
-        To prevent a deep nested expression, __add__() returns AddList object
+        To prevent a deep nested expression, __add__() returns AddList object itself
         where the added expression object is appended to :obj:`terms`.
         
         Returns:
@@ -834,7 +834,8 @@ class AddList(Express):
         else:
             if not isinstance(other, Express):
                 other = Num(other)
-            return AddList(self.terms + [other])
+            self.terms.append(other)
+            return self
 
     def __hash__(self):
         return reduce(xor, [hash(term) for term in self.terms])
@@ -878,4 +879,3 @@ class Num(Express):
             return False
         else:
             return self.value == other.value
-
