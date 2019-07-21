@@ -810,20 +810,23 @@ class AddList(Express):
         (Binary(a)+Binary(b))
     """
 
-    def __init__(self, terms):
+    def __init__(self, terms, skip_terms_check=False):
         super(AddList, self).__init__()
-        new_terms = []
-        for term in terms:
-            if isinstance(term, Express):
-                new_terms.append(term)
-            else:
-                new_terms.append(Num(term))
-        self.terms = new_terms
+        if skip_terms_check:
+            self.terms = terms
+        else:
+            new_terms = []
+            for term in terms:
+                if isinstance(term, Express):
+                    new_terms.append(term)
+                else:
+                    new_terms.append(Num(term))
+            self.terms = new_terms
 
     def __add__(self, other):
         """ Override __add__().
         
-        To prevent a deep nested expression, __add__() returns AddList object itself
+        To prevent a deep nested expression, __add__() returns AddList object
         where the added expression object is appended to :obj:`terms`.
         
         Returns:
@@ -834,8 +837,7 @@ class AddList(Express):
         else:
             if not isinstance(other, Express):
                 other = Num(other)
-            self.terms.append(other)
-            return self
+            return AddList(self.terms + [other], skip_terms_check=True)
 
     def __hash__(self):
         return reduce(xor, [hash(term) for term in self.terms])
