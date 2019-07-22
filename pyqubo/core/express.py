@@ -170,8 +170,8 @@ class Express:
             :class:`Model`: The model compiled from the :class:`.Express`.
         
         Examples:
-            In this example, there is a higher order term :math:`abcd`. It is decomposed as
-            [[``a*d``, ``c``], ``b``] hierarchically and converted into QUBO.
+            In this example, there are higher order terms :math:`abc` and :math:`abd`. It is decomposed as
+            [[``a*b``, ``c``], ``d``] hierarchically and converted into QUBO.
             By calling :func:`to_qubo()` of the :obj:`model`, we get the resulting QUBO.
             
             >>> from pyqubo import Binary
