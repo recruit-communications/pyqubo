@@ -12,9 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from operator import or_
 import dimod
-from six.moves import reduce
 
 
 class CompiledQubo:
@@ -40,7 +38,11 @@ class CompiledQubo:
     @property
     def variables(self):
         """Unique labels contained in keys of QUBO."""
-        return reduce(or_, [{i, j} for (i, j) in self.qubo.keys()])
+        indices = set()
+        for (i, j) in self.qubo.keys():
+            indices.add(i)
+            indices.add(j)
+        return list(indices)
 
     def evaluate(self, feed_dict):
         """Returns QUBO where the values are evaluated with feed_dict.
