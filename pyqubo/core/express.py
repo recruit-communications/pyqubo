@@ -625,8 +625,8 @@ class SubH(Express):
         >>> s1, s2, s3 = Spin('s1'), Spin('s2'), Spin('s3')
         >>> exp = (SubH(s1 + s2, 'n1'))**2 + (SubH(s1 + s3, 'n2'))**2
         >>> model = exp.compile()
-        >>> model.namespaces
-        >>> {'n1': {'s1', 's2'}, 'n2': {'s1', 's3'}, {'s1', 's2', 's3'}}
+        >>> model.namespaces  #doctest: +SKIP
+        ({'n1': {'s1', 's2'}, 'n2': {'s1', 's3'}}, {'s1', 's2', 's3'})
 
     """
     def __init__(self, child, label, as_constraint=False):

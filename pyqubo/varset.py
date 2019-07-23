@@ -61,6 +61,7 @@ class AndVars(VarSet):
         In this example, two VarSet instances are created from the SubH class. AndVars
         provides the common variable namespaces between these two sets.
 
+        >>> from pyqubo import SubH, VarSetFromSubH, Binary, AndVars
         >>> a, b, c = Binary("a"), Binary("b"), Binary("c")
         >>> exp = (SubH(a + b, 'n1') + SubH(b + c, 'n2'))**2
         >>> model = exp.compile()
@@ -94,14 +95,15 @@ class OrVars(VarSet):
         In this example, two VarSet instances are created from the SubH class. OrVars
         provides all namespaces contained in these two sets.
 
+        >>> from pyqubo import SubH, VarSetFromSubH, Binary, OrVars
         >>> a, b, c = Binary("a"), Binary("b"), Binary("c")
         >>> exp = (SubH(a + b, 'n1') + SubH(b + c, 'n2'))**2
         >>> model = exp.compile()
         >>> set_x = VarSetFromSubH('n1')
         >>> set_y = VarSetFromSubH('n2')
         >>> set_z = OrVars(set_x, set_y)
-        >>> set_z.var_names(model)
-        {'a','b','c'}
+        >>> set_z.var_names(model) #doctest: +SKIP
+        {'a', 'b', 'c'}
     """
 
     def __init__(self, set_a, set_b):
