@@ -19,6 +19,11 @@ Placeholder
 .. autoclass:: Placeholder
     :members:
 
+SubH
+____
+.. autoclass:: SubH
+    :members:
+
 Constraint
 ----------
 .. autoclass:: Constraint

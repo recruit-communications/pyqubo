@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Binary, Constraint, Placeholder, Array
+from pyqubo import Binary, Constraint, Placeholder, Array, VarSetFromVarLabels, solve_qubo
 from pyqubo import assert_qubo_equal
 
 
@@ -53,6 +53,27 @@ class TestModel(unittest.TestCase):
         self.assertTrue(linear == {0: 0.75, 1: 0.25})
         assert_qubo_equal(quad, {(0, 1): 0.25})
         self.assertTrue(offset == -0.25)
+
+    def test_sub_qubo(self):
+        a, b, c = Binary("a"), Binary("b"), Placeholder("c")
+        exp = 1 + a * b + c * (a - 2)
+        model = exp.compile()
+        var_set = VarSetFromVarLabels([b])
+        sample_sol = {'a': 0, 'b': 1}
+        sub_qubo, offset = model.sub_qubo(var_set, sample_sol, feed_dict={'c': 3.0})
+        self.assertTrue(sub_qubo == {("b", "b"): 0.0})
+        self.assertTrue(offset == -5.0)
+
+    def test_sub_ising(self):
+        a, b, c = Binary("a"), Binary("b"), Placeholder("c")
+        exp = 1 + a * b + c * (a - 2)
+        model = exp.compile()
+        var_set = VarSetFromVarLabels([b])
+        sample_sol = {'a': 0, 'b': 1}
+        linear, quad, offset = model.sub_ising(var_set, sample_sol, feed_dict={'c': 3.0})
+        self.assertTrue(linear == {'b': 0.0})
+        self.assertTrue(quad == {})
+        self.assertTrue(offset == -5.0)
 
     def test_decode(self):
         x = Array.create("x", (2, 2), vartype="BINARY")
@@ -190,6 +211,7 @@ class TestModel(unittest.TestCase):
         self.assertEqual(energy, 3.0)
         self.assertEqual(broken, {'const1': {'result': {'a': 1}, 'penalty': 3.0}})
         self.assertEqual(sol, {'a': 1})
+
 
 if __name__ == '__main__':
     unittest.main()
