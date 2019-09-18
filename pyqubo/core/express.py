@@ -170,8 +170,8 @@ class Express:
             :class:`Model`: The model compiled from the :class:`.Express`.
         
         Examples:
-            In this example, there is a higher order term :math:`abcd`. It is decomposed as
-            [[``a*d``, ``c``], ``b``] hierarchically and converted into QUBO.
+            In this example, there are higher order terms :math:`abc` and :math:`abd`. It is decomposed as
+            [[``a*b``, ``c``], ``d``] hierarchically and converted into QUBO.
             By calling :func:`to_qubo()` of the :obj:`model`, we get the resulting QUBO.
             
             >>> from pyqubo import Binary
@@ -897,15 +897,18 @@ class AddList(Express):
         (Binary(a)+Binary(b))
     """
 
-    def __init__(self, terms):
+    def __init__(self, terms, skip_terms_check=False):
         super(AddList, self).__init__()
-        new_terms = []
-        for term in terms:
-            if isinstance(term, Express):
-                new_terms.append(term)
-            else:
-                new_terms.append(Num(term))
-        self.terms = new_terms
+        if skip_terms_check:
+            self.terms = terms
+        else:
+            new_terms = []
+            for term in terms:
+                if isinstance(term, Express):
+                    new_terms.append(term)
+                else:
+                    new_terms.append(Num(term))
+            self.terms = new_terms
 
     def __add__(self, other):
         """ Override __add__().
@@ -921,7 +924,7 @@ class AddList(Express):
         else:
             if not isinstance(other, Express):
                 other = Num(other)
-            return AddList(self.terms + [other])
+            return AddList(self.terms + [other], skip_terms_check=True)
 
     def __hash__(self):
         return reduce(xor, [hash(term) for term in self.terms])
@@ -965,4 +968,3 @@ class Num(Express):
             return False
         else:
             return self.value == other.value
-
