@@ -47,6 +47,26 @@ class VarSetFromVarLabels(VarSet):
         )
 
 
+class VarSetFromLabels(VarSet):
+    """Creates a VarSet from a provided list of variables.
+
+    Args:
+        var_list: a list of variables
+
+        model (:class:`Model`): Model instance
+
+    """
+
+    def __init__(self, labels):
+        super(VarSetFromLabels, self).__init__()
+        self.labels = labels
+
+    def var_names(self, model):
+        return set(
+            label for label in self.labels
+        )
+
+
 class AndVars(VarSet):
     """Creates a VarSet that contains the intersection of two VarSet instances.
 
