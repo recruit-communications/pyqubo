@@ -9,3 +9,4 @@ runipy==0.1.5
 matplotlib==2.2.3
 networkx==2.0
 dwave-neal>=0.4.5
+dwave-system>=0.9.0
