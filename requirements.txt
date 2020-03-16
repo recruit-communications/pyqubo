@@ -1,4 +1,4 @@
-dimod>=0.8.4
+dimod==0.8.4
 numpy==1.15.1
 six==1.11.0
 coverage==4.5.1
@@ -8,5 +8,5 @@ ipykernel==4.9.0
 runipy==0.1.5
 matplotlib==2.2.3
 networkx==2.0
-dwave-neal>=0.4.5
-dwave-system>=0.8.0
+dwave-neal==0.4.5
+dwave-system==0.8.0
