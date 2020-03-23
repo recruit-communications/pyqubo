@@ -4,13 +4,13 @@ Getting Started
 Installation
 ------------
 
-If you use pip, just type
+You can install PyQUBO using pip:
 
 .. code-block:: shell
 
     pip install pyqubo
 
-You can install from the source code like
+You can also install from the source code:
 
 .. code-block:: shell
 
@@ -22,9 +22,9 @@ You can install from the source code like
 QUBO and Ising Model
 --------------------
 
-If you want to solve a combinatorial optimization problem by quantum or classical annealing machines, you need to represent your problem in QUBO (Quadratic Unconstrained Binary Optimization) or Ising model. PyQUBO converts your problem into QUBO or Ising model format.
+If you want to solve a combinatorial optimization problem using quantum or classical annealing machines, you need to represent your problem as a QUBO (Quadratic Unconstrained Binary Optimization) or Ising model. PyQUBO converts your problem into QUBO or Ising model format.
 
-The objective function of **QUBO** is defined as:
+The objective function of the **QUBO** is defined as:
 
 .. math::
 
@@ -35,7 +35,7 @@ where :math:`x_{i}` represents a binary variable which takes 0 or 1, and :math:`
 Note that :math:`q_{ii}x_{i}x_{i}=q_{ii}x_{i}`, since :math:`x_{i}^2=x_{i}`.
 Thus, the above expression includes linear terms of :math:`x_{i}`.
 
-The objective function of **Ising model** is defined as:
+The objective function of the **Ising model** is defined as:
 
 .. math::
 
@@ -75,14 +75,14 @@ With PyQUBO, you can construct QUBOs with 3 steps:
 >>> print(offset)
 196.0
 
-In this example, you want to solve `Number Partitioning Problem <https://en.wikipedia.org/wiki/Partition_problem>`_ with a set S = {4, 2, 7, 1}. The hamiltonian :math:`H` is represented as
+In this example, we are solving the `Number Partitioning Problem <https://en.wikipedia.org/wiki/Partition_problem>`_ given the set :math:`S` = {4, 2, 7, 1}. The hamiltonian :math:`H` is represented as
 
 .. math::
 
     H = (4 s_{1} + 2 s_{2} + 7 s_{3} + s_{4})^2
 
-where :math:`s_{i}` is a :math:`i` th spin variable which indicates a group the :math:`i` th number should belong to.
-In PyQUBO, spin variables are internally converted to binary variables via the relationship :math:`x_{i} = (s_{i}+1)/2`. The QUBO coefficents and the offset returned from :obj:`Model.to_qubo()` represents the following objective function:
+where :math:`s_{i}` is the :math:`i` -th spin variable, which indicates the group that the :math:`i` -th number should belong.
+In PyQUBO, spin variables are internally converted to binary variables via the relationship :math:`x_{i} = (s_{i}+1)/2`. The QUBO coefficents and the offset returned from :obj:`Model.to_qubo()` represent the following objective function:
 
 .. math::
 
@@ -92,7 +92,7 @@ In PyQUBO, spin variables are internally converted to binary variables via the r
 
 4. **Call ‘to_ising()’ to get Ising coefficients.**
 
-If you want to get the coefficient of the Ising model, just call :obj:`Model.to_ising()` method like below.
+To get the coefficient of the Ising model, just call the :obj:`Model.to_ising()` method, as demonstrated below.
 
 >>> linear, quadratic, offset = model.to_ising()
 >>> pprint(linear) # doctest: +SKIP
@@ -107,7 +107,7 @@ If you want to get the coefficient of the Ising model, just call :obj:`Model.to_
 >>> print(offset)
 70.0
 
-where `linear` represents external magnetic fields :math:`h`, `quadratic` represents interactions :math:`J` and `offset` represents the constant value in the objective function below.
+`linear` represents external magnetic fields :math:`h`, `quadratic` represents interactions :math:`J`, and `offset` represents the constant value in the objective function below. 
 
 .. math::
 
@@ -117,18 +117,10 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
 Variable: Binary and Spin
 -------------------------
 
-When you define a hamiltonian, you can use :class:`Binary` or :class:`Spin` as a variable.
+When defining a hamiltonian, :class:`Binary` or :class:`Spin` can be used as a variable.
 
 **Example:**
-If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
-
->>> from pyqubo import Binary
->>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2
-
->>> from pyqubo import Binary
->>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2
+When defining a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
 
 >>> from pyqubo import Binary
 >>> x1, x2 = Binary('x1'), Binary('x2')
@@ -137,7 +129,7 @@ If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
-If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
+When defining a hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
 
 >>> from pyqubo import Spin
 >>> s1, s2 = Spin('s1'), Spin('s2')
@@ -148,9 +140,10 @@ If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`,
 Array of Variables
 ------------------
 
-:class:`Array` class represents a multi-dimensional array of :class:`Binary` or :class:`Spin`.
+The :class:`Array` class represents a multi-dimensional array of :class:`Binary` or :class:`Spin` variables.
 
-**Example:** You can access each element of the matrix with an index like:
+**Example:** 
+Each element of an :class:`Array` can be accessed using indices.
 
 >>> from pyqubo import Array
 >>> x = Array.create('x', shape=(2, 3), vartype='BINARY')
@@ -159,7 +152,7 @@ Array of Variables
 
 
 **Example:**
-You can use :class:`Array` to represent multiple spins in the example of partitioning problem above.
+An :class:`Array` can represent the spins in the partitioning problem described above.
 
 >>> from pyqubo import Array
 >>> numbers = [4, 2, 7, 1]
@@ -183,25 +176,14 @@ You can use :class:`Array` to represent multiple spins in the example of partiti
 Placeholder
 -----------
 
-If you have a parameter that you will probably update, such as the strength of the constraints in your hamiltonian, using :class:`Placeholder` will save your time.
-If you define the parameter by :class:`Placeholder`, you can specify the value of the parameter after compile.
-This means that you don't have to compile repeatedly for getting QUBOs with various parameter values.
-It takes longer time to execute a compile when the problem size is bigger. In that case, you can save your time by using :class:`Placeholder`.
+The :class:`Placeholder` class allows users to quickly update coefficients and parameters, such as the strength of the constraint in a given hamiltonian. 
+
+If the parameter is defined by :class:`Placeholder`, you can specify its value after compilation. In other words, you don't have to re-compile your hamiltonian each time you change parameter values. As it takes longer to compile when the problem size is bigger, the :class:`Placeholder` saves valuable time.
 
 **Example:**
-If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to find the penalty strength :math:`M` such that the constraint is satisfied. Thus, you need to create QUBO with different values of :math:`M`. In this example, we create QUBO with :math:`M=5.0` and :math:`M=6.0`.
+Given the objective function :math:`2a+b` and the constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2`, where :math:`a,b` is q-bit variable, the appropriate penalty strength :math:`M` must be used so that the constraint is satisfied. To find the correct :math:`M`, we create a QUBO with different :math:`M` values. In this example, we create a QUBO with :math:`M=5.0` and :math:`M=6.0`.
 
-In the first code, we don't use placeholder. In this case, you need to compile the hamiltonian twice to get a QUBO with :math:`M=5.0` and :math:`M=6.0`.
-
->>> from pyqubo import Binary
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0
->>> H = 2
-
->>> from pyqubo import Binary
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0
->>> H = 2
+In the first snippet, we don't use a placeholder. In this case, we need to compile the hamiltonian twice to get a QUBO with :math:`M=5.0` and :math:`M=6.0`.
 
 >>> from pyqubo import Binary
 >>> a, b = Binary('a'), Binary('b')
@@ -214,7 +196,7 @@ In the first code, we don't use placeholder. In this case, you need to compile t
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo() # QUBO with M=6.0
 
-If you don't want to compile twice, define :math:`M` by :class:`Placeholder`.
+If we define :math:`M` using :class:`Placeholder`, we only have to compile once.
 
 >>> from pyqubo import Placeholder
 >>> a, b = Binary('a'), Binary('b')
@@ -222,19 +204,16 @@ If you don't want to compile twice, define :math:`M` by :class:`Placeholder`.
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo(feed_dict={'M': 5.0})
-
-You get a QUBO with different value of M without compile
-
 >>> qubo, offset = model.to_qubo(feed_dict={'M': 6.0})
 
-The actual value of the placeholder :math:`M` is specified in calling :obj:`Model.to_qubo()` as a value of the feed_dict.
+The value of the placeholder :math:`M` is specified when calling :obj:`Model.to_qubo()` using a feed_dict.
 
 Decode Solution
 ---------------
 
-When you get a solution from the Ising solver, :obj:`Model.decode_solution()` decodes the solution and returns decoded_solution in dictionary form.
+Given a solution from an Ising solver, :obj:`Model.decode_solution()` decodes the solution and returns it in dictionary form.
 
-**Example:** You are solving a partitioning problem.
+**Example:** The partitioning problem.
 
 >>> from pyqubo import Array
 >>> numbers = [4, 2, 7, 1]
@@ -243,7 +222,7 @@ When you get a solution from the Ising solver, :obj:`Model.decode_solution()` de
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
 
-Let's assume that you get a solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0}` from the solver.
+Let's assume that we get the solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0}` from the solver.
 
 >>> raw_solution = {'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0} # solution from the solver
 >>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
@@ -254,19 +233,15 @@ Let's assume that you get a solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[
 >>> energy
 0.0
 
-You can see that :obj:`decoded_solution` has the decoded solution of spin vector where :math:`i` th element of the vector is accessed via `s[i]`.
-:obj:`broken` represents broken constraint which will be explained in the following section.
-:obj:`energy` represents energy of the problem.
+We see that :obj:`decoded_solution` contains the decoded solution of spin vector where the :math:`i` -th element of the vector is accessed via :math:`s[i]`. :obj:`broken` represents broken constraints, which will be explained in the following section. :obj:`energy` represents the energy of the problem.
 
 
 Validation of Constraints
 -------------------------
 
-When the hamiltonian has constraints, you can let the compiler recognize the hamiltonian of the constraint with :class:`Constraint`.
-When you decode the solution, the model let you know which constraints are broken.
-You don't have to write additional programs for validation of the constraints.
+The :class:`Constraint` wrapper can be used to make the compiler recognize the constraint terms of a hamiltonian. Then, given a solution, :obj:`Model.decode_solution()` can also show whether any constraints were broken. In other words, no additional programs have to be written for the validation of constraints.
 
-**Example:** If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
+**Example:** Given the objective function :math:`2a+b`, and the constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2`, where :math:`a,b` is a q-bit variable, we can wrap :math:`(a+b-1)^2` using :class:`Constraint` to signal to the compiler that this part of the hamiltonian is a constraint, i.e., it should be zero when the solution is not broken.
 
 >>> from pyqubo import Binary, Constraint
 >>> a, b = Binary('a'), Binary('b')
@@ -274,29 +249,11 @@ You don't have to write additional programs for validation of the constraints.
 >>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
 >>> model = H.compile()
 
-Let's assume that you get a solution
-
->>> from pyqubo import Binary, Constraint
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0 # strength of the constraint
->>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
->>> model = H.compile()
-
-Let's assume that you get a solution
-
->>> from pyqubo import Binary, Constraint
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0 # strength of the constraint
->>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
->>> model = H.compile()
-
-Let's assume that you get a solution :obj:`{'a': 1, 'b': 1}` from the solver which breaks the constraint :math:`a+b=1`.
+Let's assume that we get the solution :obj:`{'a': 1, 'b': 1}` from the solver, which breaks the constraint :math:`a+b=1`.
 
 >>> raw_solution = {'a': 1, 'b': 1}
 >>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
 >>> pprint(broken)
 {'a+b=1': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
 
-:obj:`broken` object contains the information about the broken constraint.
-If no constraint is broken, :obj:`broken` is empty.
-
+:obj:`broken` object contains information about the broken constraint. If no constraint is broken, :obj:`broken` is empty.
