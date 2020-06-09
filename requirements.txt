@@ -1,5 +1,6 @@
 dimod>=0.8.4
-numpy==1.15.1
+numpy==1.15.1;python_version<'3.5'
+numpy==1.17.3;python_version>='3.5'
 six==1.11.0
 coverage==4.5.1
 codecov==2.0.15
