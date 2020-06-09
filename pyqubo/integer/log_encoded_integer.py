@@ -19,7 +19,7 @@ import numpy as np
 
 class LogEncInteger(Integer):
     """Log encoded integer. The value that takes :math:`[0, n]` is
-    represented by :math:`\\sum_{i=1}^{\\lceil\\log_{2}n\\rceil}2^ix_{i}` without any constraint.
+    represented by :math:`\\sum_{i=0}^{\\lfloor\\log_{2}n\\rfloor}2^ix_{i}` without any constraint.
 
     Args:
         label (str): Label of the integer.

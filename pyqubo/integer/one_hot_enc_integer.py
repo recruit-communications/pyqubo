@@ -19,7 +19,7 @@ from pyqubo.core.express import WithPenalty, Placeholder
 
 
 class OneHotEncInteger(WithPenalty, Integer):
-    """One-hot encoded integer. The value that takes :math:`[0, n]` is represented by :math:`\sum_{i=1}^{n}ix_{i}`.
+    """One-hot encoded integer. The value that takes :math:`[1, n]` is represented by :math:`\sum_{i=1}^{n}ix_{i}`.
     Also we have the penalty function :math:`strength \\times (\sum_{i=1}^{n}x_{i}-1)^2` in the Hamiltonian.
     
     Args:
@@ -36,7 +36,7 @@ class OneHotEncInteger(WithPenalty, Integer):
         
         .. math::
         
-            H = \\left(\\left(\sum_{i=1}^{3}ia_{i}+1\\right) - 2\\right)^2 + strength \\times \\left(\sum_{i=1}^{3}a_{i}-1\\right)^2
+            H = \\left(\sum_{i=1}^{3}ia_{i} - 2\\right)^2 + strength \\times \\left(\sum_{i=1}^{3}a_{i}-1\\right)^2
         
         >>> from pyqubo import OneHotEncInteger
         >>> a = OneHotEncInteger("a", 1, 3, strength=5)
