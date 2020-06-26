@@ -2,7 +2,8 @@ version: 2
 jobs:
   test-3.6: &full-test-template
     docker:
-      - image: circleci/python:3.6-jessie
+      #- image: circleci/python:3.6-jessie
+      - image: 3.6-cmake-3.11
 
     working_directory: ~/repo
 
@@ -13,25 +14,15 @@ jobs:
       - run:
           name: install cmake 3.11
           command: |
-            #sudo apt-get install software-properties-common --force-yes
-            #sudo add-apt-repository --yes ppa:george-edison55/cmake-3.x --force-yes
-            #sudo apt-get update --force-yes && sudo apt-get install cmake --force-yes
             
-            sudo apt-get install build-essential
-            #wget http://www.cmake.org/files/v3.2/cmake-3.2.2.tar.gz
-            wget http://www.cmake.org/files/v3.11/cmake-3.11.4.tar.gz
-            tar xf cmake-3.11.4.tar.gz
-            cd cmake-3.11.4
-            ./configure
-            make
-            sudo make install
-            #sudo apt-get update --force-yes
-            #sudo apt-get install software-properties-common --force-yes
-            #sudo apt-get update --force-yes
-            #sudo add-apt-repository --yes ppa:george-edison55/cmake-3.2
-            #sudo apt-get install cmake --force-yes
-            
-            cmake --version
+            #sudo apt-get install build-essential
+            #wget http://www.cmake.org/files/v3.11/cmake-3.11.4.tar.gz
+            #tar xf cmake-3.11.4.tar.gz
+            #cd cmake-3.11.4
+            #./configure
+            #make
+            #sudo make install
+            #cmake --version
       
       - setup_remote_docker:
           docker_layer_caching: true

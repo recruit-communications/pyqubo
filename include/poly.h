@@ -1,8 +1,6 @@
 #pragma once
 #include <vector>
 #include <csignal>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h> // vector用
 #include "coeff.h"
 #include "prod.h"
 #include "express.h"

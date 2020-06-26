@@ -5,11 +5,11 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -msse4.1 -O3")
 
+include(external/pybind11.cmake)
 include_directories(cpp_dimod)
 add_subdirectory(include)
 add_subdirectory(src)
 
-include(external/pybind11.cmake)
 
 
 include(external/googletest.cmake)

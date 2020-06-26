@@ -2,6 +2,7 @@
 //#include <emmintrin.h>
 #include <smmintrin.h>
 #include <emmintrin.h>
+#include <set>
 using namespace std;
 
 //typedef std::unordered_set<std::string> VarSet;

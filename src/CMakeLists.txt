@@ -1,6 +1,6 @@
 include_directories(../include)
 
-add_library(cpp_pyqubo STATIC
+pybind11_add_module(cpp_pyqubo MODULE
 pybind_mapping.cpp
 express.cpp
 coeff.cpp
@@ -19,9 +19,18 @@ set_target_properties(cpp_pyqubo PROPERTIES
 
 
 target_link_libraries(cpp_pyqubo
-    pybind11::module
+#    pyqubo_header_only
 )
 
 add_custom_target(python
     DEPENDS cpp_pyqubo
+)
+
+add_library(cpp_pyqubo_body STATIC
+express.cpp
+coeff.cpp
+encoder.cpp
+placeholderpoly.cpp
+expanded.cpp
+poly.cpp
 )

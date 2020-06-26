@@ -2,8 +2,6 @@
 #include <vector>
 #include <stdio.h>
 #include <string.h>
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h> // vector用
 #include <encoder.h>
 #include <linkedlist.h>
 
