@@ -113,11 +113,11 @@ venv.bak/
 .spyproject
 
 
+
 ### Python.VirtualEnv Stack ###
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
 [Bb]in
-[Ii]nclude
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
@@ -128,3 +128,14 @@ pip-selfcheck.json
 # ignore gitkeep
 !.gitkeep
 .vscode/settings.json
+
+
+# CMake
+*.dSYM
+*.dtps
+CMakeFiles
+Makefile
+CMakeCache.txt
+_build/
+_generate/
+cmake-build-debug/

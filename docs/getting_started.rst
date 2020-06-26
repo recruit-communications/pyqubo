@@ -48,13 +48,13 @@ Basic Usage
 
 With PyQUBO, you can construct QUBOs with 3 steps:
 
-1. **Define the hamiltonian.**
+1. **Define the Hamiltonian.**
 
 >>> from pyqubo import Spin
 >>> s1, s2, s3, s4 = Spin("s1"), Spin("s2"), Spin("s3"), Spin("s4")
 >>> H = (4*s1 + 2*s2 + 7*s3 + s4)**2
 
-2. **Compile the hamiltonian to get a model.**
+2. **Compile the Hamiltonian to get a model.**
 
 >>> model = H.compile()
 
@@ -92,7 +92,7 @@ In PyQUBO, spin variables are internally converted to binary variables via the r
 
 4. **Call ‘to_ising()’ to get Ising coefficients.**
 
-If you want to get the coefficient of the Ising model, just call :obj:`Model.to_ising()` method like below.
+If you want to get the coefficient of the Ising model, just call :obj:`to_ising()` method like below.
 
 >>> linear, quadratic, offset = model.to_ising()
 >>> pprint(linear) # doctest: +SKIP
@@ -117,33 +117,56 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
 Variable: Binary and Spin
 -------------------------
 
-When you define a hamiltonian, you can use :class:`Binary` or :class:`Spin` as a variable.
+When you define a Hamiltonian, you can use :class:`Binary` or :class:`Spin` class to represent :math:`\{0,1\}` or :math:`\{1,-1\}` variable.
 
 **Example:**
-If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
+If you want to define a Hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
 
 >>> from pyqubo import Binary
 >>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2
-
->>> from pyqubo import Binary
->>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2
-
->>> from pyqubo import Binary
->>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2*x1*x2 + 3*x1
->>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
+>>> H = 2*x1*x2 + 3*x1
+>>> pprint(H.compile().to_qubo()) # doctest: +SKIP
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
-If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
+If you want to define a Hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
 
 >>> from pyqubo import Spin
 >>> s1, s2 = Spin('s1'), Spin('s2')
->>> exp = 2*s1*s2 + 3*s1
->>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
+>>> H = 2*s1*s2 + 3*s1
+>>> pprint(H.compile().to_qubo()) # doctest: +SKIP
 ({('s1', 's1'): 2.0, ('s1', 's2'): 8.0, ('s2', 's2'): -4.0}, -1.0)
+
+
+Solve QUBO by dimod Sampler
+---------------------------
+
+PyQUBO model can output the `BinaryQuadraticModel(BQM) <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/reference/bqm.html>`_.
+You can solve BQM by using :class:`Sampler` class.
+:class:`Sampler` is an abstract class defined by `dimod <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/>`_ package.
+Various kinds of sampler class, such as `SimulatedAnnealingSampler <https://docs.ocean.dwavesys.com/en/stable/docs_neal/reference/sampler.html>`_ or `DWaveSampler <https://docs.ocean.dwavesys.com/en/stable/docs_system/reference/samplers.html#dwave.system.samplers.DWaveSampler>`_, inherits `Sampler` class.
+
+First, we craete BQM object using :func:`to_bqm` method.
+(If you want to use DWaveSampler which only takes integer-indexed QUBO,
+you can simply do like ``to_bqm(index_label=True)``.)
+
+>>> from pyqubo import Binary
+>>> x1, x2 = Binary('x1'), Binary('x2')
+>>> H = (x1 + x2 - 1)**2
+>>> model = H.compile()
+>>> bqm = model.to_bqm()
+
+Next, we create :class:`neal.SimulatedAnnealingSampler` and use :func:`sample` method to get the solutions of QUBO as `SampleSet <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/reference/sampleset.html>`_.
+You can use :func:`Model.decode_sampleset` to interpret the `sampleset` object, and it returns `decoded_samples` which is a list of :class:`pyqubo.DecodedSample` object.
+
+>>> import neal
+>>> sa = neal.SimulatedAnnealingSampler()
+>>> sampleset = sa.sample(bqm, num_reads=10)
+>>> decoded_samples = model.decode_sampleset(sampleset)
+>>> best_sample = min(decoded_samples, key=lambda x: x.energy)
+>>> pprint(best_sample.sample)
+{'x1': 0, 'x2': 1}
+
 
 Array of Variables
 ------------------
@@ -196,16 +219,6 @@ In the first code, we don't use placeholder. In this case, you need to compile t
 >>> from pyqubo import Binary
 >>> a, b = Binary('a'), Binary('b')
 >>> M = 5.0
->>> H = 2
-
->>> from pyqubo import Binary
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0
->>> H = 2
-
->>> from pyqubo import Binary
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0
 >>> H = 2*a + b + M*(a+b-1)**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo() # QUBO with M=5.0
@@ -229,44 +242,12 @@ You get a QUBO with different value of M without compile
 
 The actual value of the placeholder :math:`M` is specified in calling :obj:`Model.to_qubo()` as a value of the feed_dict.
 
-Decode Solution
----------------
-
-When you get a solution from the Ising solver, :obj:`Model.decode_solution()` decodes the solution and returns decoded_solution in dictionary form.
-
-**Example:** You are solving a partitioning problem.
-
->>> from pyqubo import Array
->>> numbers = [4, 2, 7, 1]
->>> s = Array.create('s', 4, 'SPIN')
->>> H = sum(n * s_i for s_i, n in zip(s, numbers))**2
->>> model = H.compile()
->>> qubo, offset = model.to_qubo()
-
-Let's assume that you get a solution :obj:`{'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0}` from the solver.
-
->>> raw_solution = {'s[0]': 0, 's[1]': 0, 's[2]': 1, 's[3]': 0} # solution from the solver
->>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
->>> pprint(decoded_solution)
-{'s': {0: 0, 1: 0, 2: 1, 3: 0}}
->>> broken
-{}
->>> energy
-0.0
-
-You can see that :obj:`decoded_solution` has the decoded solution of spin vector where :math:`i` th element of the vector is accessed via `s[i]`.
-:obj:`broken` represents broken constraint which will be explained in the following section.
-:obj:`energy` represents energy of the problem.
-
-
 Validation of Constraints
 -------------------------
 
-When the hamiltonian has constraints, you can let the compiler recognize the hamiltonian of the constraint with :class:`Constraint`.
-When you decode the solution, the model let you know which constraints are broken.
-You don't have to write additional programs for validation of the constraints.
+When you get a solution from the Sampler, :obj:`Model.decode_sample()` decodes the sample and returns :class:`DecodedSample` object.
 
-**Example:** If you have an objective function :math:`2a+b`, and a constraint :math:`a+b=1` whose hamiltonian is :math:`(a+b-1)^2` where :math:`a,b` is qbit variable, you need to put :math:`(a+b-1)^2` in :class:`Constraint` to tell the compiler that this hamiltonian is constraint i.e. it should be zero when the solution is not broken.
+**Example:** You are solving a partitioning problem.
 
 >>> from pyqubo import Binary, Constraint
 >>> a, b = Binary('a'), Binary('b')
@@ -274,29 +255,18 @@ You don't have to write additional programs for validation of the constraints.
 >>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
 >>> model = H.compile()
 
-Let's assume that you get a solution
+Let's assume that you get a solution :obj:`{'a': 0, 'b': 1}` from the solver.
 
->>> from pyqubo import Binary, Constraint
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0 # strength of the constraint
->>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
->>> model = H.compile()
+>>> raw_solution = {'a': 0, 'b': 1} # solution from the solver
+>>> decoded_sample = model.decode_sample(raw_solution, vartype='BINARY')
+>>> pprint(decoded_sample.sample)
+{'a': 0, 'b': 1}
+>>> pprint(decoded_sample.constraints())
+{'a+b=1': (True, 0.0)}
+>>> pprint(decoded_sample.constraints(only_broken=True))
+{}
 
-Let's assume that you get a solution
-
->>> from pyqubo import Binary, Constraint
->>> a, b = Binary('a'), Binary('b')
->>> M = 5.0 # strength of the constraint
->>> H = 2*a + b + M * Constraint((a+b-1)**2, label='a+b=1')
->>> model = H.compile()
-
-Let's assume that you get a solution :obj:`{'a': 1, 'b': 1}` from the solver which breaks the constraint :math:`a+b=1`.
-
->>> raw_solution = {'a': 1, 'b': 1}
->>> decoded_solution, broken, energy = model.decode_solution(raw_solution, vartype='BINARY')
->>> pprint(broken)
-{'a+b=1': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-
-:obj:`broken` object contains the information about the broken constraint.
-If no constraint is broken, :obj:`broken` is empty.
-
+You can access to the dict of the sample via :obj:`decoded_sample.sample`.
+You can also access to the value of the constraint of the Hamiltonian via `decoded_sample.constraints()`.
+If you specify the argument `only_broken=True`, only broken constraint will be returned.
+If the empty `dict` is returned, it indicates that there is no broken constraint corresponding to the given sample.

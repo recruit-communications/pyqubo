@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from cpp_pyqubo import SubH
 from pyqubo.array import Array
 from pyqubo.integer import Integer
 import numpy as np
@@ -33,36 +34,38 @@ class LogEncInteger(Integer):
         
         >>> from pyqubo import LogEncInteger
         >>> import dimod
-        >>> a = LogEncInteger("a", 0, 4)
-        >>> b = LogEncInteger("b", 0, 4)
+        >>> a = LogEncInteger("a", (0, 4))
+        >>> b = LogEncInteger("b", (0, 4))
         >>> M=2.0
         >>> H = (2*a-b-1)**2 + M*(a+b-5)**2
         >>> model = H.compile()
-        >>> q, offset = model.to_qubo()
-        >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-        >>> response, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-        >>> sol_a = sum(2**k * v for k, v in response["a"].items())
-        >>> sol_b = sum(2**k * v for k, v in response["b"].items())
-        >>> print("a={},b={}".format(sol_a, sol_b))
-        a=2,b=3
+        >>> bqm = model.to_bqm()
+        >>> import dimod
+        >>> sampleset = dimod.ExactSolver().sample(bqm)
+        >>> decoded_samples = model.decode_sampleset(sampleset)
+        >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+        >>> print(best_sample.subh['a'])
+        2.0
+        >>> print(best_sample.subh['b'])
+        3.0
     """
 
-    def __init__(self, label, lower, upper):
+    def __init__(self, label, value_range):
+        lower, upper = value_range
         assert upper > lower, "upper value should be larger than lower value"
         assert isinstance(lower, int)
         assert isinstance(upper, int)
 
-        self.lower = lower
-        self.upper = upper
-        self._num_variables = int(np.log2(upper - lower))+1
+        span = upper - lower
+        
+        self._num_variables = int(np.log2(span)) + 1
         self.array = Array.create(label, shape=self._num_variables, vartype='BINARY')
-        self.label = label
-        self._express = lower + sum(x*2**i for i, x in enumerate(self.array))
-
-    @property
-    def express(self):
-        return self._express
-
-    @property
-    def interval(self):
-        return self.lower, self.upper
+        d = self._num_variables - 1
+        express = lower + sum(self.array[i] * 2 ** i for i in range(self._num_variables - 1))
+        express += (span - (2**d - 1)) * self.array[-1]
+        express = SubH(express, label)
+        
+        super().__init__(
+            label=label,
+            value_range=value_range,
+            express=express)

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .core import UserDefinedExpress
+from cpp_pyqubo import UserDefinedExpress
 
 
 class Not(UserDefinedExpress):
@@ -33,11 +33,8 @@ class Not(UserDefinedExpress):
     """
 
     def __init__(self, bit):
-        self._express = 1 - bit
-
-    @property
-    def express(self):
-        return self._express
+        hamiltonian = 1 - bit
+        super().__init__(hamiltonian)
 
 
 class And(UserDefinedExpress):
@@ -63,11 +60,8 @@ class And(UserDefinedExpress):
     """
 
     def __init__(self, bit_a, bit_b):
-        self._express = bit_a * bit_b
-
-    @property
-    def express(self):
-        return self._express
+        hamiltonian = bit_a * bit_b
+        super().__init__(hamiltonian)
 
 
 class Or(UserDefinedExpress):
@@ -93,11 +87,8 @@ class Or(UserDefinedExpress):
     """
 
     def __init__(self, bit_a, bit_b):
-        self._express = Not(And(Not(bit_a), Not(bit_b)))
-
-    @property
-    def express(self):
-        return self._express
+        hamiltonian = Not(And(Not(bit_a), Not(bit_b)))
+        super().__init__(hamiltonian)
 
 
 class Xor(UserDefinedExpress):
@@ -125,8 +116,5 @@ class Xor(UserDefinedExpress):
     def __init__(self, bit_a, bit_b):
         nand_ab = Not(And(bit_a, bit_b))
         or_ab = Or(bit_a, bit_b)
-        self._express = And(nand_ab, or_ab)
-
-    @property
-    def express(self):
-        return self._express
+        hamiltonian = And(nand_ab, or_ab)
+        super().__init__(hamiltonian)
