@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from cpp_pyqubo import SubH
 from pyqubo.array import Array
 from pyqubo.integer import Integer
 
@@ -44,7 +45,8 @@ class UnaryEncInteger(Integer):
         a=1,b=2
     """
 
-    def __init__(self, label, lower, upper):
+    def __init__(self, label, value_range):
+        lower, upper = value_range
         assert upper > lower, "upper value should be larger than lower value"
         assert isinstance(lower, int)
         assert isinstance(upper, int)
@@ -53,13 +55,10 @@ class UnaryEncInteger(Integer):
         self.upper = upper
         self._num_variables = (upper - lower)
         self.array = Array.create(label, shape=self._num_variables, vartype='BINARY')
-        self.label = label
-        self._express = lower + sum(self.array)
+        express = SubH(lower + sum(self.array), label)
 
-    @property
-    def express(self):
-        return self._express
-
-    @property
-    def interval(self):
-        return self.lower, self.upper
+        super().__init__(
+            label=label,
+            value_range=value_range,
+            express=express
+        )

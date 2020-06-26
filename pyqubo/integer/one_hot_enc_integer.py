@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyqubo.array import Array
-from pyqubo.core import Constraint
-from pyqubo.integer import Integer
-from pyqubo.core.express import WithPenalty, Placeholder
+from pyqubo import Array, SubH, Constraint
+from pyqubo.integer.integer import IntegerWithPenalty
+from pyqubo import WithPenalty, Placeholder
 
 
-class OneHotEncInteger(WithPenalty, Integer):
+class OneHotEncInteger(IntegerWithPenalty):
     """One-hot encoded integer. The value that takes :math:`[0, n]` is represented by :math:`\sum_{i=1}^{n}ix_{i}`.
     Also we have the penalty function :math:`strength \\times (\sum_{i=1}^{n}x_{i}-1)^2` in the Hamiltonian.
     
@@ -49,35 +48,26 @@ class OneHotEncInteger(WithPenalty, Integer):
         a=2
     """
 
-    def __init__(self, label, lower, upper, strength):
+    def __init__(self, label, value_range, strength):
+        lower, upper = value_range
         assert upper > lower, "upper value should be larger than lower value"
         assert isinstance(lower, int)
         assert isinstance(upper, int)
         assert isinstance(strength, int) or isinstance(strength, float) or\
             isinstance(strength, Placeholder)
 
-        self.lower = lower
-        self.upper = upper
         self._num_variables = (upper - lower + 1)
         self.array = Array.create(label, shape=self._num_variables, vartype='BINARY')
-        self.label = label
+        self.constraint = Constraint((sum(self.array)-1)**2, label=label+"_const", condition=lambda x: x==0)
 
-        self.constraint = Constraint((sum(self.array)-1)**2, label=self.label+"_const")
+        express = SubH(lower + sum(i*x for i, x in enumerate(self.array)), label=label)
+        penalty = self.constraint * strength
 
-        self._express = lower + sum(i*x for i, x in enumerate(self.array))
-        self._penalty = self.constraint * strength
-
-    @property
-    def express(self):
-        return self._express
-
-    @property
-    def penalty(self):
-        return self._penalty
-
-    @property
-    def interval(self):
-        return self.lower, self.upper
+        super().__init__(
+            label=label,
+            value_range=value_range,
+            express=express,
+            penalty=penalty)
 
     def equal_to(self, k):
         """Variable representing whether the value is equal to `k`.
@@ -91,7 +81,8 @@ class OneHotEncInteger(WithPenalty, Integer):
         Returns:
             :class:`Express`
         """
+        lower, upper = self.value_range
         assert isinstance(k, int), "k should be integer"
-        assert self.lower <= k <= self.upper, "This value never takes {}".format(k)
-        return self.array[k-self.lower]
+        assert lower <= k <= upper, "This value never takes {}".format(k)
+        return self.array[k-lower]
 

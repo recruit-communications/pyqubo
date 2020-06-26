@@ -1,32 +1,12 @@
-# Copyright 2018 Recruit Communications Co., Ltd.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from __future__ import absolute_import
 
-import pyqubo.array
-import pyqubo.constraint
-import pyqubo.core
-import pyqubo.func
-import pyqubo.integer
-import pyqubo.logic
-import pyqubo.utils
-import pyqubo.varset
-from pyqubo.array import *
-from pyqubo.constraint import *
-from pyqubo.core import *
-from pyqubo.func import *
-from pyqubo.integer import *
-from pyqubo.logic import *
-from pyqubo.utils import *
-from pyqubo.varset import *
+import cpp_pyqubo
+from cpp_pyqubo import *
+from pyqubo.utils.asserts import *
+from .array import *
+from .logical_constraint import *
+from pyqubo.integer.integer import *
+from pyqubo.integer.log_encoded_integer import *
+from pyqubo.integer.one_hot_enc_integer import *
+from pyqubo.integer.order_enc_integer import *
+from pyqubo.integer.unary_encoded_integer import *

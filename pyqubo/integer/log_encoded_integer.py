@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from cpp_pyqubo import SubH
 from pyqubo.array import Array
 from pyqubo.integer import Integer
 import numpy as np
@@ -47,22 +48,22 @@ class LogEncInteger(Integer):
         a=2,b=3
     """
 
-    def __init__(self, label, lower, upper):
+    def __init__(self, label, value_range):
+        lower, upper = value_range
         assert upper > lower, "upper value should be larger than lower value"
         assert isinstance(lower, int)
         assert isinstance(upper, int)
 
-        self.lower = lower
-        self.upper = upper
-        self._num_variables = int(np.log2(upper - lower))+1
+        span = upper - lower
+        
+        self._num_variables = int(np.log2(span)) + 1
         self.array = Array.create(label, shape=self._num_variables, vartype='BINARY')
-        self.label = label
-        self._express = lower + sum(x*2**i for i, x in enumerate(self.array))
-
-    @property
-    def express(self):
-        return self._express
-
-    @property
-    def interval(self):
-        return self.lower, self.upper
+        d = self._num_variables - 1
+        express = lower + sum(self.array[i] * 2 ** i for i in range(self._num_variables - 1))
+        express += (span - (2**d - 1)) * self.array[-1]
+        express = SubH(express, label)
+        
+        super().__init__(
+            label=label,
+            value_range=value_range,
+            express=express)

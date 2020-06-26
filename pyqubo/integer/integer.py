@@ -1,4 +1,4 @@
-# Copyright 2018 Recruit Communications Co., Ltd.
+# Copyright 2020 Recruit Communications Co., Ltd.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,18 +14,30 @@
 
 import abc
 import six
-from pyqubo.core.express import UserDefinedExpress
+from cpp_pyqubo import UserDefinedExpress, WithPenalty
 
 
-@six.add_metaclass(abc.ABCMeta)
 class Integer(UserDefinedExpress):
     """Binary encoded integer
     """
 
-    @property
-    @abc.abstractmethod
-    def interval(self):  # pragma: no cover
-        """
-        (int, int): Tuple of minimum value and maximum value.
-        """
-        pass
+    def __init__(self, label, value_range, express):
+        self.label=label
+        self.value_range = value_range
+        super().__init__(express)
+    
+    def __str__(self):
+        return f"{type(self).__name__}({self.label},value_range={self.value_range})"
+
+
+class IntegerWithPenalty(WithPenalty):
+    """Binary encoded integer with penalty function
+    """
+
+    def __init__(self, label, value_range, express, penalty):
+        self.label=label
+        self.value_range = value_range
+        super().__init__(express, penalty)
+    
+    def __str__(self):
+        return f"{type(self).__name__}({self.label},value_range={self.value_range})"

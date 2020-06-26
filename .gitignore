@@ -128,3 +128,13 @@ pip-selfcheck.json
 # ignore gitkeep
 !.gitkeep
 .vscode/settings.json
+
+# CMake
+*.dSYM
+*.dtps
+CMakeFiles
+Makefile
+CMakeCache.txt
+_build/
+_generate/
+cmake-build-debug/

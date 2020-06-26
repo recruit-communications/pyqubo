@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .core import Spin, Binary, Express
+from cpp_pyqubo import Binary, Spin, Base
 
 import dimod
 from dimod.decorators import vartype_argument
@@ -179,6 +179,7 @@ class Array:
         offset = len("Array(")
 
         def format_nested_list(nested_list, nest_count):
+
             if isinstance(nested_list[0], list):
                 return '[{body}]'.format(
                     body=',{line_feed}{indent}'.format(
@@ -410,7 +411,7 @@ class Array:
         if isinstance(shape, int):
             shape = shape,
 
-        if vartype == dimod.BINARY:
+        if vartype == dimod.Vartype.BINARY:
             var_class = Binary
         else:
             var_class = Spin
@@ -423,7 +424,9 @@ class Array:
             return {var_name(name, index): tuple([name] + index)}
 
         def generator(index):
-            return var_class(var_name(name, index), create_structure(index))
+            var_label = var_name(name, index)
+            e = var_class(var_label)
+            return e
 
         return Array._create_with_generator(shape, generator)
 
@@ -469,7 +472,6 @@ class Array:
             else:
                 length = shape_list[0]
                 return [generator(index+[i]) for i in range(length)]
-
         return Array(create_internal(_shape_list, []))
 
     def _pairwise_op_with_type_check(self, other, operation):
@@ -484,7 +486,7 @@ class Array:
         """
         if isinstance(other, np.ndarray):
             other = Array(other)
-        elif isinstance(other, int) or isinstance(other, float) or isinstance(other, Express):
+        elif isinstance(other, int) or isinstance(other, float) or isinstance(other, Base):
             other = Array.fill(other, self.shape)
         elif not isinstance(other, Array):
             raise TypeError('Operation of Array cannot be done with type:{type}'
