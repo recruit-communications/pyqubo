@@ -125,6 +125,8 @@ jobs:
       PYTHON: 3.6.5
     
     steps:
+      - checkout
+
       - run:
           command: choco install -y cmake
           shell: bash.exe
