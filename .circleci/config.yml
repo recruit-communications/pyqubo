@@ -1,43 +1,6 @@
 version: 2
 jobs:
-  test-osx-3.6:
-    macos:
-      xcode: "11.2.1"
-    environment:
-      PYTHON: 3.6.5
-      HOMEBREW_NO_AUTO_UPDATE: 1
-    
-    working_directory: ~/repo
-
-    steps: 
-      - checkout
-
-      - run: 
-          name: check brew
-          command: |
-            brew --version
-            brew install cmake
-            brew info cmake
-
-      - run: 
-          name: install pyenv
-          command: |
-            brew install pyenv
-      - restore_cache:
-          keys:
-            - pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
-
-      - run:
-          name: install python
-          command: |
-            pyenv install $PYTHON -s
-      - save_cache:
-          paths:
-            - ~/.pyenv
-          key: pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
-
-
-
+  
   test-3.6: &full-test-template
     docker:
       - image: circleci/python:3.6-jessie
@@ -89,6 +52,73 @@ jobs:
             python --version
             coverage run -m unittest discover
    
+  test-osx-3.6:
+    macos:
+      xcode: "11.2.1"
+    environment:
+      PYTHON: 3.6.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: check brew
+          command: |
+            brew --version
+            brew install cmake
+            brew info cmake
+
+      - run:
+          name: install pyenv
+          command: |
+            brew install pyenv
+
+      - restore_cache:
+          keys:
+            - pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run:
+          name: install python
+          command: |
+            pyenv install $PYTHON -s
+
+      - save_cache:
+          paths:
+            - ~/.pyenv
+          key: pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+      
+      - run:
+          name: create virtualenv
+          command: |
+            eval "$(pyenv init -)"
+            pyenv local $PYTHON
+            python -m pip install virtualenv
+            python -m virtualenv env
+      
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "python/requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: &install-dependencies-template
+          name: install dependencies
+          command: |
+            . env/bin/activate
+            python --version
+            pip install -r python/requirements.txt
+      
+      - save_cache:
+          paths:
+            - ./env
+          key: v1-dependencies-{{ checksum "python/requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-package-template
+        
+      - run: *run-tests-template
+
+      
 workflows:
   version: 2
   build-test:
