@@ -6,7 +6,7 @@ orbs:
 
 jobs:
   
-  test-3.6: &full-test-template
+  test-linux: &full-test-template
     docker:
       - image: circleci/python:3.6-jessie
       
@@ -49,7 +49,7 @@ jobs:
           command: |
             . env/bin/activate
             python setup.py install
-      
+
       - run: &run-tests-template
           name: run unittests
           command: |
@@ -57,7 +57,7 @@ jobs:
             python --version
             coverage run -m unittest discover
   
-  test-osx-3.6:
+  test-osx:
     macos:
       xcode: "11.2.1"
     environment:
