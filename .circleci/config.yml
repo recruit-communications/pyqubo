@@ -117,7 +117,7 @@ jobs:
 
       - run: *run-tests-template
 
-  test-win-3.6:
+  build:
     executor:
       name: win/default
     
@@ -133,4 +133,4 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- test-3.6
-      - test-win-3.6
+      - build
