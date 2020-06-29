@@ -102,14 +102,14 @@ jobs:
           - v1-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run: *install-dependencies-template
-      
+
       - save_cache:
           paths:
             - ./env
           key: v1-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run: *install-package-template
-        
+
       - run: *run-tests-template
 
   test-win-3.6:
@@ -129,4 +129,4 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- test-3.6
-      test-win-3.6
+      - test-win-3.6
