@@ -1,5 +1,42 @@
 version: 2
 jobs:
+  test-osx-3.6:
+    macos:
+      xcode: "11.2.1"
+    environment:
+      PYTHON: 3.6.5
+    
+    working_directory: ~/repo
+
+    steps: 
+      - checkout
+
+      - run: 
+          name: check brew
+          command: |
+            brew --version
+            brew install cmake
+            brew info cmake
+
+      - run: 
+          name: install pyenv
+          command: |
+            brew install pyenv
+      - restore_cache:
+          keys:
+            - pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run:
+          name: install python
+          command: |
+            pyenv install $PYTHON -s
+      - save_cache:
+          paths:
+            - ~/.pyenv
+          key: pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+
+
   test-3.6: &full-test-template
     docker:
       - image: circleci/python:3.6-jessie
@@ -53,6 +90,7 @@ jobs:
    
 workflows:
   version: 2
-  test:
+  build-test:
     jobs:
-      - test-3.6
+      - test-osx-3.6
+      #- test-3.6
