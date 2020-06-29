@@ -1,4 +1,9 @@
-version: 2
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.2.0
+
+
 jobs:
   
   test-3.6: &full-test-template
@@ -118,9 +123,8 @@ jobs:
     
     steps:
       - run:
-         command: echo hello && echo world
-         shell: bash.exe
-
+          command: echo hello && echo world
+          shell: bash.exe
 
 
 workflows:
