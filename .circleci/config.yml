@@ -5,6 +5,7 @@ jobs:
       xcode: "11.2.1"
     environment:
       PYTHON: 3.6.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
     
     working_directory: ~/repo
 
