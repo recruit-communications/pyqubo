@@ -117,15 +117,21 @@ jobs:
 
       - run: *run-tests-template
 
-  build:
+  build-win:
     executor:
       name: win/default
+    
+    environment:
+      PYTHON: 3.6.5
     
     steps:
       - run:
           command: choco install -y cmake
           shell: bash.exe
 
+      - run:
+          command: choco install -y python --version "${PYTHON}"
+          shell: bash.exe
 
 workflows:
   version: 2
@@ -133,4 +139,4 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- test-3.6
-      - build
+      - build-win
