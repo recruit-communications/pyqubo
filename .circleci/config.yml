@@ -51,7 +51,7 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
-   
+  
   test-osx-3.6:
     macos:
       xcode: "11.2.1"
@@ -69,7 +69,6 @@ jobs:
           command: |
             brew --version
             brew install cmake
-            brew info cmake
 
       - run:
           name: install pyenv
@@ -113,10 +112,21 @@ jobs:
         
       - run: *run-tests-template
 
+  test-win-3.6:
+    executor:
+      name: win/default
+    
+    steps:
+      - run:
+         command: echo hello && echo world
+         shell: bash.exe
+
+
 
 workflows:
   version: 2
   build-test:
     jobs:
-      - test-osx-3.6
+      #- test-osx-3.6
       #- test-3.6
+      test-win-3.6
