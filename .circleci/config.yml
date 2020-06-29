@@ -123,7 +123,7 @@ jobs:
     
     steps:
       - run:
-          command: echo hello && echo world
+          command: choco install -y cmake
           shell: bash.exe
 
 
