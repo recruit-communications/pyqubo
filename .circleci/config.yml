@@ -130,8 +130,18 @@ jobs:
           shell: bash.exe
 
       - run:
-          command: choco install -y python --version "${PYTHON}"
+          command: |
+            choco install -y python --version "${PYTHON}"
+            if [[ "${PYTHON}" == "3"* ]]; then
+              alias python="python3"
+            fi
           shell: bash.exe
+      
+      - run:
+          command: |
+            python setup.py install
+          shell: bash.exe
+      
 
 workflows:
   version: 2
