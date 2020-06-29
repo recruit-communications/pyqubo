@@ -100,25 +100,20 @@ jobs:
       
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "python/requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          - v1-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
-      - run: &install-dependencies-template
-          name: install dependencies
-          command: |
-            . env/bin/activate
-            python --version
-            pip install -r python/requirements.txt
+      - run: *install-dependencies-template
       
       - save_cache:
           paths:
             - ./env
-          key: v1-dependencies-{{ checksum "python/requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          key: v1-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run: *install-package-template
         
       - run: *run-tests-template
 
-      
+
 workflows:
   version: 2
   build-test:
