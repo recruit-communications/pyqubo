@@ -17,15 +17,6 @@ set_target_properties(cpp_pyqubo PROPERTIES
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
 
-
-target_link_libraries(cpp_pyqubo
-#    pyqubo_header_only
-)
-
-add_custom_target(python
-    DEPENDS cpp_pyqubo
-)
-
 add_library(cpp_pyqubo_body STATIC
 express.cpp
 coeff.cpp

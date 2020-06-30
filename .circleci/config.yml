@@ -128,16 +128,10 @@ jobs:
       - checkout
 
       - run:
-          command: choco install -y cmake
-          shell: bash.exe
-
-      - run:
           command: |
-            choco install -y python --version "${PYTHON}"
-            if [[ "${PYTHON}" == "3"* ]]; then
-              alias python="python3"
-            fi
-          shell: bash.exe
+            choco install -y cmake
+            export PATH=$PATH:"C:\Program Files\CMake\bin"
+          shell: bash.exe  
       
       - run:
           command: |
