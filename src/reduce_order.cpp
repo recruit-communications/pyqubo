@@ -1,4 +1,5 @@
 #include <poly.h>
+#include <time.h>
 
 using QuboIndex = pair<uint32_t, uint32_t>;
 
