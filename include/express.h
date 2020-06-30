@@ -503,11 +503,11 @@ public:
     Constraint(
         BasePtr hamiltonian,
         string label,
-        std::function<bool(double)> condition
+        std::function<bool(double)> _condition
     ):
         hamiltonian(hamiltonian),
         label(label),
-        condition(condition)
+        condition(_condition)
     {};
 
     ~Constraint(){}

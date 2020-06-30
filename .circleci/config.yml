@@ -123,14 +123,14 @@ jobs:
     
     environment:
       PYTHON: 3.6.5
-    
+      PATH: ${PATH}:"C:\Program Files\CMake\bin"
+
     steps:
       - checkout
 
       - run:
           command: |
             choco install -y cmake
-            export PATH=$PATH:"C:\Program Files\CMake\bin"
           shell: bash.exe  
       
       - run:
