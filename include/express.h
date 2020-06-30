@@ -4,6 +4,7 @@
 #include <string.h>
 #include <encoder.h>
 #include <linkedlist.h>
+#include <functional>
 
 
 using namespace std;
