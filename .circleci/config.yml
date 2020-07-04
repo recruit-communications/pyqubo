@@ -58,7 +58,7 @@ jobs:
     docker:
       - image: rikorose/gcc-cmake
     environment:
-      PYENV_ROOT: /tmp/.pyenv
+      PYENV_ROOT: tmp/.pyenv
       
     working_directory: ~/repo
 
@@ -82,6 +82,8 @@ jobs:
             #echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
             #echo "echo read_bash_profile" >> ~/.bash_profile
             #source ~/.bash_profile
+            echo $PATH
+            pwd
             ls $PYENV_ROOT/bin
       
 
