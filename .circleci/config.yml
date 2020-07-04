@@ -3,110 +3,45 @@ version: 2.1
 orbs:
   win: circleci/windows@2.2.0
 
-
 jobs:
-  
-  test-linux: &full-test-template
+
+  test-linux-36:
     docker:
-      - image: circleci/python:3.6-jessie
-      
-    working_directory: ~/repo
-
-    steps:
-
-      - checkout
-
-      - run:
-          name: install cmake 3.11
-          command: |
-            
-            sudo apt-get install build-essential
-            wget http://www.cmake.org/files/v3.11/cmake-3.11.4.tar.gz
-            tar xf cmake-3.11.4.tar.gz
-            cd cmake-3.11.4
-            ./configure
-            make
-            sudo make install
-            cmake --version
-      
-      - run:
-          name: create virtualenv
-          command: |
-            python -m virtualenv env
-      
-      - run: &install-dependencies-template
-          name: install dependencies
-          command: |
-            . env/bin/activate 
-            python --version
-            pip install -r requirements.txt
-  
-      - run: &install-package-template
-          name: install package
-          command: |
-            . env/bin/activate
-            python setup.py install
-
-      - run: &run-tests-template
-          name: run unittests
-          command: |
-            . env/bin/activate
-            python --version
-            coverage run -m unittest discover
-  
-  test-linux2:
-    docker:
-      - image: rikorose/gcc-cmake
+      - image: quay.io/pypa/manylinux1_x86_64
     environment:
       PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.6.5
       
     working_directory: ~/repo
 
     steps:
 
       - checkout
-
-      - run:
-          name: set environment variables
-          command: |
-            echo $BASH_ENV
-            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
-            
-      
-      - run:
-          name: install pyenv
-          command: |
-            git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
-            #chown -R $USER:$USER $PYENV_ROOT
-            eval "$(pyenv init -)"
-            #echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
-            #echo "echo read_bash_profile" >> ~/.bash_profile
-            #source ~/.bash_profile
-            echo $PATH
-            pwd
-            ls $PYENV_ROOT/bin
-      
 
       - restore_cache:
           keys:
             - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
-      - run:
-          name: install python
+      - run: &install-python-template
+          name: install python from pyenv
           command: |
-            pyenv install 3.6.5 -s
-            pyenv local 3.6.5
+            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+            eval "$(pyenv init -)" 
+            pyenv install $PYTHON -s
       
       - save_cache:
           paths:
             - tmp/.pyenv
           key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
-      - run:
+      - run: &create-virtualenv-template
           name: create virtualenv
           command: |
             eval "$(pyenv init -)"
-            python -V
+            pyenv local $PYTHON
+            python --version
             python -m pip install virtualenv
             python -m virtualenv env
       
@@ -130,6 +65,7 @@ jobs:
           name: install package
           command: |
             . env/bin/activate
+            python --version
             python setup.py install
 
       - run: &run-tests-template
@@ -138,6 +74,162 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
+  
+  test-linux-python36-old: &linux-test-template
+    docker:
+      - image: rikorose/gcc-cmake
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.6.5
+      
+    working_directory: ~/repo
+
+    steps:
+
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run: &install-python-template
+          name: install python from pyenv
+          command: |
+            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+            eval "$(pyenv init -)" 
+            pyenv install $PYTHON -s
+      
+      - save_cache:
+          paths:
+            - tmp/.pyenv
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run: &create-virtualenv-template
+          name: create virtualenv
+          command: |
+            eval "$(pyenv init -)"
+            pyenv local $PYTHON
+            python --version
+            python -m pip install virtualenv
+            python -m virtualenv env
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: &install-dependencies-template
+          name: install dependencies
+          command: |
+            . env/bin/activate 
+            python --version
+            pip install -r requirements.txt
+      
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+  
+      - run: &install-package-template
+          name: install package
+          command: |
+            . env/bin/activate
+            python --version
+            python setup.py install
+
+      - run: &run-tests-template
+          name: run unittests
+          command: |
+            . env/bin/activate
+            python --version
+            coverage run -m unittest discover
+  
+  test-linux-python35:
+    <<: *linux-test-template
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.5.5
+  
+  test-linux-python37:
+    <<: *linux-test-template
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.7.5
+  
+  test-linux-python38:
+    <<: *linux-test-template
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.8.0
+  
+  deploy-linux:
+    docker:
+      - image: rikorose/gcc-cmake
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.6.5
+      
+    working_directory: ~/repo
+
+    steps:
+
+      - checkout    
+
+      - restore_cache:
+          keys:
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run: *install-python-template
+      
+      - save_cache:
+          paths:
+            - tmp/.pyenv
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run: *create-virtualenv-template
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-dependencies-template
+      
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+  
+      - run: *install-package-template
+      
+      - run:
+          name: build wheels
+          command: |
+            . env/bin/activate
+            python -m pip install cibuildwheel==1.5.1 twine
+            python -m cibuildwheel --output-dir wheelhouse
+            #python setup.py sdist -d ./dist
+      
+      - store_artifacts:
+          path: ./dist
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            # for testpypi
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      
+      - run:
+          name: install twine and deploy
+          command: |
+            . env/bin/activate
+            pip install twine
+            twine upload wheelhouse/*.whl
   
   test-osx:
     macos:
@@ -228,5 +320,6 @@ workflows:
   build-test:
     jobs:
       #- test-osx-3.6
-      - test-linux2
+      - deploy-linux
+      #- deploy-linux
       #- build-win
