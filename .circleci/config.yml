@@ -99,7 +99,7 @@ jobs:
       
       - save_cache:
           paths:
-            - $PYENV_ROOT
+            - tmp/.pyenv
           key: pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
       - run:
