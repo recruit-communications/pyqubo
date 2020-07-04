@@ -89,7 +89,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
       - run:
           name: install python
@@ -100,7 +100,7 @@ jobs:
       - save_cache:
           paths:
             - tmp/.pyenv
-          key: pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
       - run:
           name: create virtualenv
