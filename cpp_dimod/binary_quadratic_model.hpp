@@ -633,61 +633,6 @@ public:
         }
     };
 
-    /**
-     * @brief Normalizes the biases of the binary quadratic model such that they fall in the provided range(s), and adjusts the offset appropriately.
-     * 
-     * @param bias_range
-     * @param use_quadratic_range
-     * @param quadratic_range
-     * @param ignored_variables
-     * @param ignored_interactions
-     * @param ignored_offset
-     * 
-     */
-    void normalize
-    (
-        const std::pair<double, double> &bias_range = {1.0, 1.0},
-        const bool use_quadratic_range = false,
-        const std::pair<double, double> &quadratic_range = {1.0, 1.0},
-        const std::vector<IndexType> &ignored_variables = {},
-        const std::vector<std::pair<IndexType, IndexType>> &ignored_interactions = {},
-        const bool ignored_offset = false
-    )
-    {
-        // parse range
-        std::pair<double, double> l_range = bias_range;
-        std::pair<double, double> q_range;
-        if(!use_quadratic_range)
-        {
-            q_range = bias_range;
-        }
-        else
-        {
-            q_range = quadratic_range;
-        }
-
-        // calculate scaling value
-        auto comp = [](const auto &a, const auto &b) { return a.second < b.second; };
-        auto it_lin_min = std::min_element(m_linear.begin(), m_linear.end(), comp);
-        auto it_lin_max = std::max_element(m_linear.begin(), m_linear.end(), comp);
-        auto it_quad_min = std::min_element(m_quadratic.begin(), m_quadratic.end(), comp);
-        auto it_quad_max = std::max_element(m_quadratic.begin(), m_quadratic.end(), comp);
-
-        std::vector<double> v_scale =
-        {
-            it_lin_min->second / l_range.first,
-            it_lin_max->second / l_range.second,
-            it_quad_min->second / q_range.first,
-            it_quad_max->second / q_range.second
-        };
-        double inv_scale = *std::max_element(v_scale.begin(), v_scale.end());
-
-        // scaling
-        if(inv_scale != 0.0)
-        {
-            scale(1.0 / inv_scale, ignored_variables, ignored_interactions, ignored_offset);
-        }
-    };
 
     /**
      * @brief Fix the value of a variable and remove it from a binary quadratic model.
