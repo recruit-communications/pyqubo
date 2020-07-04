@@ -121,7 +121,7 @@ jobs:
       
       - save_cache:
           paths:
-            - $PYENV_ROOT
+            - ./env
           key: v1-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
   
       - run: &install-package-template
