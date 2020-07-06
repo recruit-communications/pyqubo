@@ -299,6 +299,25 @@ jobs:
             echo ${MY_VAR}
           shell: bash.exe
 
+  test-linux-env:
+    docker:
+      - image: colon0722/manylinux_cmake:latest
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.6.5
+      
+    working_directory: ~/repo
+
+    steps:
+
+      - checkout
+      
+      - run:
+          name: echo MY_VAR
+          command: |
+            echo ${MY_VAR}
+
+
 workflows:
   version: 2
   build-test:
@@ -306,4 +325,5 @@ workflows:
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
-      - deploy-win2
+      #- deploy-win2
+      - test-linux-env
