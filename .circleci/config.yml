@@ -281,4 +281,4 @@ workflows:
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
-      - build-win
+      - deploy-win
