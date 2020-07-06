@@ -396,8 +396,6 @@ jobs:
             echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
-            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-            cat ~/.pypirc
       
       - run:
           name: install twine and deploy
