@@ -344,16 +344,17 @@ jobs:
           command: |
             echo -e "[pypi]" >> ~/.pypirc
             # for testpypi
-            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            cat ~/.pypirc
       
       - run:
           name: install twine and deploy
           command: |
             . env/bin/activate
             pip install twine
-            twine upload --repository pypi ./dist/*
+            twine upload ./dist/*
 
 
 
