@@ -5,9 +5,9 @@ orbs:
 
 jobs:
 
-  test-linux-36:
+  test-linux-36: &linux-test-template
     docker:
-      - image: quay.io/pypa/manylinux1_x86_64
+      - image: colon0722/manylinux_cmake:latest
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
@@ -17,30 +17,23 @@ jobs:
     steps:
 
       - checkout
-
-      - restore_cache:
-          keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
       - run: &install-python-template
           name: install python from pyenv
           command: |
-            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
+            #echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
+            #source $BASH_ENV
+            #git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+            #eval "$(pyenv init -)" 
+            #pyenv install $PYTHON -s
+            echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
             source $BASH_ENV
-            git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
-            eval "$(pyenv init -)" 
-            pyenv install $PYTHON -s
+            python -V
       
-      - save_cache:
-          paths:
-            - tmp/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
       
       - run: &create-virtualenv-template
           name: create virtualenv
           command: |
-            eval "$(pyenv init -)"
-            pyenv local $PYTHON
             python --version
             python -m pip install virtualenv
             python -m virtualenv env
@@ -75,77 +68,6 @@ jobs:
             python --version
             coverage run -m unittest discover
   
-  test-linux-python36-old: &linux-test-template
-    docker:
-      - image: rikorose/gcc-cmake
-    environment:
-      PYENV_ROOT: tmp/.pyenv
-      PYTHON: 3.6.5
-      
-    working_directory: ~/repo
-
-    steps:
-
-      - checkout
-
-      - restore_cache:
-          keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
-      
-      - run: &install-python-template
-          name: install python from pyenv
-          command: |
-            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
-            source $BASH_ENV
-            if [ ! -d "$PYENV_ROOT" ]; then
-              git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
-            fi
-            eval "$(pyenv init -)" 
-            pyenv install $PYTHON -s
-      
-      - save_cache:
-          paths:
-            - tmp/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
-      
-      - run: &create-virtualenv-template
-          name: create virtualenv
-          command: |
-            eval "$(pyenv init -)"
-            pyenv local $PYTHON
-            python --version
-            python -m pip install virtualenv
-            python -m virtualenv env
-      
-      - restore_cache:
-          keys:
-          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
-
-      - run: &install-dependencies-template
-          name: install dependencies
-          command: |
-            . env/bin/activate 
-            python --version
-            pip install -r requirements.txt
-      
-      - save_cache:
-          paths:
-            - ./env
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
-  
-      - run: &install-package-template
-          name: install package
-          command: |
-            . env/bin/activate
-            python --version
-            python setup.py install
-
-      - run: &run-tests-template
-          name: run unittests
-          command: |
-            . env/bin/activate
-            python --version
-            coverage run -m unittest discover
   
   test-linux-python35:
     <<: *linux-test-template
@@ -167,7 +89,7 @@ jobs:
   
   deploy-linux:
     docker:
-      - image: rikorose/gcc-cmake
+      - image: colon0722/manylinux_cmake:latest
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
@@ -178,51 +100,27 @@ jobs:
 
       - checkout
 
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      - run:
-          name: Install Docker client
-          command: |
-            set -x
-            VER="17.03.0-ce"
-            curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$VER.tgz
-            tar -xz -C /tmp -f /tmp/docker-$VER.tgz
-            mv /tmp/docker/* /usr/bin
-
-      - restore_cache:
-          keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
-      
       - run: *install-python-template
-      
-      - save_cache:
-          paths:
-            - tmp/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
-      
-      - run: *create-virtualenv-template
-      
-      - restore_cache:
-          keys:
-          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
-
-      - run: *install-dependencies-template
-      
-      - save_cache:
-          paths:
-            - ./env
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
-  
-      - run: *install-package-template
       
       - run:
           name: build wheels
           command: |
-            . env/bin/activate
-            python -m pip install cibuildwheel==1.5.1 twine
-            python -m cibuildwheel --output-dir wheelhouse
-            #python setup.py sdist -d ./dist
+            for PYBIN in /opt/python/*/bin; do
+              echo $PYBIN
+              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 6) and sys.version_info<(3, 7))"; then continue; fi;
+              "${PYBIN}/pip" install -r requirements.txt
+              "${PYBIN}/pip" wheel . -w ./wheelhouse
+              "${PYBIN}/python" setup.py sdist -d ./dist
+            done
+      
+      - run:
+          name: bundle shared libraries into wheels
+          command: |
+            ls ./wheelhouse/
+            for whl in ./wheelhouse/pyqubo*.whl; do
+              auditwheel repair "$whl" -w ./dist
+            done
+
       
       - store_artifacts:
           path: ./dist
@@ -237,13 +135,22 @@ jobs:
 
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: python setup
+          command: |
+            echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            python -V
+      
+      - run: *create-virtualenv-template
       
       - run:
           name: install twine and deploy
           command: |
             . env/bin/activate
             pip install twine
-            twine upload wheelhouse/*.whl
+            twine upload --skip-existing ./dist/*
   
   test-osx:
     macos:
@@ -335,5 +242,5 @@ workflows:
     jobs:
       #- test-osx-3.6
       - deploy-linux
-      #- deploy-linux
+      #- test-linux-36
       #- build-win

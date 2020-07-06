@@ -82,11 +82,16 @@ class CppTest(Command):
         subprocess.call(['./tests/pyqubo_test'],
                         cwd=os.path.join('build', self.cpplibdir), shell=True)
 
-packages = ['pyqubo']
+packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
+
+install_requires = ['dimod>=0.7.4',
+                    'numpy>=1.14.0,<2.0.0',
+                    'six>=1.10.0,<2.0.0',
+                    'dwave-neal>=0.4.2']
 
 setup(
     name='pyqubo',
-    version='1.0.0',
+    version='1.0.2',
     author='Recruit Communications Co.,Ltd.',
     author_email='colon0722@gmail.com',
     description='PyQUBO',
@@ -95,4 +100,5 @@ setup(
     cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
     zip_safe=False,
     packages=packages,
+    install_requires=install_requires
 )
