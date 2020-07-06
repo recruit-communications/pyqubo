@@ -241,6 +241,7 @@ jobs:
   deploy-win:
     executor:
       name: win/default
+      shell: bash.exe
     
     environment:
       PYTHON: 3.6.5
@@ -261,12 +262,21 @@ jobs:
           command: |
             export PATH=$PATH:"C:\Program Files\CMake\bin"
             $PYTHON_PATH/python -m pip install -r requirements.txt
-            $PYTHON_PATH/python -m pip install wheel
+            $PYTHON_PATH/python -m pip install wheel twine
             $PYTHON_PATH/python setup.py bdist_wheel
             $PYTHON_PATH/python -m pip install pyqubo --no-index -f dist
-          shell: bash.exe
       
-      - run: *init_pypirc
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            # for testpypi
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+          shell: bash.exe
 
       - run:
           name: upload wheel
