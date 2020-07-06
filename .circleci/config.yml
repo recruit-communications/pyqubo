@@ -284,6 +284,24 @@ jobs:
           command: |
             $PYTHON_PATH/python -m twine upload ./dist/*
           shell: bash.exe
+  
+  deploy-win2:
+    executor:
+      name: win/default
+      shell: bash.exe
+    
+    environment:
+      PYTHON: 3.6.5
+      PYTHON_PATH: C:/Python36/
+
+    steps:
+      - checkout
+
+      - run:
+          name: echo PYPI_USERNAME
+          command: |
+            echo ${PYPI_USERNAME}
+          shell: bash.exe
 
 workflows:
   version: 2
@@ -292,4 +310,4 @@ workflows:
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
-      - deploy-win
+      - deploy-win2
