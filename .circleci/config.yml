@@ -302,7 +302,7 @@ jobs:
   test-linux-env:
           
     docker:
-      - image: quay.io/pypa/manylinux1_x86_64
+      - image: circleci/python:3.6-jessie
       
     working_directory: ~/repo
 
@@ -313,9 +313,9 @@ jobs:
       - run:
           name: echo MY_VAR
           command: |
-            echo -e "$MY_ENV_VAR"
-            echo -e "$MY_ENV_VAR" >> test
-            echo -e "${MY_ENV_VAR}" >> test
+            echo -e "$MY_VAR"
+            echo -e "$MY_VAR" >> test
+            echo -e "${MY_VAR}" >> test
             cat test
 
 
@@ -331,4 +331,3 @@ workflows:
       #- test-linux-36
       #- deploy-win2
       - test-linux-env
-        context: pyqubo_build
