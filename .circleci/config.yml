@@ -318,16 +318,51 @@ jobs:
             echo -e "${MY_VAR}" >> test
             cat test
 
+  deploy:
+    docker:
+      - image: circleci/python:3.6-jessie
 
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run:
+          name: create a virtualenv
+          command: |
+            pip install virtualenv
+            python -m virtualenv env
+      
+      - run:
+          name: build wheels
+          command: |
+            . env/bin/activate
+            mkdir ./dist
+
+      - run:
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            # for testpypi
+            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+      
+      - run:
+          name: install twine and deploy
+          command: |
+            . env/bin/activate
+            pip install twine
+            twine upload --repository pypi ./dist/*
 
 
 
 workflows:
   version: 2
-  build-test:
+  tests:
     jobs:
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
       #- deploy-win2
-      - test-linux-env
+      - deploy
