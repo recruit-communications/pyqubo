@@ -315,7 +315,8 @@ jobs:
       - run:
           name: echo MY_VAR
           command: |
-            echo ${MY_VAR}
+            echo $MY_VAR >> test
+            cat test
 
 
 workflows:
