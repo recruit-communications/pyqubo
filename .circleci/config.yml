@@ -407,7 +407,7 @@ jobs:
 
 
 workflows:
-  version: 2
+  version: 2.1
   tests:
     jobs:
       #- test-osx-3.6
