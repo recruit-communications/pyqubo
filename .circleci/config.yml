@@ -327,4 +327,4 @@ workflows:
       #- deploy-linux
       #- test-linux-36
       #- deploy-win2
-      - test-linux-env
+      - deploy-linux
