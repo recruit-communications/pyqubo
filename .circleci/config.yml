@@ -212,6 +212,8 @@ jobs:
 
       - run: *run-tests-template
 
+      - run: 
+
   build-win:
     executor:
       name: win/default
@@ -225,13 +227,14 @@ jobs:
       - run:
           command: |
             choco install -y cmake
-          shell: bash.exe  
+            choco install -y python --version "${PYTHON}"
+          shell: bash.exe
       
       - run:
           command: |
             export PATH=$PATH:"C:\Program Files\CMake\bin"
-            pip install -r requirements.txt
-            python setup.py install
+            #pip install -r requirements.txt
+            #python setup.py install
             
           shell: bash.exe
       
@@ -241,6 +244,6 @@ workflows:
   build-test:
     jobs:
       #- test-osx-3.6
-      - deploy-linux
+      #- deploy-linux
       #- test-linux-36
-      #- build-win
+      - build-win
