@@ -297,7 +297,7 @@ jobs:
           name: echo MY_VAR
           command: |
             echo ${MY_VAR}
-          shell: cmd.exe
+          shell: bash.exe
 
 workflows:
   version: 2
