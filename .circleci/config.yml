@@ -299,15 +299,27 @@ jobs:
             echo ${MY_VAR}
           shell: bash.exe
 
-  test-linux-env:
+  test-linux-env:        
     docker:
       - image: quay.io/pypa/manylinux1_x86_64
+    
+    environment:
+      PYPI_USERNAME: ${{ secrets.PYPI_USERNAME }}
       
     working_directory: ~/repo
 
     steps:
 
       - checkout
+
+      - run:
+          name: echo MY_VAR
+          command: |
+            echo -e "$PYPI_USERNAME"
+            echo -e "$PYPI_USERNAME" >> test
+            cat test
+
+
 
 
 
