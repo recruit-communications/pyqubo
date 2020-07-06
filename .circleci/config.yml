@@ -301,7 +301,7 @@ jobs:
 
   test-linux-env:
     docker:
-      - image: colon0722/manylinux_cmake:latest
+      - image: circleci/python:3.6-jessie
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
