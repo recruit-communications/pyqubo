@@ -318,26 +318,75 @@ jobs:
             echo -e "${MY_VAR}" >> test
             cat test
 
-  deploy:
+  test-linux2:
     docker:
-      - image: circleci/python:3.6-jessie
-
+      - image: rikorose/gcc-cmake
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      
     working_directory: ~/repo
 
     steps:
+
       - checkout
 
       - run:
-          name: create a virtualenv
+          name: set environment variables
           command: |
-            pip install virtualenv
+            echo $BASH_ENV
+            echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
+            
+      
+      - run:
+          name: install pyenv
+          command: |
+            git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
+            #chown -R $USER:$USER $PYENV_ROOT
+            eval "$(pyenv init -)"
+            #echo -e 'if command -v pyenv 1>/dev/null 2>&1; then\n  eval "$(pyenv init -)"\nfi' >> ~/.bash_profile
+            #echo "echo read_bash_profile" >> ~/.bash_profile
+            #source ~/.bash_profile
+            echo $PATH
+            pwd
+            ls $PYENV_ROOT/bin
+      
+
+      - restore_cache:
+          keys:
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run:
+          name: install python
+          command: |
+            pyenv install 3.6.5
+            pyenv local 3.6.5
+      
+      - save_cache:
+          paths:
+            - $PYENV_ROOT
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-linux
+      
+      - run:
+          name: create virtualenv
+          command: |
+            eval "$(pyenv init -)"
+            python -V
+            python -m pip install virtualenv
             python -m virtualenv env
+      
+      - run:
+          name: install dependencies
+          command: |
+            . env/bin/activate 
+            python --version
+            pip install -r requirements.txt
+      
       
       - run:
           name: build wheels
           command: |
             . env/bin/activate
-            mkdir ./dist
+            python setup.py sdist -d ./dist
 
       - run:
           name: init .pypirc
@@ -366,4 +415,4 @@ workflows:
       #- deploy-linux
       #- test-linux-36
       #- deploy-win2
-      - deploy
+      - test-linux2
