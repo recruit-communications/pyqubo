@@ -299,10 +299,10 @@ jobs:
             echo ${MY_VAR}
           shell: bash.exe
 
-  test-linux-env:        
+  test-linux-env:
+    context: pyqubo_build      
     docker:
       - image: quay.io/pypa/manylinux1_x86_64
-    
       
     working_directory: ~/repo
 
@@ -326,7 +326,6 @@ workflows:
   version: 2
   build-test:
     jobs:
-      context: pyqubo_build
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
