@@ -301,22 +301,14 @@ jobs:
 
   test-linux-env:
     docker:
-      - image: circleci/python:3.6-jessie
-    environment:
-      PYENV_ROOT: tmp/.pyenv
-      PYTHON: 3.6.5
+      - image: quay.io/pypa/manylinux1_x86_64
       
     working_directory: ~/repo
 
     steps:
 
       - checkout
-      
-      - run:
-          name: echo MY_VAR
-          command: |
-            echo $MY_VAR >> test
-            cat test
+
 
 
 workflows:
