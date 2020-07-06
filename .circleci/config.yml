@@ -276,6 +276,7 @@ jobs:
 
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            echo $PYPI_USERNAME
           shell: bash.exe
 
       - run:
