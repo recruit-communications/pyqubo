@@ -300,8 +300,8 @@ jobs:
       - run:
           name: echo PYPI_USERNAME
           command: |
-            echo ${PYPI_USERNAME}
-          shell: bash.exe
+            echo %PYPI_USERNAME%
+          shell: cmd.exe
 
 workflows:
   version: 2
