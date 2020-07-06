@@ -313,9 +313,9 @@ jobs:
       - run:
           name: echo MY_VAR
           command: |
-            echo -e "$PYPI_USERNAME"
-            echo -e "$PYPI_USERNAME" >> test
-            echo -e "${PYPI_USERNAME}" >> test
+            echo -e "$MY_ENV_VAR"
+            echo -e "$MY_ENV_VAR" >> test
+            echo -e "${MY_ENV_VAR}" >> test
             cat test
 
 
@@ -326,6 +326,7 @@ workflows:
   version: 2
   build-test:
     jobs:
+      context: pyqubo_build
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
