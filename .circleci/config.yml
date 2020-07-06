@@ -300,7 +300,7 @@ jobs:
           shell: bash.exe
 
   test-linux-env:
-    context: pyqubo_build      
+          
     docker:
       - image: quay.io/pypa/manylinux1_x86_64
       
@@ -331,3 +331,4 @@ workflows:
       #- test-linux-36
       #- deploy-win2
       - test-linux-env
+        context: pyqubo_build
