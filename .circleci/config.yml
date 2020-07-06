@@ -125,7 +125,7 @@ jobs:
       - store_artifacts:
           path: ./dist
 
-      - run:
+      - run: &init_pypirc
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
@@ -219,6 +219,7 @@ jobs:
     
     environment:
       PYTHON: 3.6.5
+      PYTHON_PATH: C:/Python36/
 
     steps:
       - checkout
@@ -232,11 +233,46 @@ jobs:
       - run:
           command: |
             export PATH=$PATH:"C:\Program Files\CMake\bin"
-            #pip install -r requirements.txt
+            $PYTHON_PATH/python -m pip install -r requirements.txt
             #python setup.py install
             
           shell: bash.exe
+  
+  deploy-win:
+    executor:
+      name: win/default
+    
+    environment:
+      PYTHON: 3.6.5
+      PYTHON_PATH: C:/Python36/
+
+    steps:
+      - checkout
+
+      - run:
+          name: install cmake and python
+          command: |
+            choco install -y cmake
+            choco install -y python --version "${PYTHON}"
+          shell: bash.exe
       
+      - run:
+          name: create wheel
+          command: |
+            export PATH=$PATH:"C:\Program Files\CMake\bin"
+            $PYTHON_PATH/python -m pip install -r requirements.txt
+            $PYTHON_PATH/python -m pip install wheel
+            $PYTHON_PATH/python setup.py bdist_wheel
+            $PYTHON_PATH/python -m pip install pyqubo --no-index -f dist
+          shell: bash.exe
+      
+      - run: *init_pypirc
+
+      - run:
+          name: upload wheel
+          command: |
+            $PYTHON_PATH/python -m twine upload ./dist/*
+          shell: bash.exe
 
 workflows:
   version: 2
