@@ -289,18 +289,14 @@ jobs:
     executor:
       name: win/default
       shell: bash.exe
-    
-    environment:
-      PYTHON: 3.6.5
-      PYTHON_PATH: C:/Python36/
 
     steps:
       - checkout
 
       - run:
-          name: echo PYPI_USERNAME
+          name: echo MY_VAR
           command: |
-            echo %PYPI_USERNAME%
+            echo ${MY_VAR}
           shell: cmd.exe
 
 workflows:
