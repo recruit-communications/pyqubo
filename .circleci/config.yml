@@ -22,14 +22,14 @@ jobs:
 
       - checkout
       
-      - run: &install-python-template
-          name: install python from pyenv
+      - run: &set-python-path
+          name: set python path
           command: |
             echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
             source $BASH_ENV
             python -V
       
-      - run: &create-virtualenv-template
+      - run: &create-virtualenv
           name: create virtualenv
           command: |
             python --version
@@ -100,7 +100,7 @@ jobs:
 
       - checkout
 
-      - run: *install-python-template
+      - run: *set-python-path
       
       - run:
           name: build wheels
@@ -142,7 +142,7 @@ jobs:
             source $BASH_ENV
             python -V
       
-      - run: *create-virtualenv-template
+      - run: *create-virtualenv
       
       - run: &upload-wheel
           name: install twine and deploy
@@ -150,13 +150,13 @@ jobs:
             . env/bin/activate
             pip install twine
             twine upload --skip-existing ./dist/*
-  
+
 
 ##################################################################################################
 # Mac OSX
 ##################################################################################################
 
-  test-osx:
+  test-osx-36: &test-osx-template
     macos:
       xcode: "11.2.1"
     environment:
@@ -174,7 +174,6 @@ jobs:
             brew --version
             brew install cmake
             brew install pyenv
-
 
       - restore_cache:
           keys:
@@ -213,6 +212,24 @@ jobs:
 
       - run: *run-tests-template
   
+  test-osx-35:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.5.8
+      HOMEBREW_NO_AUTO_UPDATE: 1
+
+  test-osx-37:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.7.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+  
+  test-osx-38:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.8.0
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      
   deploy-osx-36: &deploy-osx-template
     macos:
       xcode: "11.2.1"
@@ -220,6 +237,7 @@ jobs:
     environment:
       PYTHON: 3.6.5
       HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
     
     working_directory: ~/repo
 
@@ -275,24 +293,24 @@ jobs:
   
   deploy-osx-35:
     <<: *deploy-osx-template
-    
     environment:
       PYTHON: 3.5.8
       HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
   
   deploy-osx-37:
     <<: *deploy-osx-template
-    
     environment:
       PYTHON: 3.7.5
       HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
   
   deploy-osx-38:
     <<: *deploy-osx-template
-    
     environment:
       PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
 
   
 ##################################################################################################
@@ -302,6 +320,7 @@ jobs:
   build-win:
     executor:
       name: win/default
+      shell: bash.exe
     
     environment:
       PYTHON: 3.6.5
@@ -310,20 +329,27 @@ jobs:
     steps:
       - checkout
 
-      - run:
+      - run: &win-install-camke-python
+          name: install cmake and python
           command: |
             choco install -y cmake
             choco install -y python --version "${PYTHON}"
-          shell: bash.exe
       
       - run:
+          name: install pyqubo
           command: |
             export PATH=$PATH:"C:\Program Files\CMake\bin"
             $PYTHON_PATH/python -m pip install -r requirements.txt
-            #python setup.py install
+            $PYTHON_PATH/python setup.py install
+      
+      - run:
+          name: unittest
+          command: |
+            export PATH=$PATH:"C:\Program Files\CMake\bin"
+            $PYTHON_PATH/python -m pip install -r requirements.txt
+            $PYTHON_PATH/python setup.py install
+
             
-          shell: bash.exe
-  
   deploy-win:
     executor:
       name: win/default
@@ -336,15 +362,10 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: install cmake and python
-          command: |
-            choco install -y cmake
-            choco install -y python --version "${PYTHON}"
-          shell: bash.exe
+      - run: *win-install-camke-python
       
       - run:
-          name: create wheel
+          name: create wheel and test install
           command: |
             export PATH=$PATH:"C:\Program Files\CMake\bin"
             $PYTHON_PATH/python -m pip install -r requirements.txt
@@ -352,24 +373,13 @@ jobs:
             $PYTHON_PATH/python setup.py bdist_wheel
             $PYTHON_PATH/python -m pip install pyqubo --no-index -f dist
       
-      - run:
-          name: init .pypirc
-          command: |
-            echo -e "[pypi]" >> ~/.pypirc
-            # for testpypi
-            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
-
-            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-          shell: bash.exe
+      - run: *init-pypirc
 
       - run:
           name: upload wheel
           command: |
             $PYTHON_PATH/python -m twine upload ./dist/*
           shell: bash.exe
-  
 
 
 workflows:
@@ -377,9 +387,9 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- deploy-linux
-      - deploy-osx-35
-      - deploy-osx-38
-      #- deploy-osx-37
+      #- deploy-osx-35
+      #- deploy-osx-38
+      - deploy-osx-37
       #- test-linux-36
       #- deploy-win
       #- test-linux2

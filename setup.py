@@ -84,19 +84,21 @@ class CppTest(Command):
 
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
-install_requires = ['dimod>=0.7.4',
-                    'numpy>=1.14.0,<2.0.0',
-                    'six>=1.10.0,<2.0.0',
-                    'dwave-neal>=0.4.2']
+install_requires = [
+    'numpy>=1.16.0,<1.19.0',
+    'dimod>=0.9.2',
+    'dwave-neal>=0.5.4'
+    ]
+
 
 setup(
     name='pyqubo',
     version='1.0.3',
     author='Recruit Communications Co.,Ltd.',
-    author_email='colon0722@gmail.com',
+    author_email='',
     description='PyQUBO',
     long_description='',
-    ext_modules=[CMakeExtension('cmake_example')],
+    ext_modules=[CMakeExtension('pyqubo')],
     cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
     zip_safe=False,
     packages=packages,
