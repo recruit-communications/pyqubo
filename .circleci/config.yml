@@ -273,6 +273,13 @@ jobs:
       
       - run: *upload-wheel
   
+  deploy-osx-35:
+    <<: *deploy-osx-template
+    
+    environment:
+      PYTHON: 3.5.8
+      HOMEBREW_NO_AUTO_UPDATE: 1
+  
   deploy-osx-37:
     <<: *deploy-osx-template
     
@@ -284,7 +291,7 @@ jobs:
     <<: *deploy-osx-template
     
     environment:
-      PYTHON: 3.8.1
+      PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
 
   
@@ -370,7 +377,9 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- deploy-linux
-      - deploy-osx-37
+      - deploy-osx-35
+      - deploy-osx-38
+      #- deploy-osx-37
       #- test-linux-36
       #- deploy-win
       #- test-linux2
