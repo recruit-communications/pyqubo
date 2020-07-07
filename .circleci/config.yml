@@ -158,16 +158,13 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: check brew
+      - run: &install-cmake-pyenv
+          name: install cmake and pyenv
           command: |
             brew --version
             brew install cmake
-
-      - run:
-          name: install pyenv
-          command: |
             brew install pyenv
+
 
       - restore_cache:
           keys:
@@ -183,7 +180,7 @@ jobs:
             - ~/.pyenv
           key: pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
       
-      - run:
+      - run: &create-virtualenv-using-pyenv
           name: create virtualenv
           command: |
             eval "$(pyenv init -)"
@@ -206,7 +203,7 @@ jobs:
 
       - run: *run-tests-template
   
-  deploy-osx-36:
+  deploy-osx-36: &deploy-osx-template
     macos:
       xcode: "11.2.1"
     
@@ -219,16 +216,7 @@ jobs:
     steps:
       - checkout
 
-      - run:
-          name: check brew
-          command: |
-            brew --version
-            brew install cmake
-
-      - run:
-          name: install pyenv
-          command: |
-            brew install pyenv
+      - run: *install-cmake-pyenv
 
       - restore_cache:
           keys:
@@ -244,13 +232,7 @@ jobs:
             - ~/.pyenv
           key: pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
       
-      - run:
-          name: create virtualenv
-          command: |
-            eval "$(pyenv init -)"
-            pyenv local $PYTHON
-            python -m pip install virtualenv
-            python -m virtualenv env
+      - run: *create-virtualenv-using-pyenv
       
       - restore_cache:
           keys:
@@ -279,6 +261,20 @@ jobs:
       - run: *init-pypirc
       
       - run: *upload-wheel
+  
+  deploy-osx-37:
+    <<: *deploy-osx-template
+    
+    environment:
+      PYTHON: 3.7.6
+      HOMEBREW_NO_AUTO_UPDATE: 1
+  
+  deploy-osx-38:
+    <<: *deploy-osx-template
+    
+    environment:
+      PYTHON: 3.8.1
+      HOMEBREW_NO_AUTO_UPDATE: 1
 
 
   build-win:
@@ -447,7 +443,7 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- deploy-linux
-      - deploy-osx-36
+      - deploy-osx-37
       #- test-linux-36
       #- deploy-win
       #- test-linux2
