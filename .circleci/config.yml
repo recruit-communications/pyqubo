@@ -232,7 +232,7 @@ jobs:
       
   deploy-osx-36: &deploy-osx-template
     macos:
-      xcode: "11.2.1"
+      xcode: "11.2.0"
     
     environment:
       PYTHON: 3.6.5
