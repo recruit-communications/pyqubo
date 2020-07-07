@@ -21,15 +21,9 @@ jobs:
       - run: &install-python-template
           name: install python from pyenv
           command: |
-            #echo 'export PATH=$PYENV_ROOT/bin:$PATH' >> $BASH_ENV
-            #source $BASH_ENV
-            #git clone https://github.com/pyenv/pyenv.git $PYENV_ROOT
-            #eval "$(pyenv init -)" 
-            #pyenv install $PYTHON -s
             echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
             source $BASH_ENV
             python -V
-      
       
       - run: &create-virtualenv-template
           name: create virtualenv
@@ -121,7 +115,6 @@ jobs:
             for whl in ./wheelhouse/pyqubo*.whl; do
               auditwheel repair "$whl" -w ./dist
             done
-
       
       - store_artifacts:
           path: ./dist
@@ -146,7 +139,7 @@ jobs:
       
       - run: *create-virtualenv-template
       
-      - run:
+      - run: *upload-wheel
           name: install twine and deploy
           command: |
             . env/bin/activate
@@ -162,7 +155,7 @@ jobs:
     
     working_directory: ~/repo
 
-    steps:
+    steps: &test-osx-steps
       - checkout
 
       - run:
@@ -212,6 +205,32 @@ jobs:
       - run: *install-package-template
 
       - run: *run-tests-template
+  
+  deploy-osx-36:
+    macos:
+      xcode: "11.2.1"
+    
+    environment:
+      PYTHON: 3.6.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    
+    working_directory: ~/repo
+
+    steps:
+      - *test-osx-steps
+      
+      - run:
+          name: create bdist_wheel
+          command: |
+            . env/bin/activate
+            python setup.py bdist_wheel
+      
+      - store_artifacts:
+          path: ./dist
+
+      - run: *init_pypirc
+
+      - run: *upload-wheel
 
 
   build-win:
@@ -379,7 +398,7 @@ workflows:
   tests:
     jobs:
       #- test-osx-3.6
-      - deploy-linux
+      - deploy-osx-36
       #- test-linux-36
       #- deploy-win
       #- test-linux2
