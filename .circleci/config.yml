@@ -7,7 +7,7 @@ jobs:
 
   test-linux-36: &linux-test-template
     docker:
-      - image: colon0722/manylinux_cmake:latest
+      - image: colon0722/manylinux_cmake_wo_git:latest
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
@@ -89,7 +89,9 @@ jobs:
   
   deploy-linux:
     docker:
-      - image: colon0722/manylinux_cmake:latest
+      - image: colon0722/manylinux_cmake_wo_git:latest
+      # user this image if you run locally
+      #- image: colon0722/manylinux_cmake:latest
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
@@ -378,7 +380,8 @@ workflows:
   tests:
     jobs:
       #- test-osx-3.6
-      #- deploy-linux
+      - deploy-linux
       #- test-linux-36
-      - deploy-win
+      #- deploy-win
       #- test-linux2
+      #- test-linux-36
