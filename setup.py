@@ -91,7 +91,7 @@ install_requires = ['dimod>=0.7.4',
 
 setup(
     name='pyqubo',
-    version='1.0.2',
+    version='1.0.3',
     author='Recruit Communications Co.,Ltd.',
     author_email='colon0722@gmail.com',
     description='PyQUBO',

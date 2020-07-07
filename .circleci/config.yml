@@ -89,9 +89,8 @@ jobs:
   
   deploy-linux:
     docker:
-      - image: colon0722/manylinux_cmake_wo_git:latest
-      # user this image if you run locally
-      #- image: colon0722/manylinux_cmake:latest
+      - image: colon0722/manylinux_cmake_wo_ssh:latest
+
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
