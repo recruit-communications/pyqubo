@@ -119,7 +119,7 @@ jobs:
       - store_artifacts:
           path: ./dist
 
-      - run: &init_pypirc
+      - run: &init-pypirc
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
@@ -139,7 +139,7 @@ jobs:
       
       - run: *create-virtualenv-template
       
-      - run: *upload-wheel
+      - run: &upload-wheel
           name: install twine and deploy
           command: |
             . env/bin/activate
@@ -228,7 +228,7 @@ jobs:
       - store_artifacts:
           path: ./dist
 
-      - run: *init_pypirc
+      - run: *init-pypirc
 
       - run: *upload-wheel
 
