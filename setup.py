@@ -93,7 +93,7 @@ install_requires = [
 
 setup(
     name='pyqubo',
-    version='1.0.5',
+    version='1.0.6',
     author='Recruit Communications Co.,Ltd.',
     author_email='',
     description='PyQUBO',
