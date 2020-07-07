@@ -276,7 +276,6 @@ jobs:
 
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
-            echo %PYPI_USERNAME%
           shell: bash.exe
 
       - run:
@@ -285,38 +284,6 @@ jobs:
             $PYTHON_PATH/python -m twine upload ./dist/*
           shell: bash.exe
   
-  deploy-win2:
-    executor:
-      name: win/default
-      shell: bash.exe
-
-    steps:
-      - checkout
-
-      - run:
-          name: echo MY_VAR
-          command: |
-            echo ${MY_VAR}
-          shell: bash.exe
-
-  test-linux-env:
-          
-    docker:
-      - image: circleci/python:3.6-jessie
-      
-    working_directory: ~/repo
-
-    steps:
-
-      - checkout
-
-      - run:
-          name: echo MY_VAR
-          command: |
-            echo -e "$MY_VAR"
-            echo -e "$MY_VAR" >> test
-            echo -e "${MY_VAR}" >> test
-            cat test
 
   test-linux2:
     docker:
@@ -397,7 +364,7 @@ jobs:
             echo -e "username = ${PYPI_USERNAME}" >> ~/.pypirc
             echo -e "password = ${TEST_PYPI_PASSWORD}" >> ~/.pypirc
             echo -e "username = ${PYPI_USERNAME}"
-            
+
       - run:
           name: install twine and deploy
           command: |
@@ -413,5 +380,5 @@ workflows:
       #- test-osx-3.6
       #- deploy-linux
       #- test-linux-36
-      #- deploy-win2
-      - test-linux2
+      - deploy-win
+      #- test-linux2
