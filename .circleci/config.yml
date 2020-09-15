@@ -416,8 +416,10 @@ workflows:
       #- deploy-osx-37
       #- test-linux-36
       
-      - deploy-win-35
-      - deploy-win-38
+      - deploy-osx-35
+      - deploy-osx-36
+      #- deploy-win-35
+      #- deploy-win-38
       #- test-win-37
       #- test-linux-36
       #- deploy-linux
