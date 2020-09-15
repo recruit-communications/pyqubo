@@ -317,7 +317,7 @@ jobs:
 # Windows
 ##################################################################################################
 
-  build-win:
+  test-win:
     executor:
       name: win/default
       shell: bash.exe
@@ -386,11 +386,11 @@ workflows:
   tests:
     jobs:
       #- test-osx-3.6
-      - deploy-linux
       #- deploy-osx-35
       #- deploy-osx-38
       #- deploy-osx-37
       #- test-linux-36
-      #- deploy-win
-      #- test-linux2
-      - test-linux-36
+      - deploy-win
+      - test-win
+      #- test-linux-36
+      #- deploy-linux
