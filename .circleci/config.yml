@@ -317,7 +317,7 @@ jobs:
 # Windows
 ##################################################################################################
 
-  test-win: &test-win-template
+  test-win-36: &test-win-template
     executor:
       name: win/default
       shell: bash.exe
@@ -333,7 +333,10 @@ jobs:
           name: install cmake and python
           command: |
             choco install -y cmake
-            #choco install -y python --version "${PYTHON}" 
+            
+            if [ $PYTHON != '3.7.3' ]; then
+            choco install -y python --version "${PYTHON}"      
+            fi
       
       - run:
           name: install pyqubo
@@ -347,6 +350,11 @@ jobs:
           command: |
             $PYTHON_PATH/python -m coverage run -m unittest discover
 
+  test-win-37:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.7.3
+      PYTHON_PATH: C:/tools/miniconda3
             
   deploy-win-36: &deploy-win-template
     executor:
@@ -384,12 +392,19 @@ jobs:
     environment:
       PYTHON: 3.7.3
       PYTHON_PATH: C:/tools/miniconda3
-
-  test-win-37:
-    <<: *test-win-template
+  
+  deploy-win-38:
+    <<: *deploy-win-template
     environment:
-      PYTHON: 3.7.3
-      PYTHON_PATH: C:/tools/miniconda3
+      PYTHON: 3.8.5
+      PYTHON_PATH: C:/Python38/
+
+  deploy-win-35:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.5.8
+      PYTHON_PATH: C:/Python35/
+  
 
 
 workflows:
@@ -400,7 +415,9 @@ workflows:
       #- deploy-osx-38
       #- deploy-osx-37
       #- test-linux-36
-      #- deploy-win-37
-      - test-win-37
+      
+      - deploy-win-35
+      - deploy-win-38
+      #- test-win-37
       #- test-linux-36
       #- deploy-linux
