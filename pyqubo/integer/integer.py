@@ -27,7 +27,7 @@ class Integer(UserDefinedExpress):
         super().__init__(express)
     
     def __str__(self):
-        return f"{type(self).__name__}({self.label},value_range={self.value_range})"
+        return "{}({},value_range={})".format(type(self).__name__, self.label, self.value_range)
 
 
 class IntegerWithPenalty(WithPenalty):
@@ -40,4 +40,4 @@ class IntegerWithPenalty(WithPenalty):
         super().__init__(express, penalty)
     
     def __str__(self):
-        return f"{type(self).__name__}({self.label},value_range={self.value_range})"
+        return "{}({},value_range={})".format(type(self).__name__, self.label, self.value_range)
