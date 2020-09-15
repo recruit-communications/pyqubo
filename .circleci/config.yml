@@ -350,7 +350,7 @@ jobs:
             $PYTHON_PATH/python setup.py install
 
             
-  deploy-win:
+  deploy-win-36: &deploy-win-template
     executor:
       name: win/default
       shell: bash.exe
@@ -381,6 +381,11 @@ jobs:
             $PYTHON_PATH/python -m twine upload ./dist/*
           shell: bash.exe
 
+deploy-win-37:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.7.5
+      PYTHON_PATH: C:/Python37/
 
 workflows:
   tests:
@@ -390,7 +395,7 @@ workflows:
       #- deploy-osx-38
       #- deploy-osx-37
       #- test-linux-36
-      - deploy-win
-      - test-win
+      - deploy-win-37
+      #- test-win
       #- test-linux-36
       #- deploy-linux
