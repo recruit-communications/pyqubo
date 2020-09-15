@@ -107,7 +107,7 @@ jobs:
           command: |
             for PYBIN in /opt/python/*/bin; do
               echo $PYBIN
-              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 6) and sys.version_info<(3, 7))"; then continue; fi;
+              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 6) and sys.version_info<(3, 9))"; then continue; fi;
               "${PYBIN}/pip" install -r requirements.txt
               "${PYBIN}/pip" wheel . -w ./wheelhouse
               "${PYBIN}/python" setup.py sdist -d ./dist
