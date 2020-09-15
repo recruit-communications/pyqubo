@@ -317,7 +317,7 @@ jobs:
 # Windows
 ##################################################################################################
 
-  test-win:
+  test-win: &test-win-template
     executor:
       name: win/default
       shell: bash.exe
@@ -333,7 +333,7 @@ jobs:
           name: install cmake and python
           command: |
             choco install -y cmake
-            choco install -y python --version "${PYTHON}" 
+            #choco install -y python --version "${PYTHON}" 
       
       - run:
           name: install pyqubo
@@ -385,6 +385,11 @@ jobs:
       PYTHON: 3.7.3
       PYTHON_PATH: C:/tools/miniconda3
 
+  test-win-37:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.7.3
+      PYTHON_PATH: C:/tools/miniconda3
 
 
 workflows:
@@ -396,6 +401,6 @@ workflows:
       #- deploy-osx-37
       #- test-linux-36
       #- deploy-win-37
-      - test-win
+      - test-win-37
       #- test-linux-36
       #- deploy-linux
