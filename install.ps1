@@ -143,6 +143,8 @@ function InstallPythonMSI ($msipath, $python_home, $install_log) {
     RunCommand "msiexec.exe" $install_args
     if (-not(Test-Path $python_home)) {
         Write-Host "Python seems to be installed else-where, reinstalling."
+        Write-Host $uninstall_args
+        Write-Host $install_args
         RunCommand "msiexec.exe" $uninstall_args
         RunCommand "msiexec.exe" $install_args
     }
