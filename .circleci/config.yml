@@ -333,7 +333,7 @@ jobs:
           name: install cmake and python
           command: |
             choco install -y cmake
-            #choco install -y python --version "${PYTHON}" 
+            choco install -y python --version "${PYTHON}" 
       
       - run:
           name: install pyqubo
@@ -341,13 +341,11 @@ jobs:
             export PATH=$PATH:"C:\Program Files\CMake\bin"
             $PYTHON_PATH/python -m pip install -r requirements.txt
             $PYTHON_PATH/python setup.py install
-      
+
       - run:
-          name: unittest
+          name: run unittests
           command: |
-            export PATH=$PATH:"C:\Program Files\CMake\bin"
-            $PYTHON_PATH/python -m pip install -r requirements.txt
-            $PYTHON_PATH/python setup.py install
+            $PYTHON_PATH/python -m coverage run -m unittest discover
 
             
   deploy-win-36: &deploy-win-template
@@ -397,7 +395,7 @@ workflows:
       #- deploy-osx-38
       #- deploy-osx-37
       #- test-linux-36
-      - deploy-win-37
-      #- test-win
+      #- deploy-win-37
+      - test-win
       #- test-linux-36
       #- deploy-linux
