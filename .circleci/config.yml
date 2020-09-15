@@ -381,11 +381,11 @@ jobs:
             $PYTHON_PATH/python -m twine upload ./dist/*
           shell: bash.exe
 
-deploy-win-37:
-    <<: *deploy-win-template
-    environment:
-      PYTHON: 3.7.5
-      PYTHON_PATH: C:/Python37/
+  deploy-win-37:
+      <<: *deploy-win-template
+      environment:
+        PYTHON: 3.7.5
+        PYTHON_PATH: C:/Python37/
 
 workflows:
   tests:
