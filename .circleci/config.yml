@@ -386,7 +386,7 @@ workflows:
   tests:
     jobs:
       #- test-osx-3.6
-      #- deploy-linux
+      - deploy-linux
       #- deploy-osx-35
       #- deploy-osx-38
       #- deploy-osx-37
