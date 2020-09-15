@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import cpp_pyqubo
 from cpp_pyqubo import *
 from pyqubo.utils.asserts import *
+from pyqubo.utils.solver import *
 from .array import *
 from .logical_constraint import *
 from pyqubo.integer.integer import *
