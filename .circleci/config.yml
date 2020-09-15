@@ -389,7 +389,7 @@ jobs:
     
     environment:
       PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.x"
+      PYTHON_VERSION: "3.7.5"
       PYTHON_ARCH: "64"
 
     steps:
