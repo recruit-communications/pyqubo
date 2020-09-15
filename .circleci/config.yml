@@ -402,7 +402,7 @@ jobs:
   deploy-win-35:
     <<: *deploy-win-template
     environment:
-      PYTHON: 3.5.8
+      PYTHON: 3.5.4
       PYTHON_PATH: C:/Python35/
   
 
