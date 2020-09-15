@@ -388,7 +388,7 @@ jobs:
       shell: bash.exe
     
     environment:
-      PYTHON: "C:\Python37-x64"
+      PYTHON: "C:\\Python37-x64"
       PYTHON_VERSION: "3.7.5"
       PYTHON_ARCH: "64"
 
