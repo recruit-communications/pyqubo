@@ -333,7 +333,8 @@ jobs:
           name: install cmake and python
           command: |
             choco install -y cmake
-            choco install -y python --version "${PYTHON}"
+            exit 1
+            #choco install -y python --version "${PYTHON}"
       
       - run:
           name: install pyqubo
