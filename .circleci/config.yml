@@ -333,8 +333,7 @@ jobs:
           name: install cmake and python
           command: |
             choco install -y cmake
-            exit 1
-            #choco install --ignoredetectedreboot -y python --version "${PYTHON}" 
+            #choco install -y python --version "${PYTHON}" 
       
       - run:
           name: install pyqubo
@@ -383,23 +382,10 @@ jobs:
           shell: bash.exe
 
   deploy-win-37:
-    executor:
-      name: win/default
-      shell: bash.exe
-    
+    <<: *deploy-win-template
     environment:
-      PYTHON: "C:\\Python37-x64"
-      PYTHON_VERSION: "3.7.5"
-      PYTHON_ARCH: "64"
-
-    steps:
-      - checkout
-    
-      - run:
-          name: upload wheel
-          shell: powershell.exe
-          command: |
-            ./install.ps1
+      PYTHON: 3.7.3
+      PYTHON_PATH: C:/tools/miniconda3
 
 
 
