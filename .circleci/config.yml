@@ -11,7 +11,7 @@ jobs:
 
   test-linux-36: &linux-test-template
     docker:
-      - image: colon0722/manylinux_cmake_wo_git:latest
+      - image: pyqubo/manylinux_cmake_wo_ssh:latest
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
@@ -43,7 +43,7 @@ jobs:
       - run: &install-dependencies-template
           name: install dependencies
           command: |
-            . env/bin/activate 
+            . env/bin/activate
             python --version
             pip install -r requirements.txt
       
@@ -88,7 +88,7 @@ jobs:
 
   deploy-linux:
     docker:
-      - image: colon0722/manylinux_cmake_wo_ssh:latest
+      - image: pyqubo/manylinux_cmake_wo_ssh:latest
 
     environment:
       PYENV_ROOT: tmp/.pyenv
@@ -248,7 +248,7 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
 
       - run:
           name: install python
@@ -259,7 +259,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
       
       - run: *create-virtualenv-using-pyenv
       
@@ -387,10 +387,10 @@ workflows:
     jobs:
       #- test-osx-3.6
       #- deploy-linux
-      - deploy-osx-35
-      - deploy-osx-38
+      #- deploy-osx-35
+      #- deploy-osx-38
       #- deploy-osx-37
-      - test-linux-36
+      #- test-linux-36
       #- deploy-win
       #- test-linux2
-      #- test-linux-36
+      - test-linux-36
