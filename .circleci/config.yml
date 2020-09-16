@@ -420,26 +420,26 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
-      #- deploy-osx-35
-      #- deploy-osx-36
-      #- deploy-osx-37
-      #- deploy-osx-38
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
+      #- test-osx-38
+      - deploy-osx-35
+      - deploy-osx-36
+      - deploy-osx-37
+      - deploy-osx-38
 
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      #- test-win-35
+      #- test-win-36
+      #- test-win-37
+      #- test-win-38
       #- deploy-win-35
       #- deploy-win-36
       #- deploy-win-37
       #- deploy-win-38
 
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
+      #- test-linux-35
+      #- test-linux-36
+      #- test-linux-37
+      #- test-linux-38
       #- deploy-linux
