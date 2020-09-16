@@ -15,7 +15,7 @@ jobs:
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
-      
+    
     working_directory: ~/repo
 
     steps:
@@ -67,24 +67,23 @@ jobs:
             coverage run -m unittest discover
   
   
-  test-linux-python35:
+  test-linux-35:
     <<: *linux-test-template
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.5.5
   
-  test-linux-python37:
+  test-linux-37:
     <<: *linux-test-template
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.7.5
   
-  test-linux-python38:
+  test-linux-38:
     <<: *linux-test-template
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.8.0
-  
 
   deploy-linux:
     docker:
@@ -355,7 +354,19 @@ jobs:
     environment:
       PYTHON: 3.7.3
       PYTHON_PATH: C:/tools/miniconda3
-            
+  
+  test-win-38:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.8.5
+      PYTHON_PATH: C:/Python38/
+  
+  test-win-35:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.5.4
+      PYTHON_PATH: C:/Python35/
+  
   deploy-win-36: &deploy-win-template
     executor:
       name: win/default
@@ -410,16 +421,26 @@ jobs:
 workflows:
   tests:
     jobs:
-      #- test-osx-3.6
+      - test-osx-35
+      - test-osx-36
+      - test-osx-37
+      - test-osx-38
       #- deploy-osx-35
-      #- deploy-osx-38
+      #- deploy-osx-36
       #- deploy-osx-37
-      #- test-linux-36
-      
-      - deploy-osx-35
-      - deploy-osx-36
-      #- deploy-win-35
-      #- deploy-win-38
+      #- deploy-osx-38
+
+      #- test-win-35
+      #- test-win-36
       #- test-win-37
+      #- test-win-38
+      #- deploy-win-35
+      #- deploy-win-36
+      #- deploy-win-37
+      #- deploy-win-38
+
+      #- test-linux-35
       #- test-linux-36
+      #- test-linux-37
+      #- test-linux-38
       #- deploy-linux
