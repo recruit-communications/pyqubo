@@ -12,9 +12,9 @@ jobs:
   test-linux-36: &linux-test-template
     docker:
       - image: pyqubo/manylinux_cmake_wo_ssh:latest
+    
     environment:
-      PYENV_ROOT: tmp/.pyenv
-      PYTHON: 3.6.5
+      PYTHON_PATH: /opt/python/cp36-cp36m
     
     working_directory: ~/repo
 
@@ -25,7 +25,7 @@ jobs:
       - run: &set-python-path
           name: set python path
           command: |
-            echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
+            echo 'export PATH=$PYTHON_PATH/bin/:$PATH' >> $BASH_ENV
             source $BASH_ENV
             python -V
       
@@ -51,7 +51,7 @@ jobs:
           paths:
             - ./env
           key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
-  
+
       - run: &install-package-template
           name: install package
           command: |
@@ -65,14 +65,14 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
-  
+
   
   test-linux-35:
     <<: *linux-test-template
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.5.5
-  
+
   test-linux-37:
     <<: *linux-test-template
     environment:
@@ -84,6 +84,13 @@ jobs:
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.8.0
+  
+  test-linux32-35:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYENV_ROOT: tmp/.pyenv
 
   deploy-linux:
     docker:
@@ -92,7 +99,7 @@ jobs:
     environment:
       PYENV_ROOT: tmp/.pyenv
       PYTHON: 3.6.5
-      
+    
     working_directory: ~/repo
 
     steps:
@@ -420,20 +427,20 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
+      #- test-osx-38
       
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      #- test-win-35
+      #- test-win-36
+      #- test-win-37
+      #- test-win-38
 
-      - test-linux-35
+      #- test-linux-35
       - test-linux-36
-      - test-linux-37
-      - test-linux-38
+      #- test-linux-37
+      #- test-linux-38
 
   deploy:
     jobs:
