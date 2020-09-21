@@ -11,8 +11,7 @@ using namespace std;
 
 //typedef std::unordered_set<Base *, std::BaseHash, std::BaseEqual> BaseSet;
 typedef std::unordered_map<Prod, CoeffPtr, std::ProdHash, std::ProdEqual> Terms;
-//typedef std::unordered_set<string> VarSet;
-typedef std::set<string> VarSet;
+typedef std::pair<Prod, CoeffPtr> TermsPair;
 class Poly;
 
 enum class PolyType
@@ -23,19 +22,16 @@ enum class PolyType
 
 class PolyBase {
 public:
-    virtual Terms get_terms() = 0;
-
-    //virtual Poly *mul(Poly *other) = 0;
-    //virtual unique_ptr<Poly> mul(unique_ptr<Poly>& other) = 0;
+    virtual Terms* get_terms() = 0;
 
     virtual string to_string() = 0;
 
     virtual int size() const = 0;
+
     virtual PolyBase* copy() = 0;
 
     virtual PolyType get_poly_type() const = 0;
 
-    //~Poly();
     virtual Poly* to_multiple_poly() = 0;
 
     CompiledQubo* compile_coeff();
@@ -46,7 +42,7 @@ public:
 
 class Poly : public PolyBase {
 public:
-    Terms terms;
+    Terms* terms = new Terms();;
 
     virtual PolyType get_poly_type() const override {
         return PolyType::POLY;
@@ -54,13 +50,13 @@ public:
 
     Poly(){}
 
-    Poly(Terms& _terms): terms(_terms){};
+    Poly(Terms* _terms): terms(_terms){};
 
     Poly(shared_ptr<Spin> spin, Encoder* encoder){
         Prod spin_prod = Prod::create(encoder->encode(spin->label));
         Prod const_prod = Prod();
-        terms[spin_prod] = make_shared<CoeffNum>(2.0);
-        terms[const_prod] = make_shared<CoeffNum>(-1.0);
+        terms->insert(TermsPair{spin_prod, make_shared<CoeffNum>(2.0)});
+        terms->insert(TermsPair{const_prod, make_shared<CoeffNum>(-1.0)});
     }
 
     PolyBase* copy() override{
@@ -72,9 +68,9 @@ public:
             return false;
         }else{
             bool match = true;
-            for(auto it = mp.terms.begin(); it != mp.terms.end(); it++){
-                auto result = this->terms.find(it->first);
-                if(result == this->terms.end()){
+            for(auto it = mp.terms->begin(); it != mp.terms->end(); it++){
+                auto result = this->terms->find(it->first);
+                if(result == this->terms->end()){
                     return false;
                 }else{
                     match &= result->second->equal_to(it->second);
@@ -90,36 +86,34 @@ public:
     }
 
     void add_term(Prod prod, CoeffPtr coeff){
-        auto result = terms.find(prod);
-        if(result == terms.end()){
-            terms[prod] = coeff;
+        auto result = terms->find(prod);
+        if(result == terms->end()){
+            terms->insert(TermsPair{prod, coeff});
         }else{
-            terms[prod] = coeff->add(result->second);
+            result->second = coeff->add(result->second);
         }
     }
 
     int size() const override {
-        return this->terms.size();
+        return this->terms->size();
     }
 
-    Terms get_terms() override {
+    Terms* get_terms() override {
         return this->terms;
     }
 
     string to_string() override {
         string s = string() + "MultiplePoly(";
         int i = 0;
-        for (Terms::iterator it = this->terms.begin(); it != this->terms.end(); it++) {
+        for (Terms::iterator it = this->terms->begin(); it != this->terms->end(); it++) {
             Prod p = it->first;
             s += it->second->to_string() + "*" + p.to_string();
-            if(this->terms.size()-1 != i) s += "+";
+            if(this->terms->size()-1 != i) s += "+";
             i++;
         }
         s += ")";
         return s;
     }
-
-    //unique_ptr<Poly> mul(unique_ptr<Poly>& other) override;
 
     Poly* to_multiple_poly() override {
         return this;
@@ -174,8 +168,6 @@ public:
         return sp.prod == this->prod && sp.coeff->equal_to(this->coeff);
     }
 
-    //unique_ptr<Poly> mul(unique_ptr<Poly>& other) override;
-
     string to_string() override {
         string s = string() + "SinglePoly([";
         s += this->prod.to_string();
@@ -183,9 +175,9 @@ public:
         return s;
     }
 
-    Terms get_terms() override {
-        Terms terms;
-        terms[this->get_prod()] = this->coeff;
+    Terms* get_terms() override {
+        Terms* terms = new Terms();
+        terms->insert(TermsPair{this->get_prod(), this->coeff});
         return terms;
     }
 

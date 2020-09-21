@@ -8,7 +8,7 @@ public:
     CompiledQubo* compiled_qubo;
     string label;
     std::function<bool(double)> condition;
-    CompiledSubH(std::string _label, Terms terms, std::function<bool(double)> condition):
+    CompiledSubH(std::string _label, Terms* terms, std::function<bool(double)> condition):
         label(_label),
         compiled_qubo(compile_coeff(terms)),
         condition(condition){}
@@ -23,9 +23,9 @@ public:
     }
 
 private:
-    CompiledQubo* compile_coeff(Terms& terms){
+    CompiledQubo* compile_coeff(Terms* terms){
         CompiledTerms compiled_terms;
-        for(auto it = terms.begin(); it != terms.end(); it++){
+        for(auto it = terms->begin(); it != terms->end(); it++){
             PHPolyBase* compiled_coeff = it->second->expand();
             Prod prod = it->first;
             auto p = std::make_pair(prod, compiled_coeff);

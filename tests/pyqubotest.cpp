@@ -37,25 +37,39 @@ TEST(PROD, EQUALITY){
     EXPECT_NE(linear_prod_1, linear_prod_3);
     EXPECT_NE(const_prod_1, linear_prod_1);
     EXPECT_NE(const_prod_1, quad_prod_1);
-    EXPECT_EQ(quad_prod_1, quad_prod_2);
+    EXPECT_TRUE(std::ProdEqual()(quad_prod_1, quad_prod_2));
     EXPECT_NE(quad_prod_1, quad_prod_3);
+    EXPECT_NE(std::ProdHash()(quad_prod_1), std::ProdHash()(quad_prod_3));
 
     uint32_t i = 0;
     auto quad_prod_4 = Prod::create(i, 2);
 }
+
 
 TEST(EXPRESS, COMPILE){
     BasePtr a(new Binary("a"));
     BasePtr b(new Binary("b"));
     BasePtr d(new Num(2.0));
     BasePtr e(new Placeholder("e"));
+
+    typedef unordered_map<int, int> Map;
+    typedef pair<int, int> MapPair;
+    Map* m = new Map();
+    m->insert(MapPair{1, 2});
+    cout << to_string(m->at(1)) << endl;
+
+    Encoder* encoder = new Encoder();
+
+    //auto ab = a->add(b);
+    //auto expanded = ab->expand(encoder);
     
     auto a_b = a->add(b)->add(d);
     auto a_b_2 = a_b->mul(a_b);
-    auto a_b_2_e = a_b_2->mul(e);
-    Encoder* encoder = new Encoder();
-    auto expanded = a_b_2_e->expand(encoder);
     
+    auto a_b_2_e = a_b_2->mul(e);
+    printf("expand1\n");
+    auto expanded = a_b_2_e->expand(encoder);
+    printf("expand2\n");
     auto mp = expanded->poly->to_multiple_poly();
     //a_b_2_e->compile();
 
@@ -67,7 +81,6 @@ TEST(EXPRESS, COMPILE){
     expected.add_term(Prod::create(0), coeff_e->mul(5.0));
     expected.add_term(Prod(), coeff_e->mul(4.0));
     EXPECT_EQ(*mp, expected);
-
 
     //compile
     map<std::string, double> feed_dict{{"e", 2.0}};

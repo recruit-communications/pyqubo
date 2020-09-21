@@ -46,7 +46,7 @@ public:
         return compiled_qubo;
     }
 
-    void add_sub_h(string label, Terms terms, std::function<bool(double)> condition){
+    void add_sub_h(string label, Terms* terms, std::function<bool(double)> condition){
         if(first_sub_hs == nullptr){
             first_sub_hs = new LinkedList<CompiledSubH>(CompiledSubH(label, terms, condition));
             last_sub_hs = first_sub_hs;

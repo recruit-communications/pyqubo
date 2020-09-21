@@ -24,7 +24,9 @@ namespace expanded{
     }
 
     Expanded* mul(Expanded* left_exp, Expanded* right_exp){
+        //printf("expanded::mul -0\n");
         PolyBase* new_poly = poly::mul(left_exp->poly, right_exp->poly);
+        //printf("expanded::mul -1\n");
         auto new_expand = new Expanded(new_poly);
         merge_info(new_expand, left_exp);
         merge_info(new_expand, right_exp);
@@ -32,12 +34,17 @@ namespace expanded{
     }
 
     Expanded* add(Expanded* main, Expanded* append){
+        //printf("expanded::add\n");
         if(main->poly->get_poly_type()==PolyType::POLY){
+            //printf("expanded::add2\n");
             poly::merge_poly((Poly*)(main->poly), append->poly);
         }else{
+            //printf("expanded::add3\n");
+            //cout << string("add3") << main->poly->to_string() << endl;
             main->poly = main->poly->to_multiple_poly();
             poly::merge_poly((Poly*)(main->poly), append->poly);
         }
+        //cout << string("expanded::add poly") << main->poly->to_string() << endl;
         merge_info(main, append);
         return main;
     }

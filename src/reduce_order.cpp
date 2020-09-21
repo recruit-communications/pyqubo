@@ -7,18 +7,21 @@ namespace reduce_order{
 
     namespace {
 
-        void add_term(Terms& terms, Prod prod, CoeffPtr coeff){
-            auto result = terms.find(prod);
-            if(result == terms.end()){
-                terms[prod] = coeff;
+        void add_term(Terms* terms, Prod prod, CoeffPtr coeff){
+            auto result = terms->find(prod);
+            if(result == terms->end()){
+                //terms->at(prod) = coeff;
+                terms->insert(TermsPair{prod, coeff});
             }else{
-                terms[prod] = coeff->add(result->second);
+                //terms->at(prod) = coeff->add(result->second);
+                //terms->insert(TermsPair{prod, coeff->add(result->second)});
+                result->second = coeff->add(result->second);
             }
         }
 
         bool has_higher_degree(Poly* mp){
             bool found = false;
-            for(auto it = mp->terms.begin(); it != mp->terms.end(); it++){
+            for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
                 if(it->first.length > 2){
                     found = true;
                     break;
@@ -29,7 +32,7 @@ namespace reduce_order{
 
         QuboIndex find_most_common(Poly* mp){
             map<QuboIndex, uint32_t> counter;
-            for(auto it = mp->terms.begin(); it != mp->terms.end(); it++){
+            for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
                 int degree = it->first.length;
                 if(degree > 2){
                     // calc all combinations
@@ -70,11 +73,11 @@ namespace reduce_order{
         void replace_variable(Poly* mp, QuboIndex index_pair, int new_variable){
             //Terms new_poly;
             //printf("loop size:%lu\n", mp->terms.size());
-            for(auto it = mp->terms.begin(); it != mp->terms.end(); it++){
+            /*for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
                  cout << "check "<< it->first.to_string() << "\n";
-            }
+            }*/
             int loop_cnt = 0;
-            for(auto it = mp->terms.begin(); it != mp->terms.end(); it++){
+            for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
                 //cout << "prod in loop "<< it->first.to_string() << "\n";
                 loop_cnt++;
                 Prod prod = it->first;
@@ -93,12 +96,13 @@ namespace reduce_order{
                             indices[index++] = prod.get_var(i) + 1;
                         }
                     }
-                    mp->terms.erase(it);
+                    mp->terms->erase(it);
                     // increment the index when creating prod.indices
                     indices[index++] = new_variable + 1;
                     Prod new_prod = Prod(indices, index);
-                    mp->terms[new_prod] = coeff;
-                    it = mp->terms.begin();
+                    //mp->terms->at(new_prod) = coeff;
+                    mp->terms->insert(TermsPair{new_prod, coeff});
+                    it = mp->terms->begin();
                 }
             }
             //printf("loop count:%d\n", loop_cnt);
@@ -120,7 +124,7 @@ namespace reduce_order{
     void make_quadratic(Poly* mp, Encoder* encoder, CoeffPtr strength){
         clock_t time0 = clock();
         while(has_higher_degree(mp)){
-            printf("process make_quadratic\n");
+            //printf("process make_quadratic\n");
             QuboIndex index_pair = find_most_common(mp);
             uint32_t new_var = create_new_var(index_pair, encoder);
             replace_variable(mp, index_pair, new_var);
