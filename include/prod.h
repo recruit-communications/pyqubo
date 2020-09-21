@@ -4,67 +4,87 @@ using namespace std;
 
 
 
+
 class Prod {
     
     /* First order Prod */
-    Prod(uint32_t p0):
+    Prod(uint32_t _p0):
         length(1){
-        sorted_indices = new uint32_t[1];
-        sorted_indices[0] = p0+1;
-        set_hash(sorted_indices, 1);
+        this->p0 = _p0+1;
+        set_hash();
     }
 
     /* Second order Prod */
-    Prod(uint32_t p0, uint32_t p1):
+    Prod(uint32_t _p0, uint32_t _p1):
         length(2){
-            if(p0 >= p1){
+            if(_p0 >= _p1){
                 throw std::runtime_error("input indedices should be sorted.");
             }
-            sorted_indices = new uint32_t[2];
-            sorted_indices[0] = p0+1;
-            sorted_indices[1] = p1+1;
-            set_hash(sorted_indices, 2);
+            this->p0 = _p0+1;
+            this->p1 = _p1+1;
+            set_hash();
     }
 
 public:
+
+    uint32_t p0;
+    uint32_t p1;
     uint32_t* sorted_indices;
     size_t length;
     size_t hash_value;
+    size_t OFFSET = 2;
 
     Prod(const Prod& prod){
-        this->length = prod.length;
-        this->sorted_indices = new uint32_t[prod.length];
-        for(int i=0; i < prod.length; i++){
-            this->sorted_indices[i] = prod.sorted_indices[i];
+        this->copy_to_this(prod);
+    }
+
+    void copy_to_this(const Prod& from){
+        this->length = from.length;
+        if(from.length > 0){
+            this->p0 = from.p0;
         }
-        this->set_hash(sorted_indices, prod.length);
+        if(from.length > 1){
+            this->p1 = from.p1;
+        }
+        if(from.length > OFFSET){
+            size_t indice_size = from.length - OFFSET;
+            this->sorted_indices = new uint32_t[indice_size];
+            for(int i=0; i < indice_size; i++){
+                this->sorted_indices[i] = from.sorted_indices[i];
+            }
+        }
+        this->set_hash();
     }
 
     Prod &operator=(const Prod& prod){
         if(this != &prod){
-            this->sorted_indices = new uint32_t[prod.length];
-            this->length = prod.length;
-            for(int i=0; i < prod.length; i++){
-                this->sorted_indices[i] = prod.sorted_indices[i];
-            }
-            this->set_hash(sorted_indices, prod.length);
+            this->copy_to_this(prod);
         }
         return(*this);
     }
 
     ~Prod(){
-        if(length > 0){
+        if(length > OFFSET){
             delete[] sorted_indices;
         }
     }
     
     Prod(uint32_t* _sorted_indices, int _length):
         length(_length){
-            sorted_indices = new uint32_t[_length];
-            for(int i=0; i<_length; i++){
-                sorted_indices[i] = _sorted_indices[i];
+            if(_length > 0){
+                this->p0 = _sorted_indices[0];
             }
-            set_hash(sorted_indices, _length);
+            if(_length > 1){
+                this->p1 = _sorted_indices[1];
+            }
+            if(_length > OFFSET){
+                size_t indice_size = _length - OFFSET;
+                this->sorted_indices = new uint32_t[indice_size];
+                for(int i=0; i<indice_size; i++){
+                    this->sorted_indices[i] = _sorted_indices[i+OFFSET];
+                }
+            }
+            this->set_hash();
         }
 
     static Prod create(uint32_t p0, uint32_t p1){
@@ -79,38 +99,38 @@ public:
     Prod():
         length(0){
             // Constant Prod doesn't allocate memory to sorted_indices.
-            set_hash(0);
+            set_hash();
         };
-    
-    void set_hash(uint32_t p0){
-        this->hash_value = std::hash<uint32_t>{}(p0);
+
+    void set_hash(){
+        if(this->length == 0){
+            this->hash_value = std::hash<uint32_t>{}(0);
+        }else{
+            size_t seed = 0;
+            for(int i=0; i < this->length; i++){
+                int shift = 7 * (i % 4);
+                uint32_t raw_var = this->get_raw_var(i);
+                seed = seed ^ std::hash<uint32_t>{}(raw_var << shift);
+            }
+            this->hash_value = seed;
+        }
     }
 
-    void set_hash(uint32_t* sorted_indices, int length){
-        size_t seed = 0;
-        uint32_t curr = 0;
-        for(int i=0; i<length; i++){
-            int shift = 7*(i%4);
-            curr = sorted_indices[i] << shift;
-            /*if(i==0){
-                curr = sorted_indices[0];
-            }else if(i==1){
-                curr = sorted_indices[1] << 7;
-            }else if(i==2){
-                curr = sorted_indices[2] << 14;
-            }else{
-                curr = sorted_indices[3] << 21;
-            }*/
-            seed = seed ^ std::hash<uint32_t>{}(curr);
+    uint32_t get_raw_var(int index) const {
+        if(index >= this->length){
+            throw std::out_of_range("index out of bounds");
         }
-        this->hash_value = seed;
+        if(index == 0){
+            return this->p0;
+        }else if(index == 1){
+            return this->p1;
+        }else{
+            return this->sorted_indices[index-OFFSET];
+        }
     }
 
     uint32_t get_var(int index){
-        if(index > this->length){
-            throw std::runtime_error("index out of bounds in get_var().");
-        }
-        return this->sorted_indices[index]-1;
+        return get_raw_var(index)-1;
     }
 
     bool operator==(const Prod& other) const {
@@ -128,8 +148,8 @@ public:
         if(this->length == 0 && p.length == 0) return true;
 
         bool ret = true;
-        for(int i=0;i<this->length;i++){
-            bool match = p.sorted_indices[i] == this->sorted_indices[i];
+        for(int i=0; i < this->length; i++){
+            bool match = this->get_raw_var(i) == p.get_raw_var(i);
             ret = ret && match;
         }
         return ret;
@@ -142,7 +162,7 @@ public:
     string to_string() const {
         string s = string() + "Prod(";
         for (int i=0; i < this->length; i++) {
-            s += std::to_string(sorted_indices[i]);
+            s += std::to_string(this->get_raw_var(i));
             if(i != this->length-1) s+= string(",");
         }
         s += ")";
@@ -153,19 +173,21 @@ public:
         int i = 0; // index for this->sorted_indices
         int j = 0; // index for other.sorted_indices
         int k = 0; // index for new_sorted_indices
-        uint32_t* new_sorted_indices = new uint32_t[std::max(this->length, other.length)];
+        size_t max_size = std::max(this->length, other.length);
+        uint32_t* new_sorted_indices = new uint32_t[max_size];
+        
         uint32_t previous_index = -1;
         // merge sorted_indices
         while(i < this->length || j < other.length){
-            if(j == other.length || (i < this->length && this->sorted_indices[i] < other.sorted_indices[j])){
-                uint32_t new_index = this->sorted_indices[i];
+            if(j == other.length || (i < this->length && this->get_raw_var(i) < other.get_raw_var(j))){
+                uint32_t new_index = this->get_raw_var(i);
                 if(previous_index != new_index){
                     new_sorted_indices[k++] = new_index;
                     previous_index = new_index;
                 }
                 i++;
             }else{
-                uint32_t new_index = other.sorted_indices[j];
+                uint32_t new_index = other.get_raw_var(j);
                 if(new_index != previous_index){
                     new_sorted_indices[k++] = new_index;
                     previous_index = new_index;
@@ -176,121 +198,6 @@ public:
         Prod newOptProd = Prod(new_sorted_indices, k);
         delete[] new_sorted_indices;
         return newOptProd;
-    }
-};
-
-
-class Prod3 {
-    
-    /* 一次の項 */
-    Prod3(uint32_t p0):
-        length(1){
-        sorted_indices[0] = p0+1;
-        set_hash(sorted_indices, 1);
-    }
-
-    /* 二次の項 */
-    Prod3(uint32_t p0, uint32_t p1):
-        length(2){
-            if(p0 >= p1){
-                throw std::runtime_error("input indedices should be sorted.");
-            }
-            sorted_indices[0] = p0+1;
-            sorted_indices[1] = p1+1;
-            set_hash(sorted_indices, 2);
-    }
-
-public:
-    uint32_t sorted_indices[4] = {0};
-    size_t length;
-    size_t MAX_LENGTH = 4;
-    size_t hash_value;
-
-    Prod3(const Prod3& prod){
-        this->length = prod.length;
-        for(int i=0; i < prod.length; i++){
-            this->sorted_indices[i] = prod.sorted_indices[i];
-        }
-        set_hash(sorted_indices, prod.length);
-    }
-
-    ~Prod3(){}
-    
-    Prod3(uint32_t* _sorted_indices, int _length):
-        length(_length){
-            for(int i=0; i<_length; i++){
-                sorted_indices[i] = _sorted_indices[i];
-            }
-            set_hash(sorted_indices, _length);
-        }
-
-    static Prod3 create(uint32_t p0, uint32_t p1){
-        return Prod3(p0, p1);
-    }
-
-    static Prod3 create(uint32_t p0){
-        return Prod3(p0);
-    }
-
-    /* 定数項 */
-    Prod3():
-        length(0){
-            set_hash(0);
-        };
-    
-    void set_hash(uint32_t p0){
-        this->hash_value = std::hash<uint32_t>{}(p0);
-    }
-
-    void set_hash(uint32_t* sorted_indices, int length){
-        size_t seed = 0;
-        uint32_t curr = 0;
-        for(int i=0; i<length; i++){
-            if(i==0){
-                curr = sorted_indices[0];
-            }else if(i==1){
-                curr = sorted_indices[1] << 7;
-            }else if(i==2){
-                curr = sorted_indices[2] << 14;
-            }else{
-                curr = sorted_indices[3] << 21;
-            }
-            seed = seed ^ std::hash<uint32_t>{}(curr);
-        }
-        this->hash_value = seed;
-    }
-
-    uint32_t get_var(int index){
-        if(index > this->length){
-            throw std::runtime_error("index out of bounds in get_var().");
-        }
-        return this->sorted_indices[index]-1;
-    }
-    
-    bool equal_to(const Prod3& p) const {
-        if(this->length != p.length) return false;
-        //return this->enc_prod.equal_to(p.enc_prod);
-
-        bool ret = true;
-        for(int i=0;i<this->length;i++){
-            bool match = p.sorted_indices[i] == this->sorted_indices[i];
-            ret = ret && match;
-        }
-        return ret;
-    }
-
-    size_t hash() const {
-        return this-> hash_value;
-    }
-
-    string to_string() const {
-        string s = string() + "Prod3(";
-        for (int i=0; i < this->length; i++) {
-            s += std::to_string(sorted_indices[i]);
-            if(i != this->length-1) s+= string(",");
-        }
-        s += ")";
-        return s;
     }
 };
 
