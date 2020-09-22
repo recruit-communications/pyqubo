@@ -28,6 +28,8 @@ namespace expanded{
         auto new_expand = new Expanded(new_poly);
         merge_info(new_expand, left_exp);
         merge_info(new_expand, right_exp);
+        delete left_exp;
+        delete right_exp;
         return new_expand;
     }
 
@@ -39,6 +41,7 @@ namespace expanded{
             poly::merge_poly((Poly*)(main->poly), append->poly);
         }
         merge_info(main, append);
+        delete append;
         return main;
     }
 

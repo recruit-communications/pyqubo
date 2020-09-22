@@ -58,9 +58,6 @@ namespace poly {
                 }
             }
             auto new_poly = new Poly(new_terms);
-            //printf("%s %s %s\n", left->to_string().c_str(), right->to_string().c_str(), new_poly->to_string().c_str());
-            delete left;
-            delete right;
             return new_poly;
         }
 

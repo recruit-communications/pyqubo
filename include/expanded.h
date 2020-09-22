@@ -15,8 +15,12 @@ public:
     LinkedList<CompiledPenalty>* last_penalties = nullptr;
 
     PolyBase* poly;
-    Expanded(PolyBase* _poly):
-        poly(_poly){}
+    Expanded(PolyBase* poly):
+        poly(poly){}
+
+    ~Expanded(){
+        delete poly;
+    }
 
     string to_string(){
         string s = string("Expanded(poly=") + poly->to_string() + ",sub_h=[";

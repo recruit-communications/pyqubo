@@ -46,7 +46,6 @@ class Poly : public PolyBase {
 private:
     Poly(const Poly &poly);
     Poly &operator=(const Poly &poly);
-    //bool operator==(const Poly mp);
 
 public:
     Terms* terms = new Terms();
