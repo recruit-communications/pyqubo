@@ -410,33 +410,26 @@ class WithPenalty: public Base{
 public:
     BasePtr hamiltonian;
     BasePtr penalty;
+    string label;
     WithPenalty(){}
 
     ~WithPenalty(){}
 
     WithPenalty(
         BasePtr hamiltonian,
-        BasePtr penalty
+        BasePtr penalty,
+        string label
     ):
         hamiltonian(hamiltonian),
-        penalty(penalty){}
+        penalty(penalty),
+        label(label){}
 
     virtual ExpressType get_type() const override {
         return ExpressType::WITH_PENALTY;
     }
 
     std::string to_string(bool with_symbol) override {
-        check_instance_variable();
-        return string("WithPenalty(") + this->hamiltonian->to_string(with_symbol) + "," + penalty->to_string(with_symbol) + ")";
-    }
-
-    void check_instance_variable(){
-        if(hamiltonian == nullptr){
-            throw std::runtime_error("`hamiltonian` is not defined. Please define the `hamiltonian` in the constructor of your inherited class.");
-        }
-        if(penalty == nullptr){
-            throw std::runtime_error("`penalty` is not defined. Please define the `penalty` in the constructor of your inherited class.");
-        }
+        return string("WithPenalty(") + this->hamiltonian->to_string(with_symbol) + "," + penalty->to_string(with_symbol) + "," + label + ")";
     }
 
     bool equal_to(BasePtr other) override {

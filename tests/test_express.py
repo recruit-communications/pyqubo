@@ -21,8 +21,8 @@ class TestExpress(unittest.TestCase):
         self.assertNotEqual(mul1, mul3)
 
         class CustomPenalty(WithPenalty):
-            def __init__(self, hamiltonian, penalty):
-                super().__init__(hamiltonian, penalty)
+            def __init__(self, hamiltonian, penalty, label="label"):
+                super().__init__(hamiltonian, penalty, label)
         
         a, b = Binary("a"), Binary("b")
         p1 = 1 + CustomPenalty(a+b, a*b)
@@ -107,12 +107,12 @@ class TestExpress(unittest.TestCase):
 
     def test_compile_with_penalty(self):
         class CustomPenalty(WithPenalty):
-            def __init__(self, hamiltonian, penalty):
-                super().__init__(hamiltonian, penalty)
+            def __init__(self, hamiltonian, penalty, label):
+                super().__init__(hamiltonian, penalty, label)
 
         a, b = Binary("a"), Binary("b")
         p = Placeholder("p")
-        custom_penalty = p * CustomPenalty(a+b, a*b)
+        custom_penalty = p * CustomPenalty(a+b, a*b, "label")
         expected_qubo = {('a', 'a'): 2.0, ('a', 'b'): 1.0, ('b', 'b'): 2.0}
         expected_offset = 0.0
         feed_dict={"p": 2}

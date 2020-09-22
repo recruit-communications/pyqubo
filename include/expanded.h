@@ -2,6 +2,7 @@
 #include <poly.h>
 #include <linkedlist.h>
 #include <compiled_sub_h.h>
+#include <compiled_penalty.h>
 
 
 
@@ -10,8 +11,8 @@ public:
     LinkedList<CompiledSubH>* first_sub_hs = nullptr;
     LinkedList<CompiledSubH>* last_sub_hs = nullptr;
 
-    LinkedList<PolyBase*>* first_penalties = nullptr;
-    LinkedList<PolyBase*>* last_penalties = nullptr;
+    LinkedList<CompiledPenalty>* first_penalties = nullptr;
+    LinkedList<CompiledPenalty>* last_penalties = nullptr;
 
     PolyBase* poly;
     Expanded(PolyBase* _poly):
@@ -33,8 +34,13 @@ public:
 
         // add penalties to the Hamiltonian
         auto it = this->first_penalties;
+        std::set<string> penalties;
         while(it != nullptr){
-            poly::merge_poly(mp, it->value);
+            auto result = penalties.find(it->value.label);
+            if(result == penalties.end()){
+                poly::merge_poly(mp, it->value.poly);
+                penalties.insert(it->value.label);
+            }
             it = it->next;
         }
 
@@ -56,13 +62,13 @@ public:
         }
     }
 
-    void add_penalty(Expanded* expanded){
+    void add_penalty(string label, Expanded* expanded){
         // add poly of penalty
         if(first_penalties == nullptr){
-            first_penalties = new LinkedList<PolyBase*>(expanded->poly);
+            first_penalties = new LinkedList<CompiledPenalty>(CompiledPenalty(label, expanded->poly));
             last_penalties = first_penalties;
         }else{
-            last_penalties->next = new LinkedList<PolyBase*>(expanded->poly);
+            last_penalties->next = new LinkedList<CompiledPenalty>(CompiledPenalty(label, expanded->poly));
             last_penalties = last_penalties->next;
         }
 

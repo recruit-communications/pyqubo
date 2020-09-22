@@ -178,21 +178,18 @@ Expanded* Pow::expand(Encoder* encoder){
 };
 
 Expanded* WithPenalty::expand(Encoder* encoder){
-    this->check_instance_variable();
     Expanded* hamiltonian_expand = this->hamiltonian->expand(encoder);
     Expanded* penalty_expanded = penalty->expand(encoder);
-    hamiltonian_expand->add_penalty(penalty_expanded);
+    hamiltonian_expand->add_penalty(this->label, penalty_expanded);
     return hamiltonian_expand;
 };
 
 Expanded* UserDefinedExpress::expand(Encoder* encoder){
-    this->check_instance_variable();
     Expanded* hamiltonian_expand = this->hamiltonian->expand(encoder);
     return hamiltonian_expand;
 };
 
 Expanded* SubH::expand(Encoder* encoder){
-    SubH::check_instance_variable();
     Expanded* hamiltonian_exp = this->hamiltonian->expand(encoder);
     hamiltonian_exp->add_sub_h(this->label, hamiltonian_exp->poly->get_terms(), nullptr);
     return hamiltonian_exp;

@@ -37,7 +37,7 @@ class IntegerWithPenalty(WithPenalty):
     def __init__(self, label, value_range, express, penalty):
         self.label=label
         self.value_range = value_range
-        super().__init__(express, penalty)
+        super().__init__(express, penalty, label)
     
     def __str__(self):
         return "{}({},value_range={})".format(type(self).__name__, self.label, self.value_range)

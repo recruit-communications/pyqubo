@@ -32,22 +32,27 @@ class TestInteger(unittest.TestCase):
         self.assertTrue(decoded.subh_values["a"]==3)
         self.assertTrue(a.value_range == (0, 4))
 
-        expected_q = {('a[0]', 'a[1]'): 40.0,
-             ('a[0]', 'a[2]'): 40.0,
-             ('a[0]', 'a[3]'): 40.0,
-             ('a[0]', 'a[4]'): 40.0,
-             ('a[1]', 'a[2]'): 44.0,
-             ('a[1]', 'a[3]'): 46.0,
-             ('a[1]', 'a[4]'): 48.0,
-             ('a[2]', 'a[3]'): 52.0,
-             ('a[2]', 'a[4]'): 56.0,
-             ('a[3]', 'a[4]'): 64.0,
-             ('a[0]', 'a[0]'): -20.0,
-             ('a[1]', 'a[1]'): -25.0,
-             ('a[2]', 'a[2]'): -28.0,
-             ('a[3]', 'a[3]'): -29.0,
-             ('a[4]', 'a[4]'): -28.0}
+        expected_q = {('a[0]', 'a[1]'): 20.0,
+             ('a[0]', 'a[2]'): 20.0,
+             ('a[0]', 'a[3]'): 20.0,
+             ('a[0]', 'a[4]'): 20.0,
+             ('a[1]', 'a[2]'): 24.0,
+             ('a[1]', 'a[3]'): 26.0,
+             ('a[1]', 'a[4]'): 28.0,
+             ('a[2]', 'a[3]'): 32.0,
+             ('a[2]', 'a[4]'): 36.0,
+             ('a[3]', 'a[4]'): 44.0,
+             ('a[0]', 'a[0]'): -10.0,
+             ('a[1]', 'a[1]'): -15.0,
+             ('a[2]', 'a[2]'): -18.0,
+             ('a[3]', 'a[3]'): -19.0,
+             ('a[4]', 'a[4]'): -18.0}
+        expected_offset = 19
         assert_qubo_equal(q, expected_q)
+        self.assertTrue(offset == expected_offset)
+
+
+        
 
     def test_one_hot_enc_integer_equal(self):
         a = OneHotEncInteger("a", (0, 4), strength=Placeholder("s"))
@@ -70,16 +75,18 @@ class TestInteger(unittest.TestCase):
         a = OrderEncInteger("a", (0, 4), strength=Placeholder("s"))
         model = ((a - 3) ** 2).compile()
         q, offset = model.to_qubo(feed_dict={"s": 10.0})
-        expected_q = {('a[0]', 'a[1]'): -18.0,
-                    ('a[0]', 'a[2]'): 2.0,
-                    ('a[0]', 'a[3]'): 2.0,
-                    ('a[1]', 'a[2]'): -18.0,
-                    ('a[1]', 'a[3]'): 2.0,
-                    ('a[2]', 'a[3]'): -18.0,
-                    ('a[0]', 'a[0]'): -5.0,
-                    ('a[1]', 'a[1]'): 15.0,
-                    ('a[2]', 'a[2]'): 15.0,
-                    ('a[3]', 'a[3]'): 15.0}
+        expected_q = {
+            ('a[3]', 'a[2]'): -8.0,
+            ('a[0]', 'a[1]'): -8.0,
+            ('a[3]', 'a[0]'): 2.0,
+            ('a[2]', 'a[0]'): 2.0,
+            ('a[1]', 'a[1]'): 5.0,
+            ('a[3]', 'a[1]'): 2.0,
+            ('a[2]', 'a[1]'): -8.0,
+            ('a[3]', 'a[3]'): 5.0,
+            ('a[0]', 'a[0]'): -5.0,
+            ('a[2]', 'a[2]'): 5.0
+        }
         response = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(
             response, feed_dict={"s": 10.0})[0]

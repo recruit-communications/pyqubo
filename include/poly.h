@@ -26,6 +26,8 @@ public:
 
     virtual string to_string() = 0;
 
+    virtual bool equal_to(PolyBase* poly) = 0;
+
     virtual int size() const = 0;
 
     virtual PolyBase* copy() = 0;
@@ -41,12 +43,21 @@ public:
 
 
 class Poly : public PolyBase {
+private:
+    Poly(const Poly &poly);
+    Poly &operator=(const Poly &poly);
+    //bool operator==(const Poly mp);
+
 public:
     Terms* terms = new Terms();
 
     virtual PolyType get_poly_type() const override {
         return PolyType::POLY;
     }
+
+    ~Poly(){
+        delete terms;
+    };
 
     Poly(){}
 
@@ -68,20 +79,25 @@ public:
         return new Poly(new_terms);
     }
 
-    bool operator==(const Poly mp) const{
-        if(this->size() != mp.size()){
+    bool equal_to(PolyBase* poly_base) override {
+        if(poly_base->get_poly_type() != PolyType::POLY){
             return false;
         }else{
-            bool match = true;
-            for(auto it = mp.terms->begin(); it != mp.terms->end(); it++){
-                auto result = this->terms->find(it->first);
-                if(result == this->terms->end()){
-                    return false;
-                }else{
-                    match &= result->second->equal_to(it->second);
+            auto poly = (Poly*)poly_base;
+            if(this->size() != poly->size()){
+                return false;
+            }else{
+                bool match = true;
+                for(auto it = poly->terms->begin(); it != poly->terms->end(); it++){
+                    auto result = this->terms->find(it->first);
+                    if(result == this->terms->end()){
+                        return false;
+                    }else{
+                        match &= result->second->equal_to(it->second);
+                    }
                 }
+                return match;
             }
-            return match;
         }
     }
 
@@ -123,12 +139,14 @@ public:
     Poly* to_multiple_poly() override {
         return this;
     }
-
-    ~Poly(){};
 };
 
 
 class Mono : public PolyBase {
+private:
+    Mono(const Mono &poly);
+    Mono &operator=(const Mono &poly);
+
 public:
     Prod prod = Prod();
     CoeffPtr coeff;
@@ -136,6 +154,8 @@ public:
     int size() const override {
         return 1;
     }
+
+    ~Mono(){}
 
     virtual PolyType get_poly_type() const override {
         return PolyType::MONO;
@@ -170,8 +190,13 @@ public:
         return mp;
     }
 
-    bool operator==(const Mono sp) const{
-        return sp.prod == this->prod && sp.coeff->equal_to(this->coeff);
+    bool equal_to(PolyBase* poly_base) override {
+        if(poly_base->get_poly_type() != PolyType::MONO){
+            return false;
+        }else{
+            auto mono = (Mono*)poly_base;
+            return mono->prod == this->prod && mono->coeff->equal_to(this->coeff);
+        }
     }
 
     string to_string() override {

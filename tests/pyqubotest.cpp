@@ -65,14 +65,14 @@ TEST(EXPRESS, COMPILE){
     auto expanded = a_b_2_e->expand(encoder);
     auto mp = expanded->poly->to_multiple_poly();
 
-    auto expected = Poly();
+    auto expected = new Poly();
     // original terms
     CoeffPtr coeff_e = make_shared<CoeffPlaceholder>("e");
-    expected.add_term(Prod::create(1), coeff_e->mul(5.0));
-    expected.add_term(Prod::create(0, 1), coeff_e->mul(2.0));
-    expected.add_term(Prod::create(0), coeff_e->mul(5.0));
-    expected.add_term(Prod(), coeff_e->mul(4.0));
-    EXPECT_EQ(*mp, expected);
+    expected->add_term(Prod::create(1), coeff_e->mul(5.0));
+    expected->add_term(Prod::create(0, 1), coeff_e->mul(2.0));
+    expected->add_term(Prod::create(0), coeff_e->mul(5.0));
+    expected->add_term(Prod(), coeff_e->mul(4.0));
+    EXPECT_TRUE(mp->equal_to(expected));
 
     //compile
     map<std::string, double> feed_dict{{"e", 2.0}};
@@ -152,16 +152,16 @@ TEST(EXPRESS, MAKE_QUADRATIC){
     Poly* quad_poly = expanded->poly->make_quadratic(encoder, strength_coeff);
     cout << "quad_poly" << quad_poly->to_string() << " \n";
 
-    auto expected = Poly();
+    auto expected = new Poly();
     // original terms
-    expected.add_term(Prod::create(3, 4), 1.0);
-    expected.add_term(Prod::create(0, 4), 1.0);
+    expected->add_term(Prod::create(3, 4), 1.0);
+    expected->add_term(Prod::create(0, 4), 1.0);
     // contraint terms
-    expected.add_term(Prod::create(1, 4), -2.0 * strength);
-    expected.add_term(Prod::create(2, 4), -2.0 * strength);
-    expected.add_term(Prod::create(4), 3.0 * strength);
-    expected.add_term(Prod::create(1, 2), strength);
-    EXPECT_EQ(*quad_poly, expected);
+    expected->add_term(Prod::create(1, 4), -2.0 * strength);
+    expected->add_term(Prod::create(2, 4), -2.0 * strength);
+    expected->add_term(Prod::create(4), 3.0 * strength);
+    expected->add_term(Prod::create(1, 2), strength);
+    EXPECT_TRUE(quad_poly->equal_to(expected));
 
     // check to_bqm_with_index()
     auto model = H->compile();

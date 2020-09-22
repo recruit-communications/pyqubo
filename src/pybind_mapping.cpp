@@ -251,7 +251,7 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
 
     py::class_<WithPenalty, shared_ptr<WithPenalty>, Base>(m, "WithPenalty")
         //.def(py::init<>())
-        .def(py::init<BasePtr, BasePtr>(), py::arg("express"), py::arg("penalty"))
+        .def(py::init<BasePtr, BasePtr, string>(), py::arg("express"), py::arg("penalty"), py::arg("label"))
         .def_readwrite("express", &WithPenalty::hamiltonian)
         .def_readwrite("penalty", &WithPenalty::penalty);
     
