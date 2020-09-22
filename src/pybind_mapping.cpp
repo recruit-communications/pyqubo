@@ -123,7 +123,6 @@ namespace pybind_model{
         }catch(char* error){
             cout << "error:" << error << endl;
         }
-        
     }
 
     py::object decode_sample_list(Model model, py::list py_sample, string py_vartype, py::dict feed_dict){
@@ -139,8 +138,6 @@ namespace pybind_model{
         auto sol = model.decode_sample_vector(sample, vartype, map_feed_dict);
         return py::cast(sol);
     }
-
-    
 }
 
 namespace pybind_decoded_solution{
@@ -171,7 +168,6 @@ namespace pybind_decoded_solution{
 
 
 PYBIND11_MODULE(cpp_pyqubo, m) {
-    //py::module m("example", "pybind11 example plugin");
     m.doc() = "pyqubo C++ binding";
     
     py::class_<DecodedSubH>(m, "DecodedSubH")
@@ -200,12 +196,6 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         .def("energy", pybind_model::energy, py::arg("sample"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
         .def("variables", &Model::variables);
     
-    m.def("test", []() {
-        py::module dimod = py::module::import("dimod");
-        auto bqm = dimod.attr("BinaryQuadraticModel");
-        py::print(bqm.attr("from_qubo"));
-        //py::object a;
-    });
     
     py::class_<Base, BasePtr, PyBase>(m, "Base")
         .def(py::init<>())

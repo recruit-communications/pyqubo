@@ -42,7 +42,7 @@ public:
 
 class Poly : public PolyBase {
 public:
-    Terms* terms = new Terms();;
+    Terms* terms = new Terms();
 
     virtual PolyType get_poly_type() const override {
         return PolyType::POLY;
@@ -60,7 +60,12 @@ public:
     }
 
     PolyBase* copy() override{
-        return new Poly(this->terms);
+        Terms* new_terms = new Terms();
+        for (Terms::iterator it = this->terms->begin(); it != this->terms->end(); it++) {
+            Prod p = it->first;
+            new_terms->insert(TermsPair{it->first, it->second});
+        }
+        return new Poly(new_terms);
     }
 
     bool operator==(const Poly mp) const{
@@ -138,7 +143,8 @@ public:
 
     PolyBase* copy() override{
         CoeffPtr coeff = make_shared<CoeffNum>(1.0);
-        return new Mono(prod, coeff);
+        Prod new_prod = Prod();
+        return new Mono(new_prod, coeff);
     }
 
     Mono(Prod _prod, CoeffPtr _coeff):
@@ -192,5 +198,6 @@ public:
 
 namespace poly{
     PolyBase* mul(PolyBase* left, PolyBase* right);
+    PolyBase* pow(PolyBase* poly, int exponent);
     void merge_poly(Poly* org_poly, PolyBase* poly);
 }

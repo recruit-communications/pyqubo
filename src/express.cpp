@@ -58,10 +58,17 @@ BasePtr Base::pow(int other){
     BasePtr result = shared_from_this();
     BasePtr this_ptr = shared_from_this(); 
     for(int i=0; i < other-1; i++){
-        result = result->mul(this_ptr); 
+        result = result->mul(this_ptr);
     }
     return result;
 }
+
+// we don't use Pow class since the advantage was not confirmed in benchmark.
+/*BasePtr Base::pow(int exponent){
+    BasePtr this_ptr = shared_from_this(); 
+    shared_ptr<Pow> new_pow(new Pow(this_ptr, exponent));
+    return new_pow;
+}*/
 
 BasePtr Base::neg(){
     return Base::mul(-1.0);
@@ -95,16 +102,14 @@ Model Base::compile(string placeholder_label){
 }
 
 Model Base::compile(CoeffPtr strength){
-    clock_t start = clock();
-    printf("clock\n");
+    //clock_t start = clock();
     Encoder* encoder = new Encoder();
-    printf("encoder\n");
     Expanded* expanded = this->expand(encoder);
-    clock_t end = clock();
-    printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
+    //clock_t end = clock();
+    //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
-    clock_t end2 = clock();
-    printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
+    //clock_t end2 = clock();
+    //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
     return Model(compiled_qubo, encoder, expanded);
 }
 
@@ -116,34 +121,23 @@ BasePtr Add::add(BasePtr other){
 }
 
 Expanded* Add::expand(Encoder* encoder){
-    //printf("Add::expand\n");
     int i = 0;
     AddList* next_node = this->node;
-    //printf("Add::expand1\n");
-    //std::cout << next_node->value->to_string(true) << std::endl;
     Expanded* new_expanded = next_node->value->expand(encoder);
-    //printf("Add::expand2\n");
     next_node = next_node->next;
     while(next_node != nullptr){
-        //printf("Add::loop\n");
         Expanded* expanded_tmp = next_node->value->expand(encoder);
         expanded::add(new_expanded, expanded_tmp);
         next_node = next_node->next;
         i++;
     }
-    //printf("Add::expand -3 %s\n", new_expanded->to_string().c_str());
     return new_expanded;
 };
 
 /*---------Mul------------*/
 Expanded* Mul::expand(Encoder* encoder){
-    //printf("Mul::expand\n");
     Expanded* left_expanded = this->left->expand(encoder);
-    //printf("Mul::expand -left %s\n", left_expanded->to_string().c_str());
-
     Expanded* right_expanded = this->right->expand(encoder);
-    //printf("Mul::expand -right %s\n", right_expanded->to_string().c_str());
-
     Expanded* new_expanded = expanded::mul(left_expanded, right_expanded);
     return new_expanded;
 };
@@ -151,9 +145,7 @@ Expanded* Mul::expand(Encoder* encoder){
 /*---------Binary------------*/
 Expanded* Binary::expand(Encoder* encoder){
     BasePtr this_ptr = shared_from_this();
-    //printf("Binary::expand1\n");
     Mono* poly = new Mono(static_pointer_cast<Binary>(this_ptr), encoder);
-    //printf("Binary::expand2 %s\n", poly->to_string().c_str());
     auto new_expanded = new Expanded(poly);
     return new_expanded;
 };
@@ -168,7 +160,6 @@ Expanded* Spin::expand(Encoder* encoder){
 /*---------Num------------*/
 Expanded* Num::expand(Encoder* encoder){
     BasePtr this_ptr = shared_from_this();
-    //unique_ptr<SinglePoly> poly = unique_ptr<SinglePoly>(new SinglePoly(static_pointer_cast<Num>(this_ptr)));
     Mono* poly = new Mono(static_pointer_cast<Num>(this_ptr));
     return new Expanded(poly);
 };
@@ -180,15 +171,19 @@ Expanded* Placeholder::expand(Encoder* encoder){
     return new Expanded(poly);
 };
 
+Expanded* Pow::expand(Encoder* encoder){
+    Expanded* expanded = this->hamiltonian->expand(encoder);
+    auto new_expanded = expanded::pow(expanded, this->exponent);
+    return new_expanded;
+};
+
 Expanded* WithPenalty::expand(Encoder* encoder){
     this->check_instance_variable();
     Expanded* hamiltonian_expand = this->hamiltonian->expand(encoder);
     Expanded* penalty_expanded = penalty->expand(encoder);
-    
     hamiltonian_expand->add_penalty(penalty_expanded);
     return hamiltonian_expand;
 };
-
 
 Expanded* UserDefinedExpress::expand(Encoder* encoder){
     this->check_instance_variable();
@@ -200,14 +195,11 @@ Expanded* SubH::expand(Encoder* encoder){
     SubH::check_instance_variable();
     Expanded* hamiltonian_exp = this->hamiltonian->expand(encoder);
     hamiltonian_exp->add_sub_h(this->label, hamiltonian_exp->poly->get_terms(), nullptr);
-    //cout << "SubH::expand " << std::to_string(hamiltonian_poly->compiled_sub_hs.size()) << "\n";
     return hamiltonian_exp;
 };
 
 Expanded* Constraint::expand(Encoder* encoder){
-    //Constraint::check_instance_variable();
     Expanded* hamiltonian_exp = this->hamiltonian->expand(encoder);
     hamiltonian_exp->add_sub_h(this->label, hamiltonian_exp->poly->get_terms(), this->condition);
-    //cout << "SubH::expand " << std::to_string(hamiltonian_poly->compiled_sub_hs.size()) << "\n";
     return hamiltonian_exp;
 };

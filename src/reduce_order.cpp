@@ -71,14 +71,8 @@ namespace reduce_order{
         }
 
         void replace_variable(Poly* mp, QuboIndex index_pair, int new_variable){
-            //Terms new_poly;
-            //printf("loop size:%lu\n", mp->terms.size());
-            /*for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
-                 cout << "check "<< it->first.to_string() << "\n";
-            }*/
             int loop_cnt = 0;
             for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
-                //cout << "prod in loop "<< it->first.to_string() << "\n";
                 loop_cnt++;
                 Prod prod = it->first;
                 CoeffPtr coeff = it->second;
@@ -100,12 +94,10 @@ namespace reduce_order{
                     // increment the index when creating prod.indices
                     indices[index++] = new_variable + 1;
                     Prod new_prod = Prod(indices, index);
-                    //mp->terms->at(new_prod) = coeff;
                     mp->terms->insert(TermsPair{new_prod, coeff});
                     it = mp->terms->begin();
                 }
             }
-            //printf("loop count:%d\n", loop_cnt);
         }
 
         uint32_t create_new_var(QuboIndex index_pair, Encoder* encoder){
@@ -122,15 +114,14 @@ namespace reduce_order{
     }
 
     void make_quadratic(Poly* mp, Encoder* encoder, CoeffPtr strength){
-        clock_t time0 = clock();
+        //clock_t time0 = clock();
         while(has_higher_degree(mp)){
-            //printf("process make_quadratic\n");
             QuboIndex index_pair = find_most_common(mp);
             uint32_t new_var = create_new_var(index_pair, encoder);
             replace_variable(mp, index_pair, new_var);
             add_and_constraint(mp, index_pair, new_var, strength);
         }
-        clock_t time3 = clock();
-        printf("make_quadratic2 %lf[ms]\n", static_cast<double>(time3-time0) / CLOCKS_PER_SEC * 1000.0);
+        //clock_t time3 = clock();
+        //printf("make_quadratic2 %lf[ms]\n", static_cast<double>(time3-time0) / CLOCKS_PER_SEC * 1000.0);
     }
 }

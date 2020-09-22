@@ -80,4 +80,5 @@ public:
 namespace expanded{
     Expanded* mul(Expanded* left_exp, Expanded* right_exp);
     Expanded* add(Expanded* left_exp, Expanded* right_exp);
+    Expanded* pow(Expanded* expanded, int exponent);
 }

@@ -202,7 +202,6 @@ public:
     ){
         vector<DecodedSolution> decoded_solutions;
         BinaryQuadraticModel<std::string> bqm = to_bqm(feed_dict);
-        bqm.print();
         for(auto& sample: samples){
             Sample<string> binary_sample;
             if(vartype == Vartype::BINARY){
@@ -210,11 +209,7 @@ public:
             }else{
                 binary_sample = utils::binary_to_spin(sample);
             }
-            /*for(auto& it: binary_sample){
-                printf("sample %s, %d\n", it.first.c_str(), it.second);
-            }*/
             double energy = bqm.energy(binary_sample);
-            //printf("energy=%f\n", energy);
             auto sol = DecodedSolution(this->compiled_sub_hs, sample, energy, feed_dict, this->encoder, vartype);
             decoded_solutions.push_back(sol);
         }

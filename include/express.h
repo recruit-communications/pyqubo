@@ -38,7 +38,8 @@ enum class ExpressType
     SUBH = 6,
     WITH_PENALTY = 7,
     UDE = 8,
-    CONSTRAINT = 9
+    CONSTRAINT = 9,
+    POW = 10
 };
 
 class Base: public enable_shared_from_this<Base>{
@@ -55,7 +56,7 @@ public:
 
     virtual BasePtr sub(double other);
 
-    virtual BasePtr pow(int other);
+    virtual BasePtr pow(int exponent);
 
     virtual BasePtr rsub(double other);
 
@@ -362,6 +363,47 @@ public:
     }
     Expanded* expand(Encoder* encoder) override;
 };
+
+class Pow : public Base{
+public:
+    BasePtr hamiltonian;
+    int exponent;
+
+    ~Pow(){}
+
+    virtual ExpressType get_type() const override {
+        return ExpressType::POW;
+    }
+
+    Pow(
+        BasePtr hamiltonian,
+        int exponent
+    ):
+        hamiltonian(hamiltonian),
+        exponent(exponent){
+        if(exponent <= 0){
+            throw std::runtime_error("`exponent` should be positive");
+        }
+    }
+
+    std::string to_string(bool with_symbol) override {
+        string s = string("Pow(") + this->hamiltonian->to_string(with_symbol)
+            + "," + to_string(this->exponent) + ")";
+        return s;
+    }
+
+    bool equal_to(BasePtr other) override {
+        if (other->get_type() == ExpressType::POW) {
+            auto other_casted = static_pointer_cast<Pow>(other);
+            return this->hamiltonian->equal_to(other_casted->hamiltonian) && this->exponent == other_casted->exponent;
+        } else {
+            return false;
+        }
+    }
+
+    Expanded* expand(Encoder* encoder) override;
+};
+
 
 
 class WithPenalty: public Base{

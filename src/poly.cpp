@@ -23,11 +23,8 @@ namespace poly {
 
                 auto result = new_terms->find(prod_mp);
                 if (result != new_terms->end()) {
-                    //new_terms->at(prod_mp) = new_terms->at(prod_mp)->add(coeff_mp->mul(coeff_sp));
-                    //new_terms->insert(TermsPair{prod_mp, new_terms->at(prod_mp)->add(coeff_mp->mul(coeff_sp))});
                     result->second = new_terms->at(prod_mp)->add(coeff_mp->mul(coeff_sp));
                 } else {
-                    //new_terms->at(prod_mp) = coeff_mp->mul(coeff_sp);
                     new_terms->insert(TermsPair{prod_mp, coeff_mp->mul(coeff_sp)});
                 }
             }
@@ -36,6 +33,7 @@ namespace poly {
         }
 
         Poly* mul_mp_mp(Poly* left, Poly* right) {
+            
             Terms* left_terms = left->terms;
             Terms* right_terms = right->terms;
             Terms* new_terms = new Terms();
@@ -53,18 +51,17 @@ namespace poly {
                     
                     auto result = new_terms->find(prod_left);
                     if(result != new_terms->end()){
-                        //new_terms->at(prod_left) = new_terms->at(prod_left)->add(coeff_left->mul(coeff_right));
-                        //new_terms->insert(TermsPair{prod_left, new_terms->at(prod_left)->add(coeff_left->mul(coeff_right))});
                         result->second = new_terms->at(prod_left)->add(coeff_left->mul(coeff_right));
                     }else{
-                        //new_terms->at(prod_left) = coeff_left->mul(coeff_right);
                         new_terms->insert(TermsPair{prod_left, coeff_left->mul(coeff_right)});
                     }
                 }
             }
+            auto new_poly = new Poly(new_terms);
+            //printf("%s %s %s\n", left->to_string().c_str(), right->to_string().c_str(), new_poly->to_string().c_str());
             delete left;
             delete right;
-            return new Poly(new_terms);
+            return new_poly;
         }
 
         PolyBase* mul_sp_sp(Mono* left, Mono* right){
@@ -76,17 +73,12 @@ namespace poly {
     }
 
     PolyBase* mul(PolyBase* left, PolyBase* right){
-        //printf("poly::mul-1\n");
-        //printf("left %s\n", left->to_string().c_str());
-        //printf("right %s\n", right->to_string().c_str());
         PolyType left_type = left->get_poly_type();
         PolyType right_type = right->get_poly_type();
         if(left_type == PolyType::MONO && right_type == PolyType::MONO){
-            //printf("poly::mul-2\n");
             return mul_sp_sp((Mono*)left, (Mono*)right);
         }else if((left_type == PolyType::MONO && right_type == PolyType::POLY)
             || (left_type == PolyType::POLY && right_type == PolyType::MONO)){
-            //printf("poly::mul-3\n");
             Poly* mp;
             Mono* sp;
             if(left_type == PolyType::MONO && right_type == PolyType::POLY){
@@ -98,34 +90,32 @@ namespace poly {
             }
             return mul_mp_sp(mp, sp);
         }else if(left_type == PolyType::POLY && right_type == PolyType::POLY){
-            //printf("poly::mul-4\n");
             return mul_mp_mp((Poly*)left, (Poly*)right);
         }else{
-
+            throw std::runtime_error("The code above is wrong.");
         }
     }
 
-    void merge_poly(Poly* org_poly, PolyBase* poly){
-        //cout << "merge_poly -0" << org_poly->to_string() << endl;
+    PolyBase* pow(PolyBase* poly, int exponent){
+        PolyBase* new_poly = mul(poly, poly->copy());
+        if(exponent > 2){
+            for(int i=0; i < exponent-2; i++){
+                new_poly = mul(new_poly, poly->copy());
+            }
+        }
+        return new_poly;
+    }
 
+    void merge_poly(Poly* org_poly, PolyBase* poly){
         Terms* terms = org_poly->terms;
         if(poly->get_poly_type() == PolyType::MONO){
             Mono* sp = (Mono*)poly;
             const Prod& prod = sp->prod;
-
             auto result = terms->find(prod);
             if(result != (terms->end())){
-                //terms->at(prod) = terms->at(prod)->add(sp->get_coeff());
-                //cout << "merge_poly -1" << terms->at(prod)->to_string() << endl;
-                //cout << "merge_poly -2" << sp->get_coeff()->to_string() << endl;
-                //terms->insert(TermsPair{prod, terms->at(prod)->add(sp->get_coeff())});
                 result->second = terms->at(prod)->add(sp->get_coeff());
-                //cout << "merge_poly -3" << terms->at(prod)->to_string() << endl;
             }else{
-                //terms->at(prod) = sp->get_coeff();
-                //cout << "merge_poly -4" << prod.to_string() << endl;
                 terms->insert(TermsPair{prod, sp->get_coeff()});
-                //cout << "merge_poly -4.5" << terms->at(prod)->to_string() << endl;
             }
         }else{
             Poly* mp = (Poly*)poly;
@@ -133,43 +123,34 @@ namespace poly {
             for(Terms::iterator it = adding_terms->begin(); it != adding_terms->end(); it++){
                 const Prod& prod = it->first;
                 auto coeff = it->second;
-
-                //cout << "merge_poly -6" << prod.to_string() << endl;
-                //cout << "merge_poly -7" << coeff->to_string() << endl;
-
                 auto result = terms->find(prod);
                 if(result != (terms->end())){
-                    //terms->at(prod) = terms->at(prod)->add(coeff);
-                    //terms->insert(TermsPair{prod, added});
                     result->second = terms->at(prod)->add(coeff);
                 }else{
-                    //terms->at(prod) = coeff;
-                    //cout << "merge_poly -9" << prod.to_string() << endl;
                     terms->insert(TermsPair{prod, coeff});
                 }
-                //cout << "merge_poly -10" << terms->at(prod)->to_string() << endl;
             }
         }
     }
 }
 
 CompiledQubo* PolyBase::compile_coeff(){
-    clock_t time0 = clock();
+    //clock_t time0 = clock();
     CompiledTerms compiled_terms;
     Poly* mp = this->to_multiple_poly();
-    clock_t time1 = clock();
-    printf("compile_coeff %lf[ms]\n", static_cast<double>(time1-time0) / CLOCKS_PER_SEC * 1000.0);
+    //clock_t time1 = clock();
+    //printf("compile_coeff %lf[ms]\n", static_cast<double>(time1-time0) / CLOCKS_PER_SEC * 1000.0);
     for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
         PHPolyBase* compiled_coeff = it->second->expand();
         Prod prod = it->first;
         auto p = std::make_pair(prod, compiled_coeff);
         compiled_terms.push_back(p);
     }
-    clock_t time2 = clock();
-    printf("compile_coeff 1 %lf[ms]\n", static_cast<double>(time2-time1) / CLOCKS_PER_SEC * 1000.0);
+    //clock_t time2 = clock();
+    //printf("compile_coeff 1 %lf[ms]\n", static_cast<double>(time2-time1) / CLOCKS_PER_SEC * 1000.0);
     auto cq = new CompiledQubo(compiled_terms);
-    clock_t time3 = clock();
-    printf("compile_coeff 2 %lf[ms]\n", static_cast<double>(time3-time2) / CLOCKS_PER_SEC * 1000.0);
+    //clock_t time3 = clock();
+    //printf("compile_coeff 2 %lf[ms]\n", static_cast<double>(time3-time2) / CLOCKS_PER_SEC * 1000.0);
     return cq;
 }
 

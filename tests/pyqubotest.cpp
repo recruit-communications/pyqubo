@@ -59,19 +59,11 @@ TEST(EXPRESS, COMPILE){
     cout << to_string(m->at(1)) << endl;
 
     Encoder* encoder = new Encoder();
-
-    //auto ab = a->add(b);
-    //auto expanded = ab->expand(encoder);
-    
     auto a_b = a->add(b)->add(d);
-    auto a_b_2 = a_b->mul(a_b);
-    
+    auto a_b_2 = a_b->mul(a_b);    
     auto a_b_2_e = a_b_2->mul(e);
-    printf("expand1\n");
     auto expanded = a_b_2_e->expand(encoder);
-    printf("expand2\n");
     auto mp = expanded->poly->to_multiple_poly();
-    //a_b_2_e->compile();
 
     auto expected = Poly();
     // original terms
