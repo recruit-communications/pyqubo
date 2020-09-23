@@ -46,23 +46,30 @@ public:
         }
     }
 
+
     BinaryQuadraticModel<string> evaluate(map<string, double> feed_dict, Encoder& encoder){
-        auto bqm = evaluate_with_index(feed_dict);
-        Linear<std::string> linear;
-        Quadratic<std::string> quadratic;
-        for(auto const& it: bqm.get_linear()){
-            std::string label = encoder.decode(it.first);
-            linear[label] = it.second;
-        }
-        for(auto const& it: bqm.get_quadratic()){
-            std::string label1 = encoder.decode(it.first.first);
-            std::string label2 = encoder.decode(it.first.second);
-            quadratic[make_pair(label1, label2)] = it.second;
+        Linear<string> linear;
+        Quadratic<string> quadratic;
+        double offset = 0.0;
+        for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
+            if(it->first.length == 2){
+                string i = encoder.decode(it->first.get_var(0));
+                string j = encoder.decode(it->first.get_var(1));
+                quadratic[std::make_pair(i, j)] = it->second->evaluate(feed_dict);
+            }else if(it->first.length == 1){
+                string i = encoder.decode(it->first.get_var(0));
+                linear[i] = it->second->evaluate(feed_dict);
+            }else if(it->first.length == 0){
+                offset = it->second->evaluate(feed_dict);
+            }else{
+                throw std::runtime_error("QUBO was not created correctly. Please report the bug to the developer.");
+            }
         }
         Vartype vartype = Vartype::BINARY;
-        BinaryQuadraticModel<std::string> new_bqm(linear, quadratic, bqm.get_offset(), vartype);
-        return new_bqm;
+        BinaryQuadraticModel<string> bqm(linear, quadratic, offset, vartype);
+        return bqm;
     }
+
 
     BinaryQuadraticModel<uint32_t> evaluate_with_index(map<string, double> feed_dict){
         Linear<uint32_t> linear;
