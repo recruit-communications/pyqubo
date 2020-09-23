@@ -80,7 +80,7 @@ jobs:
   test-linux-38:
     <<: *linux-test-template
     environment:
-      PYTHON_PATH: /opt/python/cp38-cp38m
+      PYTHON_PATH: /opt/python/cp38-cp38
   
   test-linux32-35:
     <<: *linux-test-template
