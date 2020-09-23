@@ -17,27 +17,29 @@ using IsingStr = std::tuple<Linear<std::string>, Quadratic<std::string>, double>
 using FeedDict = map<string, double>;
 
 class Model{
-    CompiledQubo* compiled_qubo;
-    Encoder* encoder;
-    LinkedList<CompiledSubH>* compiled_sub_hs;
+    CompiledQubo compiled_qubo;
+    Encoder encoder;
+    std::vector<CompiledSubH> compiled_sub_hs;
 
 public:
     Model(
-        CompiledQubo* _compiled_qubo,
-        Encoder* _encoder,
+        CompiledQubo _compiled_qubo,
+        Encoder encoder,
         Expanded* expanded
     ):
         compiled_qubo(_compiled_qubo),
-        encoder(_encoder),
-        compiled_sub_hs(expanded->first_sub_hs){}
+        encoder(encoder),
+        compiled_sub_hs(build_sub_hs_vector(expanded->first_sub_hs)){
+            printf("size of subh %d\n", compiled_sub_hs.size());
+        }
+    
+    ~Model(){}
     
     string to_string(){
-        string s = string("Model(") + this->compiled_qubo->to_string() + ", SubHs=[";
-        auto it = this->compiled_sub_hs;
+        string s = string("Model(") + this->compiled_qubo.to_string() + ", SubHs=[";
         bool subhs_exists = false;
-        while(it != nullptr){
-            s += it->value.to_string() + ",";
-            it = it->next;
+        for(auto& it: compiled_sub_hs){
+            s += it.to_string() + ",";
             subhs_exists = true;
         }
         if(subhs_exists) s.pop_back();
@@ -46,15 +48,15 @@ public:
     }
 
     vector<string> variables() const {
-        return this->encoder->variables;
+        return this->encoder.variables;
     }
 
     BinaryQuadraticModel<uint32_t> to_bqm_with_index(FeedDict feed_dict){
-        return compiled_qubo->evaluate_with_index(feed_dict);
+        return compiled_qubo.evaluate_with_index(feed_dict);
     }
 
     BinaryQuadraticModel<std::string> to_bqm(FeedDict feed_dict){
-        return compiled_qubo->evaluate(feed_dict, this->encoder);
+        return compiled_qubo.evaluate(feed_dict, this->encoder);
     }
 
     QuboInt to_qubo_with_index(FeedDict feed_dict = std::map<string, double>()){
@@ -77,14 +79,19 @@ public:
         return bqm.to_ising();
     }
 
-    std::vector<CompiledSubH> get_compiled_sub_hs(){
-        std::vector<CompiledSubH> result;
-        auto it = this->compiled_sub_hs;
+    std::vector<CompiledSubH> build_sub_hs_vector(LinkedList<CompiledSubH>* compiled_sub_hs){
+        std::vector<CompiledSubH> subhs_vector;
+        std:set<string> labels;
+        auto it = compiled_sub_hs;
         while(it != nullptr){
-            result.push_back(it->value);
+            auto found = labels.find(it->value.label);
+            if(found == labels.end()){
+                subhs_vector.push_back(it->value);
+                labels.insert(it->value.label);
+            }
             it = it->next;
         }
-        return result;
+        return subhs_vector;
     }
 
     double energy(
@@ -118,7 +125,7 @@ public:
         Sample<string> new_sample;
         int i = 0;
         for(auto & it: sample){
-            string new_index = encoder->decode(i);
+            string new_index = encoder.decode(i);
             new_sample[new_index] = it;
             i++;
         }
@@ -148,7 +155,7 @@ public:
     Sample<string> convert_sample_index_to_label(Sample<uint32_t>& sample){
         Sample<string> new_sample;
         for(auto & it: sample){
-            string new_index = encoder->decode(it.first);
+            string new_index = encoder.decode(it.first);
             new_sample[new_index] = it.second;
         }
         return new_sample;

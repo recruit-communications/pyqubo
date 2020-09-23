@@ -12,6 +12,8 @@ public:
         label(_label),
         compiled_qubo(compile_coeff(terms)),
         condition(condition){}
+    
+    ~CompiledSubH(){}
 
     bool equal_to(const CompiledSubH& other){
         return compiled_qubo->equal_to(other.compiled_qubo) && label == other.label;

@@ -22,6 +22,15 @@ public:
         delete poly;
     }
 
+    void delete_linked_list(){
+        if(this->first_sub_hs != nullptr){
+            delete this->first_sub_hs;
+        }
+        if(this->first_penalties != nullptr){
+            delete this->first_penalties;
+        }
+    }
+
     string to_string(){
         string s = string("Expanded(poly=") + poly->to_string() + ",sub_h=[";
         auto it = first_sub_hs;

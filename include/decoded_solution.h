@@ -20,7 +20,7 @@ public:
         CompiledSubH compiled_sub_h,
         Sample<string> sample,
         FeedDict feed_dict,
-        Encoder* encoder,
+        Encoder& encoder,
         Vartype vartype
     ){
         BinaryQuadraticModel<string> bqm = compiled_sub_h.compiled_qubo->evaluate(feed_dict, encoder);
@@ -55,21 +55,19 @@ public:
     double energy;
 
     DecodedSolution(
-        LinkedList<CompiledSubH>* compiled_sub_hs,
+        vector<CompiledSubH> compiled_sub_hs,
         Sample<string> _sample,
         double _energy,
         FeedDict feed_dict,
-        Encoder* encoder,
+        Encoder& encoder,
         Vartype vartype
     ):
         sample(_sample),
         energy(_energy)
     {
-        auto sub_h = compiled_sub_hs;
-        while(sub_h != nullptr){
-            auto decoded_subh = DecodedSubH(sub_h->value, sample, feed_dict, encoder, vartype);
+        for(auto& sub_h: compiled_sub_hs){
+            auto decoded_subh = DecodedSubH(sub_h, sample, feed_dict, encoder, vartype);
             this->decoded_subhs.push_back(decoded_subh);
-            sub_h = sub_h->next;
         }
         subh_values = build_subh_values(this->decoded_subhs);
         constraints = build_constraints(this->decoded_subhs);

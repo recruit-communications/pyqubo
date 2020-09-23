@@ -110,7 +110,8 @@ Model Base::compile(CoeffPtr strength){
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
-    auto model = Model(compiled_qubo, encoder, expanded);
+    auto model = Model(*compiled_qubo, *encoder, expanded);
+    expanded->delete_linked_list();
     delete expanded;
     return model;
 }
