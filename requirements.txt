@@ -4,3 +4,4 @@ coverage==4.5.1
 codecov==2.0.15
 dwave-neal==0.5.4
 Deprecated==1.2.10
+nbsphinx==0.3.5
