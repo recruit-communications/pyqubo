@@ -87,7 +87,28 @@ jobs:
     docker:
       - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
     environment:
+      PYTHON_PATH: /opt/python/cp35-cp35m
+  
+  test-linux32-36:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
       PYTHON_PATH: /opt/python/cp36-cp36m
+  
+  test-linux32-37:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp37-cp37m
+  
+  test-linux32-38:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp38-cp38
 
   deploy-linux:
     docker:
@@ -436,9 +457,13 @@ workflows:
 
       - test-linux-35
       - test-linux-36
-      - test-linux32-35
       - test-linux-37
       - test-linux-38
+
+      - test-linux32-35
+      - test-linux32-36
+      - test-linux32-37
+      - test-linux32-38
   
   deploy:
     jobs:
