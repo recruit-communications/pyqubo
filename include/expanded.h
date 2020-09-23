@@ -15,10 +15,12 @@ public:
     LinkedList<CompiledPenalty>* last_penalties = nullptr;
 
     PolyBase* poly;
+
     Expanded(PolyBase* poly):
         poly(poly){}
 
     ~Expanded(){
+        // we delete linkedlist by calling `delete_linked_list` at expanding finished.
         delete poly;
     }
 

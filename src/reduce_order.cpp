@@ -100,9 +100,9 @@ namespace reduce_order{
             }
         }
 
-        uint32_t create_new_var(QuboIndex index_pair, Encoder* encoder){
+        uint32_t create_new_var(QuboIndex index_pair, Encoder& encoder){
             string new_label = std::to_string(index_pair.first) + string("*") + std::to_string(index_pair.second);
-            return encoder->encode(new_label);
+            return encoder.encode(new_label);
         }
 
         void add_and_constraint(Poly* mp, QuboIndex index_pair, uint32_t new_var, CoeffPtr strength){
@@ -113,7 +113,7 @@ namespace reduce_order{
         }
     }
 
-    void make_quadratic(Poly* mp, Encoder* encoder, CoeffPtr strength){
+    void make_quadratic(Poly* mp, Encoder& encoder, CoeffPtr strength){
         //clock_t time0 = clock();
         while(has_higher_degree(mp)){
             QuboIndex index_pair = find_most_common(mp);
