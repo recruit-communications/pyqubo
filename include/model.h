@@ -29,9 +29,7 @@ public:
     ):
         compiled_qubo(_compiled_qubo),
         encoder(encoder),
-        compiled_sub_hs(build_sub_hs_vector(expanded->first_sub_hs)){
-            printf("size of subh %d\n", compiled_sub_hs.size());
-        }
+        compiled_sub_hs(build_sub_hs_vector(expanded->first_sub_hs)){}
     
     ~Model(){}
     
@@ -154,7 +152,7 @@ public:
 
     Sample<string> convert_sample_index_to_label(Sample<uint32_t>& sample){
         Sample<string> new_sample;
-        for(auto & it: sample){
+        for(auto& it: sample){
             string new_index = encoder.decode(it.first);
             new_sample[new_index] = it.second;
         }

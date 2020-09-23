@@ -84,7 +84,7 @@ public:
 
     virtual ExpressType get_type() const = 0;
 
-    virtual Expanded* expand(Encoder* encoder) = 0;
+    virtual Expanded* expand(Encoder& encoder) = 0;
 
     virtual ~Base(){};
 };
@@ -199,7 +199,7 @@ public:
             return false;
         }
     }
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 
@@ -239,7 +239,7 @@ public:
             return false;
         }
     }
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 
@@ -273,7 +273,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 
@@ -305,7 +305,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 class Num : public Base{
@@ -332,7 +332,7 @@ public:
             return false;
         }
     }
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 class Placeholder : public Base{
@@ -361,7 +361,7 @@ public:
             return false;
         }
     }
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 class Pow : public Base{
@@ -401,7 +401,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 
@@ -441,7 +441,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 class UserDefinedExpress: public Base{
@@ -482,7 +482,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 
@@ -527,7 +527,7 @@ public:
         }
     }
 
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };
 
 class Constraint: public Base{
@@ -566,5 +566,5 @@ public:
         }
     }
     
-    Expanded* expand(Encoder* encoder) override;
+    Expanded* expand(Encoder& encoder) override;
 };

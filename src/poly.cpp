@@ -151,7 +151,7 @@ CompiledQubo* PolyBase::compile_coeff(){
     return cq;
 }
 
-Poly* PolyBase::make_quadratic(Encoder* encoder, CoeffPtr strength){
+Poly* PolyBase::make_quadratic(Encoder& encoder, CoeffPtr strength){
     Poly* mp = this->to_multiple_poly();
     reduce_order::make_quadratic(mp, encoder, strength);
     return mp;

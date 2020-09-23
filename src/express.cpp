@@ -103,14 +103,14 @@ Model Base::compile(string placeholder_label){
 
 Model Base::compile(CoeffPtr strength){
     //clock_t start = clock();
-    Encoder* encoder = new Encoder();
+    Encoder encoder = Encoder();
     Expanded* expanded = this->expand(encoder);
     //clock_t end = clock();
     //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
-    auto model = Model(*compiled_qubo, *encoder, expanded);
+    auto model = Model(*compiled_qubo, encoder, expanded);
     expanded->delete_linked_list();
     delete expanded;
     return model;
@@ -123,7 +123,7 @@ BasePtr Add::add(BasePtr other){
     return new_base;
 }
 
-Expanded* Add::expand(Encoder* encoder){
+Expanded* Add::expand(Encoder& encoder){
     int i = 0;
     AddList* next_node = this->node;
     Expanded* new_expanded = next_node->value->expand(encoder);
@@ -138,7 +138,7 @@ Expanded* Add::expand(Encoder* encoder){
 };
 
 /*---------Mul------------*/
-Expanded* Mul::expand(Encoder* encoder){
+Expanded* Mul::expand(Encoder& encoder){
     Expanded* left_expanded = this->left->expand(encoder);
     Expanded* right_expanded = this->right->expand(encoder);
     Expanded* new_expanded = expanded::mul(left_expanded, right_expanded);
@@ -146,14 +146,14 @@ Expanded* Mul::expand(Encoder* encoder){
 };
 
 /*---------Binary------------*/
-Expanded* Binary::expand(Encoder* encoder){
+Expanded* Binary::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Binary>(this_ptr), encoder);
     auto new_expanded = new Expanded(poly);
     return new_expanded;
 };
 
-Expanded* Spin::expand(Encoder* encoder){
+Expanded* Spin::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Poly* poly = new Poly(static_pointer_cast<Spin>(this_ptr), encoder);
     auto new_expanded = new Expanded(poly);
@@ -161,44 +161,44 @@ Expanded* Spin::expand(Encoder* encoder){
 };
 
 /*---------Num------------*/
-Expanded* Num::expand(Encoder* encoder){
+Expanded* Num::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Num>(this_ptr));
     return new Expanded(poly);
 };
 
 /*---------Placeholder------------*/
-Expanded* Placeholder::expand(Encoder* encoder){
+Expanded* Placeholder::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Placeholder>(this_ptr));
     return new Expanded(poly);
 };
 
-Expanded* Pow::expand(Encoder* encoder){
+Expanded* Pow::expand(Encoder& encoder){
     Expanded* expanded = this->hamiltonian->expand(encoder);
     auto new_expanded = expanded::pow(expanded, this->exponent);
     return new_expanded;
 };
 
-Expanded* WithPenalty::expand(Encoder* encoder){
+Expanded* WithPenalty::expand(Encoder& encoder){
     Expanded* hamiltonian_expand = this->hamiltonian->expand(encoder);
     Expanded* penalty_expanded = penalty->expand(encoder);
     hamiltonian_expand->add_penalty(this->label, penalty_expanded);
     return hamiltonian_expand;
 };
 
-Expanded* UserDefinedExpress::expand(Encoder* encoder){
+Expanded* UserDefinedExpress::expand(Encoder& encoder){
     Expanded* hamiltonian_expand = this->hamiltonian->expand(encoder);
     return hamiltonian_expand;
 };
 
-Expanded* SubH::expand(Encoder* encoder){
+Expanded* SubH::expand(Encoder& encoder){
     Expanded* hamiltonian_exp = this->hamiltonian->expand(encoder);
     hamiltonian_exp->add_sub_h(this->label, hamiltonian_exp->poly->get_terms(), nullptr);
     return hamiltonian_exp;
 };
 
-Expanded* Constraint::expand(Encoder* encoder){
+Expanded* Constraint::expand(Encoder& encoder){
     Expanded* hamiltonian_exp = this->hamiltonian->expand(encoder);
     hamiltonian_exp->add_sub_h(this->label, hamiltonian_exp->poly->get_terms(), this->condition);
     return hamiltonian_exp;

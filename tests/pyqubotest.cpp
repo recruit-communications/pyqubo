@@ -58,7 +58,7 @@ TEST(EXPRESS, COMPILE){
     m->insert(MapPair{1, 2});
     cout << to_string(m->at(1)) << endl;
 
-    Encoder* encoder = new Encoder();
+    Encoder encoder = Encoder();
     auto a_b = a->add(b)->add(d);
     auto a_b_2 = a_b->mul(a_b);    
     auto a_b_2_e = a_b_2->mul(e);
@@ -97,7 +97,7 @@ TEST(EXPRESS, COMPILE2){
     auto C1 = make_shared<SubH>(H, "const_1");
     auto C2 = make_shared<SubH>(H2, "const_2");
     auto H3 = C1->add(C2);
-    Encoder* encoder = new Encoder();
+    Encoder encoder = Encoder();
     Expanded* expand = H3->expand(encoder);
     cout << expand->to_string() << "\n";
     auto model = H3->compile(1.0);
@@ -144,7 +144,7 @@ TEST(EXPRESS, MAKE_QUADRATIC){
     BasePtr e(new Placeholder("e"));
     auto abc = a->mul(b)->mul(c);
     auto bcd = b->mul(c)->mul(d);
-    Encoder* encoder = new Encoder();
+    Encoder encoder = Encoder();
     auto H = abc->add(bcd);
     auto expanded = H->expand(encoder);
     double strength = 2.0;

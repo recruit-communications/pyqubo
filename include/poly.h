@@ -37,7 +37,7 @@ public:
     virtual Poly* to_multiple_poly() = 0;
 
     CompiledQubo* compile_coeff();
-    Poly* make_quadratic(Encoder* encoder, CoeffPtr strength);
+    Poly* make_quadratic(Encoder& encoder, CoeffPtr strength);
     virtual ~PolyBase(){};
 };
 
@@ -62,8 +62,8 @@ public:
 
     Poly(Terms* _terms): terms(_terms){};
 
-    Poly(shared_ptr<Spin> spin, Encoder* encoder){
-        Prod spin_prod = Prod::create(encoder->encode(spin->label));
+    Poly(shared_ptr<Spin> spin, Encoder& encoder){
+        Prod spin_prod = Prod::create(encoder.encode(spin->label));
         Prod const_prod = Prod();
         terms->insert(TermsPair{spin_prod, make_shared<CoeffNum>(2.0)});
         terms->insert(TermsPair{const_prod, make_shared<CoeffNum>(-1.0)});
@@ -178,8 +178,8 @@ public:
         this-> coeff = make_shared<CoeffPlaceholder>(exp->label);
     }
 
-    Mono(shared_ptr<Binary> exp, Encoder* encoder) {
-        this-> prod = Prod::create(encoder->encode(exp));
+    Mono(shared_ptr<Binary> exp, Encoder& encoder) {
+        this-> prod = Prod::create(encoder.encode(exp));
         this-> coeff = make_shared<CoeffNum>(1.0);
     }
 

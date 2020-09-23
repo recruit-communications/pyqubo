@@ -42,7 +42,7 @@ public:
         return s;
     }
 
-    CompiledQubo* get_compiled_qubo(Encoder* encoder, CoeffPtr strength){
+    CompiledQubo* get_compiled_qubo(Encoder& encoder, CoeffPtr strength){
         Poly* mp = this->poly->to_multiple_poly();
 
         // add penalties to the Hamiltonian

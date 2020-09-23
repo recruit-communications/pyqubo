@@ -68,7 +68,7 @@ public:
         );
     };*/
 
-    Expanded* expand(Encoder* encoder) override {return NULL;}
+    Expanded* expand(Encoder& encoder) override {return NULL;}
 
     bool equal_to(BasePtr other) override {
         PYBIND11_OVERLOAD_PURE(
