@@ -21,10 +21,7 @@
    reference/integer
    reference/constraint
    reference/logic
-   reference/func
    reference/utils
-   reference/varset
-   reference/internal/index
 
 
 Indices and tables
