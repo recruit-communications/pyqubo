@@ -33,16 +33,20 @@ class UnaryEncInteger(Integer):
         
         >>> from pyqubo import UnaryEncInteger
         >>> import dimod
-        >>> a = UnaryEncInteger("a", 0, 3)
-        >>> b = UnaryEncInteger("b", 0, 3)
+        >>> a = UnaryEncInteger("a", (0, 3))
+        >>> b = UnaryEncInteger("b", (0, 3))
         >>> M=2.0
         >>> H = (2*a-b-1)**2 + M*(a+b-3)**2
         >>> model = H.compile()
-        >>> q, offset = model.to_qubo()
-        >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-        >>> response, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-        >>> print("a={},b={}".format(sum(response["a"].values()), sum(response["b"].values())))
-        a=1,b=2
+        >>> bqm = model.to_bqm()
+        >>> import dimod
+        >>> sampleset = dimod.ExactSolver().sample(bqm)
+        >>> decoded_samples = model.decode_sampleset(sampleset)
+        >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+        >>> print(best_sample.subh_values['a'])
+        1.0
+        >>> print(best_sample.subh_values['b'])
+        2.0
     """
 
     def __init__(self, label, value_range):

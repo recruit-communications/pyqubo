@@ -34,18 +34,20 @@ class LogEncInteger(Integer):
         
         >>> from pyqubo import LogEncInteger
         >>> import dimod
-        >>> a = LogEncInteger("a", 0, 4)
-        >>> b = LogEncInteger("b", 0, 4)
+        >>> a = LogEncInteger("a", (0, 4))
+        >>> b = LogEncInteger("b", (0, 4))
         >>> M=2.0
         >>> H = (2*a-b-1)**2 + M*(a+b-5)**2
         >>> model = H.compile()
-        >>> q, offset = model.to_qubo()
-        >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-        >>> response, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-        >>> sol_a = sum(2**k * v for k, v in response["a"].items())
-        >>> sol_b = sum(2**k * v for k, v in response["b"].items())
-        >>> print("a={},b={}".format(sol_a, sol_b))
-        a=2,b=3
+        >>> bqm = model.to_bqm()
+        >>> import dimod
+        >>> sampleset = dimod.ExactSolver().sample(bqm)
+        >>> decoded_samples = model.decode_sampleset(sampleset)
+        >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+        >>> print(best_sample.subh_values['a'])
+        2.0
+        >>> print(best_sample.subh_values['b'])
+        3.0
     """
 
     def __init__(self, label, value_range):

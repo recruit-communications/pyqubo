@@ -40,14 +40,15 @@ class OrderEncInteger(IntegerWithPenalty):
         Solution of `a` represents 2 which is the optimal solution of the Hamiltonian.
         
         >>> from pyqubo import OrderEncInteger
-        >>> import dimod
-        >>> a = OrderEncInteger("a", 0, 3, strength = 5.0)
+        >>> a = OrderEncInteger("a", (0, 3), strength = 5.0)
         >>> model = ((a-2)**2).compile()
-        >>> q, offset = model.to_qubo()
-        >>> response = dimod.ExactSolver().sample_qubo(q)
-        >>> solution, broken, e  = model.decode_dimod_response(response, topk=1)[0]
-        >>> print("a={}".format(sum(solution["a"].values())))
-        a=2
+        >>> bqm = model.to_bqm()
+        >>> import dimod
+        >>> sampleset = dimod.ExactSolver().sample(bqm)
+        >>> decoded_samples = model.decode_sampleset(sampleset)
+        >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+        >>> print(best_sample.subh_values['a'])
+        2.0
     """
 
     def __init__(self, label, value_range, strength):
@@ -97,15 +98,18 @@ class OrderEncInteger(IntegerWithPenalty):
             The obtained solution is :math:`a=b=2`.
             
             >>> from pyqubo import OrderEncInteger
-            >>> import dimod
-            >>> a = OrderEncInteger("a", 0, 4, strength = 5.0)
-            >>> b = OrderEncInteger("b", 0, 4, strength = 5.0)
+            >>> a = OrderEncInteger("a", (0, 4), strength = 5.0)
+            >>> b = OrderEncInteger("b", (0, 4), strength = 5.0)
             >>> model = ((a-b)**2 + (1-a.more_than(1))**2 + (1-b.less_than(3))**2).compile()
-            >>> q, offset = model.to_qubo()
-            >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-            >>> solution, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-            >>> solution
-            {'a': {0: 1, 1: 1, 2: 0, 3: 0}, 'b': {0: 1, 1: 1, 2: 0, 3: 0}}
+            >>> bqm = model.to_bqm()
+            >>> import dimod
+            >>> sampleset = dimod.ExactSolver().sample(bqm)
+            >>> decoded_samples = model.decode_sampleset(sampleset)
+            >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+            >>> print(best_sample.subh_values['a'])
+            2.0
+            >>> print(best_sample.subh_values['b'])
+            2.0
         """
         assert isinstance(k, int), "k should be integer"
         lower, upper = self.value_range
@@ -132,15 +136,18 @@ class OrderEncInteger(IntegerWithPenalty):
             The obtained solution is :math:`a=b=2`.
             
             >>> from pyqubo import OrderEncInteger
-            >>> import dimod
-            >>> a = OrderEncInteger("a", 0, 4, strength = 5.0)
-            >>> b = OrderEncInteger("b", 0, 4, strength = 5.0)
+            >>> a = OrderEncInteger("a", (0, 4), strength = 5.0)
+            >>> b = OrderEncInteger("b", (0, 4), strength = 5.0)
             >>> model = ((a-b)**2 + (1-a.more_than(1))**2 + (1-b.less_than(3))**2).compile()
-            >>> q, offset = model.to_qubo()
-            >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-            >>> solution, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-            >>> solution
-            {'a': {0: 1, 1: 1, 2: 0, 3: 0}, 'b': {0: 1, 1: 1, 2: 0, 3: 0}}
+            >>> bqm = model.to_bqm()
+            >>> import dimod
+            >>> sampleset = dimod.ExactSolver().sample(bqm)
+            >>> decoded_samples = model.decode_sampleset(sampleset)
+            >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+            >>> print(best_sample.subh_values['a'])
+            2.0
+            >>> print(best_sample.subh_values['b'])
+            2.0
         """
         assert isinstance(k, int), "k should be integer"
         lower, upper = self.value_range

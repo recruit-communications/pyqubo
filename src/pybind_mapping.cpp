@@ -175,14 +175,14 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         .def_readwrite("label", &DecodedSubH::label)
         .def_readwrite("energy", &DecodedSubH::energy);
 
-    py::class_<DecodedSolution>(m, "DecodedSolution")
+    py::class_<DecodedSolution>(m, "DecodedSample")
         .def("__repr__", &DecodedSolution::to_string)
         .def_readwrite("sample", &DecodedSolution::sample)
         .def_readwrite("energy", &DecodedSolution::energy)
-        .def("array_value", pybind_decoded_solution::array_value_int)
-        .def("array_value", pybind_decoded_solution::array_value_tuple)
         .def_readwrite("subh_values", &DecodedSolution::subh_values)
-        .def("get_constraints", &DecodedSolution::get_constraints, py::arg("only_broken")=false);
+        .def("get_array_value", pybind_decoded_solution::array_value_int, py::arg("array_name"), py::arg("index"))
+        .def("get_array_value", pybind_decoded_solution::array_value_tuple, py::arg("array_name"), py::arg("index"))
+        .def("get_constraint_values", &DecodedSolution::get_constraints, py::arg("only_broken")=false);
 
     py::class_<Model>(m, "Model")
         .def("__repr__", &Model::to_string)
@@ -194,7 +194,7 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         .def("decode_sample", pybind_model::decode_sample_list, py::arg("sample"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
         .def("decode_sampleset", pybind_model::decode_sampleset, py::arg("sampleset"), py::arg("feed_dict")=py::dict())
         .def("energy", pybind_model::energy, py::arg("sample"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
-        .def("variables", &Model::variables);
+        .def_property_readonly("variables", &Model::variables);
     
     
     py::class_<Base, BasePtr, PyBase>(m, "Base")

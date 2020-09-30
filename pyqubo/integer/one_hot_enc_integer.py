@@ -38,14 +38,16 @@ class OneHotEncInteger(IntegerWithPenalty):
             H = \\left(\\left(\sum_{i=1}^{3}ia_{i}+1\\right) - 2\\right)^2 + strength \\times \\left(\sum_{i=1}^{3}a_{i}-1\\right)^2
         
         >>> from pyqubo import OneHotEncInteger
-        >>> a = OneHotEncInteger("a", 1, 3, strength=5)
+        >>> a = OneHotEncInteger("a", (1, 3), strength=5)
         >>> H = (a-2)**2
         >>> model = H.compile()
-        >>> q, offset = model.to_qubo()
-        >>> sampleset = dimod.ExactSolver().sample_qubo(q)
-        >>> solution, broken, e  = model.decode_dimod_response(sampleset, topk=1)[0]
-        >>> print("a={}".format(1+sum(k*v for k, v in solution["a"].items())))
-        a=2
+        >>> bqm = model.to_bqm()
+        >>> import dimod
+        >>> sampleset = dimod.ExactSolver().sample(bqm)
+        >>> decoded_samples = model.decode_sampleset(sampleset)
+        >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
+        >>> print(best_sample.subh_values['a'])
+        2.0
     """
 
     def __init__(self, label, value_range, strength):

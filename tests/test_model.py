@@ -68,18 +68,18 @@ class TestModel(unittest.TestCase):
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 1)
 
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 0}
         decoded_sample = model.decode_sample(sample, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 0)
 
         ## vartype = SPIN
         sample = {'x[0][1]': 1, 'x[1][1]': 1, 'x[0][0]': -1}
@@ -87,105 +87,105 @@ class TestModel(unittest.TestCase):
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 1)
 
         sample = {'x[0][1]': 1, 'x[1][1]': -1, 'x[0][0]': -1}
         decoded_sample = model.decode_sample(sample, vartype="SPIN")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == -1)
 
         # type of solution is list[int]
 
         ## vartype = BINARY
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 1}
-        list_sample = [sample[v] for v in model.variables()]
+        list_sample = [sample[v] for v in model.variables]
         decoded_sample = model.decode_sample(list_sample, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_get_array_value("x", (0, 0)) == 1)
+        self.assertTrue(decoded_sample.get_get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_get_array_value("x", (1, 1)) == 0)
 
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 0}
-        list_sample = [sample[v] for v in model.variables()]
+        list_sample = [sample[v] for v in model.variables]
         decoded_sample = model.decode_sample(list_sample, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 0)
 
         ## vartype = SPIN
         sample = {'x[0][1]': 1, 'x[1][1]': 1, 'x[0][0]': -1}
-        list_sample = [sample[v] for v in model.variables()]
+        list_sample = [sample[v] for v in model.variables]
         decoded_sample = model.decode_sample(list_sample, vartype="SPIN")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 1)
 
         sample = {'x[0][1]': 1, 'x[1][1]': -1, 'x[0][0]': -1}
-        list_sample = [sample[v] for v in model.variables()]
+        list_sample = [sample[v] for v in model.variables]
         decoded_sample = model.decode_sample(list_sample, vartype="SPIN")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == -1)
 
         # type of solution is dict[index_label(int), bit]
         ## vartype = BINARY
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 1}
-        sample_index = {v: sample[v] for v in model.variables()}
+        sample_index = {v: sample[v] for v in model.variables}
         decoded_sample = model.decode_sample(sample_index, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 0)
 
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 0}
-        sample_index = {v: sample[v] for v in model.variables()}
+        sample_index = {v: sample[v] for v in model.variables}
         decoded_sample = model.decode_sample(sample_index, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 0)
 
         ## vartype = SPIN
         sample = {'x[0][1]': 1, 'x[1][1]': 1, 'x[0][0]': -1}
-        sample_index = {v: sample[v] for v in model.variables()}
+        sample_index = {v: sample[v] for v in model.variables}
         decoded_sample = model.decode_sample(sample_index, vartype="SPIN")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 1)
 
         sample = {'x[0][1]': 1, 'x[1][1]': -1, 'x[0][0]': -1}
-        sample_index = {v: sample[v] for v in model.variables()}
+        sample_index = {v: sample[v] for v in model.variables}
         decoded_sample = model.decode_sample(sample_index, vartype="SPIN")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 0)
         self.assertTrue(decoded_sample.energy == 0)
-        self.assertTrue(decoded_sample.array_value("x", (0, 0)) == -1)
-        self.assertTrue(decoded_sample.array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.array_value("x", (1, 1)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == -1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == -1)
 
         # invalid solution
         self.assertRaises(ValueError, lambda: model.decode_sample([1, 1, 1, 1], vartype="BINARY"))
@@ -202,9 +202,9 @@ class TestModel(unittest.TestCase):
         sampler = dimod.ExactSolver()
         sampleset = sampler.sample(binary_bqm)
         sol = model.decode_sampleset(sampleset)
-        self.assertTrue(sol[0].array_value("S", 0) == 0)
-        self.assertTrue(sol[0].array_value("S", 1) == 0)
-        self.assertTrue(sol[0].array_value("S", 2) == 1)
+        self.assertTrue(sol[0].get_array_value("S", 0) == 0)
+        self.assertTrue(sol[0].get_array_value("S", 1) == 0)
+        self.assertTrue(sol[0].get_array_value("S", 2) == 1)
         self.assertTrue(np.isclose(sol[0].energy, -1.8))
     
     def test_placeholders(self):
@@ -218,9 +218,9 @@ class TestModel(unittest.TestCase):
         sampler = dimod.ExactSolver()
         sampleset = sampler.sample(binary_bqm)
         sol = model.decode_sampleset(sampleset, feed_dict=feed_dict)
-        self.assertTrue(sol[0].array_value("S", 0) == 0)
-        self.assertTrue(sol[0].array_value("S", 1) == 0)
-        self.assertTrue(sol[0].array_value("S", 2) == 1)
+        self.assertTrue(sol[0].get_array_value("S", 0) == 0)
+        self.assertTrue(sol[0].get_array_value("S", 1) == 0)
+        self.assertTrue(sol[0].get_array_value("S", 2) == 1)
         self.assertTrue(np.isclose(sol[0].energy, -1.8))
 
 

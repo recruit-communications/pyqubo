@@ -20,7 +20,6 @@ from pyqubo import assert_qubo_equal
 
 class TestInteger(unittest.TestCase):
 
-
     def test_one_hot_enc_integer(self):
         a = OneHotEncInteger("a", (0, 4), strength=Placeholder("s"))
         H = (a - 3) ** 2
@@ -49,10 +48,7 @@ class TestInteger(unittest.TestCase):
              ('a[4]', 'a[4]'): -18.0}
         expected_offset = 19
         assert_qubo_equal(q, expected_q)
-        self.assertTrue(offset == expected_offset)
-
-
-        
+        self.assertTrue(offset == expected_offset)        
 
     def test_one_hot_enc_integer_equal(self):
         a = OneHotEncInteger("a", (0, 4), strength=Placeholder("s"))
@@ -69,7 +65,7 @@ class TestInteger(unittest.TestCase):
         self.assertTrue(decoded.subh_values["a_const"]==0)
         self.assertTrue(decoded.subh_values["b_const"]==0)
 
-        print(decoded.get_constraints(only_broken=False))
+        print(decoded.constraint_values(only_broken=False))
     
     def test_order_enc_integer(self):
         a = OrderEncInteger("a", (0, 4), strength=Placeholder("s"))

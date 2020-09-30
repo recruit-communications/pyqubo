@@ -1,3 +1,5 @@
+.. currentmodule:: pyqubo
+
 Expression
 ==========
 
@@ -42,7 +44,7 @@ Expression
         >>> from pyqubo import Binary
         >>> a, b = Binary("a"), Binary("b")
         >>> 2*a*b + 1
-        (((Binary(a)*Num(2))*Binary(b))+Num(1))
+        (Binary(a)*Num(2.000000)*Binary(b)+Num(1.000000))
 
 
 .. py:method:: compile(strength=5.0)
@@ -62,7 +64,7 @@ Expression
 
             In this example, there are higher order terms :math:`abc` and :math:`abd`. It is decomposed as
             [[``a*b``, ``c``], ``d``] hierarchically and converted into QUBO.
-            By calling :func:`to_qubo()` of the :obj:`model`, we get the resulting QUBO.
+            By calling :func:`to_qubo()` of the :obj:`model`, we get the QUBO.
             
             >>> from pyqubo import Binary
             >>> a, b, c, d = Binary("a"), Binary("b"), Binary("c"), Binary("d")
@@ -80,6 +82,8 @@ Expression
               ('d', 'd'): 0},
              0.0)
 
+Binary
+------
 
 .. py:class:: Binary(label)
 
@@ -97,6 +101,9 @@ Expression
         >>> pprint(exp.compile().to_qubo())   # doctest: +SKIP
         ({('a', 'a'): 3.0, ('a', 'b'): 2.0, ('b', 'b'): 0}, 0.0)
 
+Spin
+----
+
 .. py:class:: Spin(label)
 
     Spin variable i.e. {-1, 1}.
@@ -113,6 +120,8 @@ Expression
         >>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
         ({('a', 'a'): 2.0, ('a', 'b'): 8.0, ('b', 'b'): -4.0}, -1.0)
 
+Placeholder
+-----------
 
 .. py:class:: Placeholder(label)
 
@@ -136,6 +145,8 @@ Expression
         >>> pprint(exp.compile().to_qubo(feed_dict={'a': 5.0})) # doctest: +SKIP
         ({('x', 'x'): 2.0, ('x', 'y'): 5.0, ('y', 'y'): 0}, 0.0)
 
+SubH
+----
 
 .. py:class:: SubH(hamiltonian, label, as_constraint=False)
 
@@ -161,6 +172,8 @@ Expression
         >>> model.namespaces  #doctest: +SKIP
         ({'n1': {'s1', 's2'}, 'n2': {'s1', 's3'}}, {'s1', 's2', 's3'})
 
+Constraint
+----------
 
 .. py:class:: Constraint(hamiltonian, label, condition=lambda x: x==0.0)
 
@@ -175,20 +188,22 @@ Expression
 
     **Example:**
 
-        When the solution is broken, `decode_solution` can detect it.
-        In this example, we introduce a constraint :math:`a+b=1`.
-    
+        When the Hamiltonian contains :class:`Constraint`,
+        you know whether each constraint is satisfied or not
+        by accessing to :class:`DecodedSample`.
+
         >>> from pyqubo import Binary, Constraint
         >>> a, b = Binary('a'), Binary('b')
-        >>> exp = a + b + Constraint((a+b-1)**2, label="one_hot")
-        >>> model = exp.compile()
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 1}, vartype='BINARY')
-        >>> pprint(broken)
-        {'one_hot': {'penalty': 1.0, 'result': {'a': 1, 'b': 1}}}
-        >>> sol, broken, energy = model.decode_solution({'a': 1, 'b': 0}, vartype='BINARY')
-        >>> pprint(broken)
-        {}
+        >>> H = Constraint(a+b-2, "const1") + Constraint(a+b-1, "const2")
+        >>> model = H.compile()
+        >>> dec = model.decode_sample({'a': 1, 'b': 0}, vartype='BINARY')
+        >>> pprint(dec.get_constraint_values())
+        {'const1': (False, -1.0), 'const2': (True, 0.0)}
+        >>> pprint(dec.get_constraint_values(only_broken=True))
+        {'const1': (False, -1.0)}
 
+Add
+---
 
 .. py:class:: Add(left, right)
     
@@ -208,6 +223,8 @@ Expression
         >>> Add(a, b)
         (Binary(a)+Binary(b))
 
+Mul
+---
 
 .. py:class:: Mul(left, right)
 
@@ -223,10 +240,12 @@ Expression
         >>> from pyqubo import Binary, Mul
         >>> a, b = Binary('a'), Binary('b')
         >>> a * b
-        (Binary(a)*Binary(b))
+        Binary(a)*Binary(b)
         >>> Mul(a, b)
-        (Binary(a)*Binary(b))
+        Binary(a)*Binary(b)
 
+Num
+---
     
 .. py:class:: Num(value)
 
@@ -241,10 +260,12 @@ Expression
         >>> from pyqubo import Binary, Num
         >>> a = Binary('a')
         >>> a + 1
-        (Binary(a)+Num(1))
+        (Binary(a)+Num(1.000000))
         >>> a + Num(1)
-        (Binary(a)+Num(1))
+        (Binary(a)+Num(1.000000))
 
+UserDefinedExpress
+------------------
 
 .. py:class:: UserDefinedExpress()
 
@@ -265,3 +286,27 @@ Expression
         ...     def express(self):
         ...         return self._express
 
+WithPenalty
+-----------
+
+.. py:class:: WithPenalty()
+
+    You can define the custum penalty class by inheriting `WithPenalty`.
+    The `penalty` argument will be added to the generated Hamiltonian.
+    Integer classes with constraints, such as :class:`OneHotEncInteger`, are defined using this class.
+
+    **Example:**
+
+    Define the custom penalty class inheriting `WithPenalty`.
+    We initialize this class with `hamiltonian` :math:`h`.
+    The constraint term :math:`(h-1)^2` will be added to the generated Hamiltonian.
+    
+    >>> from pyqubo import WithPenalty
+    >>> class CustomPenalty(WithPenalty):
+    ...     def __init__(self, hamiltonian, label, strength):
+    ...         penalty = strength * (hamiltonian-1)**2
+    ...         super().__init__(hamiltonian, penalty, label)
+    >>> a, b = Binary("a"), Binary("b")
+    >>> p = CustomPenalty(a+b, label="penalty", strength=2.0)
+    >>> model = (p+1).compile()
+    >>> qubo, offset = model.to_qubo()

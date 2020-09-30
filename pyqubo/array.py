@@ -264,22 +264,22 @@ class Array:
             >>> import numpy as np
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
             >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
-            >>> array_a.add(array_b)
+            >>> array_a.add(array_b) # doctest: +SKIP
             Array([[(Binary(a)+Binary(d)), (Binary(b)+Num(1))],
                    [(Binary(c)+Binary(f)), (Binary(g)+Num(2))]])
-            >>> array_a + array_b
+            >>> array_a + array_b # doctest: +SKIP
             Array([[(Binary(a)+Binary(d)), (Binary(b)+Num(1))],
                    [(Binary(c)+Binary(f)), (Binary(g)+Num(2))]])
 
             Sum of self and scalar value.
             
-            >>> array_a + 5
+            >>> array_a + 5 # doctest: +SKIP
             Array([[(Binary(a)+Num(5)), (Binary(b)+Num(5))],
                    [(Binary(c)+Num(5)), 7]])
             
             Sum of self and numpy ndarray.
             
-            >>> array_a + np.array([[1, 2], [3, 4]])
+            >>> array_a + np.array([[1, 2], [3, 4]]) # doctest: +SKIP
             Array([[(Binary(a)+Num(1)), (Binary(b)+Num(2))],
                    [(Binary(c)+Num(3)), 6]])
         """
@@ -300,22 +300,22 @@ class Array:
             >>> import numpy as np
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
             >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
-            >>> array_a.subtract(array_b)
+            >>> array_a.subtract(array_b) # doctest: +SKIP
             Array([[(Binary(a)+(Binary(d)*Num(-1))), (Binary(b)+Num(-1))],
                    [(Binary(c)+(Binary(f)*Num(-1))), ((Binary(g)*Num(-1))+Num(2))]])
-            >>> array_a - array_b
+            >>> array_a - array_b # doctest: +SKIP
             Array([[(Binary(a)+(Binary(d)*Num(-1))), (Binary(b)+Num(-1))],
                    [(Binary(c)+(Binary(f)*Num(-1))), ((Binary(g)*Num(-1))+Num(2))]])
 
             Difference of self and scalar value.
             
-            >>> array_a - 5
+            >>> array_a - 5 # doctest: +SKIP
             Array([[(Binary(a)+Num(-5)), (Binary(b)+Num(-5))],
                    [(Binary(c)+Num(-5)), -3]])
             
             Difference of self and numpy ndarray.
             
-            >>> array_a - np.array([[1, 2], [3, 4]])
+            >>> array_a - np.array([[1, 2], [3, 4]]) # doctest: +SKIP
             Array([[(Binary(a)+Num(-1)), (Binary(b)+Num(-2))],
                    [(Binary(c)+Num(-3)), -2]])
         """
@@ -336,22 +336,22 @@ class Array:
             >>> import numpy as np
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
             >>> array_b = Array([[Binary('d'), 1], [Binary('f'), Binary('g')]])
-            >>> array_a.mul(array_b)
+            >>> array_a.mul(array_b) # doctest: +SKIP
             Array([[(Binary(a)*Binary(d)), (Binary(b)*Num(1))],
                    [(Binary(c)*Binary(f)), (Binary(g)*Num(2))]])
-            >>> array_a * array_b
+            >>> array_a * array_b # doctest: +SKIP
             Array([[(Binary(a)*Binary(d)), (Binary(b)*Num(1))],
                    [(Binary(c)*Binary(f)), (Binary(g)*Num(2))]])
 
             Product of self and scalar value.
 
-            >>> array_a * 5
+            >>> array_a * 5 # doctest: +SKIP
             Array([[(Binary(a)*Num(5)), (Binary(b)*Num(5))],
                    [(Binary(c)*Num(5)), 10]])
 
             Product of self and numpy ndarray.
             
-            >>> array_a * np.array([[1, 2], [3, 4]])
+            >>> array_a * np.array([[1, 2], [3, 4]]) # doctest: +SKIP
             Array([[(Binary(a)*Num(1)), (Binary(b)*Num(2))],
                    [(Binary(c)*Num(3)), 8]])
         """
@@ -370,7 +370,7 @@ class Array:
             
             >>> from pyqubo import Array, Binary
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), 2]])
-            >>> array_a / 5
+            >>> array_a / 5 # doctest: +SKIP
             Array([[(Binary(a)*Num(0.2)), (Binary(b)*Num(0.2))],
                    [(Binary(c)*Num(0.2)), 0.4]])
         """
@@ -401,10 +401,10 @@ class Array:
         Example:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 2), vartype='BINARY')
-            >>> array
+            >>> array # doctest: +SKIP
             Array([[Binary(x[0][0]), Binary(x[0][1])],
                    [Binary(x[1][0]), Binary(x[1][1])]])
-            >>> array[0]
+            >>> array[0] # doctest: +SKIP
             Array([Binary(x[0][0]), Binary(x[0][1])])
         """
 
@@ -554,7 +554,7 @@ class Array:
             >>> from pyqubo import Array, Binary
             >>> array_a = Array([Binary('a'), Binary('b')])
             >>> array_b = Array([Binary('c'), Binary('d')])
-            >>> array_a.dot(array_b)
+            >>> array_a.dot(array_b) # doctest: +SKIP
             ((Binary(a)*Binary(c))+(Binary(b)*Binary(d)))
             
             2. If `self` is an N-D array and `other` is a 1-D array,\
@@ -562,7 +562,7 @@ class Array:
             
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
             >>> array_b = Array([Binary('e'), Binary('f')])
-            >>> array_a.dot(array_b)
+            >>> array_a.dot(array_b) # doctest: +SKIP
             Array([((Binary(a)*Binary(e))+(Binary(b)*Binary(f))), \
                 ((Binary(c)*Binary(e))+(Binary(d)*Binary(f)))])
             
@@ -570,7 +570,7 @@ class Array:
             
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
             >>> array_b = Array([[Binary('e'), Binary('f')], [Binary('g'), Binary('h')]])
-            >>> array_a.dot(array_b)
+            >>> array_a.dot(array_b) # doctest: +SKIP
             Array([[((Binary(a)*Binary(e))+(Binary(b)*Binary(g))), \
                 ((Binary(a)*Binary(f))+(Binary(b)*Binary(h)))],
                    [((Binary(c)*Binary(e))+(Binary(d)*Binary(g))), \
@@ -599,7 +599,7 @@ class Array:
             
             >>> array_a = Array([Binary('a'), Binary('b')])
             >>> array_b = [3, 4]
-            >>> array_a.dot(array_b)
+            >>> array_a.dot(array_b) # doctest: +SKIP
             ((Binary(a)*Num(3))+(Binary(b)*Num(4)))
         """
         if isinstance(other, np.ndarray) or isinstance(other, list):
@@ -670,7 +670,7 @@ class Array:
             >>> from pyqubo import Array, Binary
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
             >>> array_b = Array([Binary('e'), Binary('f')])
-            >>> array_a.matmul(array_b)
+            >>> array_a.matmul(array_b) # doctest: +SKIP
             Array([((Binary(a)*Binary(e))+(Binary(b)*Binary(f))), \
                 ((Binary(c)*Binary(e))+(Binary(d)*Binary(f)))])
             
@@ -678,7 +678,7 @@ class Array:
             
             >>> array_a = Array([[Binary('a'), Binary('b')], [Binary('c'), Binary('d')]])
             >>> array_b = Array([[Binary('e'), Binary('f')], [Binary('g'), Binary('h')]])
-            >>> array_a.matmul(array_b)
+            >>> array_a.matmul(array_b) # doctest: +SKIP
             Array([[((Binary(a)*Binary(e))+(Binary(b)*Binary(g))), \
                 ((Binary(a)*Binary(f))+(Binary(b)*Binary(h)))],
                    [((Binary(c)*Binary(e))+(Binary(d)*Binary(g))), \

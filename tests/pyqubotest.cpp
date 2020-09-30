@@ -40,11 +40,7 @@ TEST(PROD, EQUALITY){
     EXPECT_TRUE(std::ProdEqual()(quad_prod_1, quad_prod_2));
     EXPECT_NE(quad_prod_1, quad_prod_3);
     EXPECT_NE(std::ProdHash()(quad_prod_1), std::ProdHash()(quad_prod_3));
-
-    uint32_t i = 0;
-    auto quad_prod_4 = Prod::create(i, 2);
 }
-
 
 TEST(EXPRESS, COMPILE){
     BasePtr a(new Binary("a"));
@@ -85,7 +81,6 @@ TEST(EXPRESS, COMPILE){
     EXPECT_EQ(bqm.get_linear(), expected_linear);
     EXPECT_EQ(bqm.get_quadratic(), expected_quadratic);
     EXPECT_EQ(bqm.get_offset(), 8.0);
-    
 }
 
 TEST(EXPRESS, COMPILE2){
@@ -111,7 +106,6 @@ TEST(EXPRESS, COMPILE2){
     ASSERT_EQ(sol.subh_values["const_2"], 1.0);
     ASSERT_EQ(sol.energy, 3.0);
 }
-
 
 TEST(EXPRESS, COMPILE3){
     
@@ -180,8 +174,6 @@ TEST(EXPRESS, MAKE_QUADRATIC){
     model.to_bqm(feed_dict);
 }
 
-
-
 TEST(COEFF_POLY, EQUALITY){
     CoeffProd a = CoeffProd("x", 1);
     CoeffProd b = CoeffProd("y", 2);
@@ -239,8 +231,7 @@ TEST(COEFF, EXPAND){
 
     CoeffPtr x = make_shared<CoeffPlaceholder>("x");
     CoeffPtr ax_b = x->mul(a)->add(b);
-    
-    
+
     auto expand_ax_b = ax_b->expand();
     auto expect_poly1 = new PHPoly();
     CoeffProd x_prod = CoeffProd("x", 1);

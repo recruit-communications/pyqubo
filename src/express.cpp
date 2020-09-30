@@ -9,7 +9,6 @@ using namespace::std;
 
 /*---------- Base ------------*/
 BasePtr Base::add(BasePtr other){
-    //cout << "Base::add\n";
     BasePtr this_ptr = shared_from_this();
     AddPtr new_base(new Add(this_ptr, other));
     return new_base;
