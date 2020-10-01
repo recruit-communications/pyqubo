@@ -1,32 +1,284 @@
-version: 2
-jobs:
-  test-2.7: &test-template
-    docker:
-      - image: circleci/python:2.7-jessie
+version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
+jobs:
+
+##################################################################################################
+# Linux
+##################################################################################################
+
+  test-linux-36: &linux-test-template
+    docker:
+      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+    
+    environment:
+      PYTHON_PATH: /opt/python/cp36-cp36m
+    
     working_directory: ~/repo
 
     steps:
-      - checkout
 
-      - run:
+      - checkout
+      
+      - run: &set-python-path
+          name: set python path
+          command: |
+            echo 'export PATH=$PYTHON_PATH/bin/:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            python -V
+      
+      - run: &create-virtualenv
           name: create virtualenv
           command: |
+            python --version
+            python -m pip install virtualenv
             python -m virtualenv env
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
-      - run:
-          name: install python dependencies
+      - run: &install-dependencies-template
+          name: install dependencies
           command: |
             . env/bin/activate
             python --version
             pip install -r requirements.txt
+      
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
-      - run:
+      - run: &install-package-template
+          name: install package
+          command: |
+            . env/bin/activate
+            python --version
+            python setup.py install
+
+      - run: &run-tests-template
           name: run unittests
           command: |
             . env/bin/activate
             python --version
             coverage run -m unittest discover
+  
+  
+  test-linux-doctest:
+    <<: *linux-test-template
+  
+    steps:
+
+      - checkout
+      
+      - run: *set-python-path
+      
+      - run: *create-virtualenv
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run:
+          name: install dependencies
+          command: |
+            . env/bin/activate
+            python --version
+            pip install -r requirements.txt
+            pip install -r requirements_doctest.txt
+
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-package-template
+      
+      - run: *run-tests-template
+      
+      - run:
+          name: test doc build
+          command: |
+            . env/bin/activate
+            sphinx-build -W -b html docs docs/_build/html
+      
+      - run:
+          name: run doctest
+          command: |
+            . env/bin/activate
+            make doctest
+  
+  test-linux-35:
+    <<: *linux-test-template
+    environment:
+      PYTHON_PATH: /opt/python/cp35-cp35m
+
+  test-linux-37:
+    <<: *linux-test-template
+    environment:
+      PYTHON_PATH: /opt/python/cp37-cp37m
+  
+  test-linux-38:
+    <<: *linux-test-template
+    environment:
+      PYTHON_PATH: /opt/python/cp38-cp38
+  
+  test-linux32-35:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp35-cp35m
+  
+  test-linux32-36:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp36-cp36m
+  
+  test-linux32-37:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp37-cp37m
+  
+  test-linux32-38:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp38-cp38
+
+  deploy-linux:
+    docker:
+      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+
+    environment:
+      PYENV_ROOT: tmp/.pyenv
+      PYTHON: 3.6.5
+    
+    working_directory: ~/repo
+
+    steps:
+
+      - checkout
+
+      - run: *set-python-path
+      
+      - run:
+          name: build wheels
+          command: |
+            for PYBIN in /opt/python/*/bin; do
+              echo $PYBIN
+              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 9))"; then continue; fi;
+              "${PYBIN}/pip" install -r requirements.txt
+              "${PYBIN}/pip" wheel . -w ./wheelhouse
+              "${PYBIN}/python" setup.py sdist -d ./dist
+            done
+      
+      - run:
+          name: bundle shared libraries into wheels
+          command: |
+            ls ./wheelhouse/
+            for whl in ./wheelhouse/pyqubo*.whl; do
+              auditwheel repair "$whl" -w ./dist
+            done
+      
+      - store_artifacts:
+          path: ./dist
+
+      - run: &init-pypirc
+          name: init .pypirc
+          command: |
+            echo -e "[pypi]" >> ~/.pypirc
+            # for testpypi
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+
+            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+
+      - run:
+          name: python setup
+          command: |
+            echo 'export PATH=/opt/python/cp36-cp36m/bin/:$PATH' >> $BASH_ENV
+            source $BASH_ENV
+            python -V
+      
+      - run: *create-virtualenv
+      
+      - run: &upload-wheel
+          name: install twine and deploy
+          command: |
+            . env/bin/activate
+            pip install twine
+            twine upload --skip-existing ./dist/*
+
+
+##################################################################################################
+# Mac OSX
+##################################################################################################
+
+  test-osx-36: &test-osx-template
+    macos:
+      xcode: "11.2.0"
+    environment:
+      PYTHON: 3.6.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - run: &install-cmake-pyenv
+          name: install cmake and pyenv
+          command: |
+            brew --version
+            brew install cmake
+            brew install pyenv
+
+      - restore_cache:
+          keys:
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run:
+          name: install python
+          command: |
+            pyenv install $PYTHON -s
+
+      - save_cache:
+          paths:
+            - ~/.pyenv
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+      
+      - run: &create-virtualenv-using-pyenv
+          name: create virtualenv
+          command: |
+            eval "$(pyenv init -)"
+            pyenv local $PYTHON
+            python -m pip install virtualenv
+            python -m virtualenv env
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-dependencies-template
+
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-package-template
+
+      - run: *run-tests-template
 
       - run:
           name: codecov
@@ -36,137 +288,259 @@ jobs:
             if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] || [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
               codecov
             fi
+  
+  test-osx-35:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.5.8
+      HOMEBREW_NO_AUTO_UPDATE: 1
 
-      - run:
-          name: test notebooks
-          command: |
-            . env/bin/activate
-            python setup.py install
-            find notebooks -name *.ipynb -not -path "*/.ipynb_checkpoints/*" | xargs -L 1 runipy
-
-  test-3.4:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.4-jessie
-
-  test-3.5:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.5-jessie
-
-  test-3.6:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.6-jessie
-
-  test-3.7:
-    <<: *test-template
-    docker:
-      - image: circleci/python:3.7-stretch
-
-  test-doc:
-    docker:
-      - image: circleci/python:3.6-jessie
-
-    working_directory: ~/repo
-
-    steps:
-      - run:
-          name: install graphviz and pandoc
-          command: |
-            sudo apt-get install graphviz
-            sudo apt-get install pandoc
-
-      - checkout
-
-      - run:
-          name: create virtualenv
-          command: |
-            python -m virtualenv env
-
-      - run:
-          name: install sphinx and dependencies
-          command: |
-            . env/bin/activate
-            pip install -r requirements.txt
-            pip install sphinx
-            pip install sphinx_rtd_theme
-
-      - run:
-          name: test doc build
-          command: |
-            . env/bin/activate
-            sphinx-build -W -b html docs docs/_build/html
-
-      - run:
-          name: run doctest
-          command: |
-            . env/bin/activate
-            make doctest
-
-  deploy:
-    docker:
-      - image: circleci/python:3.6-jessie
-
+  test-osx-37:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.7.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+  
+  test-osx-38:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.8.0
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      
+  deploy-osx-36: &deploy-osx-template
+    macos:
+      xcode: "11.2.0"
+    
+    environment:
+      PYTHON: 3.6.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+    
     working_directory: ~/repo
 
     steps:
       - checkout
 
-      - run:
-          name: create a virtualenv
-          command: |
-            pip install virtualenv
-            python -m virtualenv env
+      - run: *install-cmake-pyenv
+
+      - restore_cache:
+          keys:
+            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
 
       - run:
-          name: install python dependencies
+          name: install python
+          command: |
+            pyenv install -l
+            pyenv install $PYTHON -s
+
+      - save_cache:
+          paths:
+            - ~/.pyenv
+          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
+      
+      - run: *create-virtualenv-using-pyenv
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-dependencies-template
+
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-package-template
+
+      - run: *run-tests-template
+      
+      - run:
+          name: create bdist_wheel
           command: |
             . env/bin/activate
-            python --version
-            pip install -r requirements.txt
-
-      - run:
-          name: build wheels
-          command: |
-            . env/bin/activate
-            python setup.py sdist -d ./dist
-
+            python setup.py bdist_wheel
+      
       - store_artifacts:
           path: ./dist
 
-      - run:
-          name: init .pypirc
+      - run: *init-pypirc
+      
+      - run: *upload-wheel
+  
+  deploy-osx-35:
+    <<: *deploy-osx-template
+    environment:
+      PYTHON: 3.5.8
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+  
+  deploy-osx-37:
+    <<: *deploy-osx-template
+    environment:
+      PYTHON: 3.7.5
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+  
+  deploy-osx-38:
+    <<: *deploy-osx-template
+    environment:
+      PYTHON: 3.8.0
+      HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+
+  
+##################################################################################################
+# Windows
+##################################################################################################
+
+  test-win-36: &test-win-template
+    executor:
+      name: win/default
+      shell: bash.exe
+    
+    environment:
+      PYTHON: 3.6.5
+      PYTHON_PATH: C:/Python36/
+
+    steps:
+      - checkout
+
+      - run: &win-install-camke-python
+          name: install cmake and python
           command: |
-            echo -e "[pypi]" >> ~/.pypirc
-
-            # for testpypi
-            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-
-            echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            choco install -y cmake
+            
+            if [ $PYTHON != '3.7.3' ]; then
+            choco install -y python --version "${PYTHON}"      
+            fi
+      
+      - run:
+          name: install pyqubo
+          command: |
+            export PATH=$PATH:"C:\Program Files\CMake\bin"
+            $PYTHON_PATH/python -m pip install -r requirements.txt
+            $PYTHON_PATH/python setup.py install
 
       - run:
-          name: install twine and deploy
+          name: run unittests
           command: |
-            . env/bin/activate
-            pip install twine
-            twine upload --repository pypi ./dist/*
+            $PYTHON_PATH/python -m coverage run -m unittest discover
+
+  test-win-37:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.7.3
+      PYTHON_PATH: C:/tools/miniconda3
+  
+  test-win-38:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.8.5
+      PYTHON_PATH: C:/Python38/
+  
+  test-win-35:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.5.4
+      PYTHON_PATH: C:/Python35/
+  
+  deploy-win-36: &deploy-win-template
+    executor:
+      name: win/default
+      shell: bash.exe
+    
+    environment:
+      PYTHON: 3.6.5
+      PYTHON_PATH: C:/Python36/
+
+    steps:
+      - checkout
+
+      - run: *win-install-camke-python
+      
+      - run:
+          name: create wheel and test install
+          command: |
+            export PATH=$PATH:"C:\Program Files\CMake\bin"
+            $PYTHON_PATH/python -m pip install -r requirements.txt
+            $PYTHON_PATH/python -m pip install wheel twine
+            $PYTHON_PATH/python setup.py bdist_wheel
+            $PYTHON_PATH/python -m pip install pyqubo --no-index -f dist
+
+      - run: *init-pypirc
+
+      - run:
+          name: upload wheel
+          command: |
+            $PYTHON_PATH/python -m twine upload --skip-existing ./dist/*
+          shell: bash.exe
+
+  deploy-win-37:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.7.3
+      PYTHON_PATH: C:/tools/miniconda3
+
+  deploy-win-38:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.8.5
+      PYTHON_PATH: C:/Python38/
+
+  deploy-win-35:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.5.4
+      PYTHON_PATH: C:/Python35/
 
 
 workflows:
-  version: 2
   tests:
     jobs:
-      - test-2.7
-      - test-3.4
-      - test-3.5
-      - test-3.6
-      - test-3.7
-      - test-doc
-      - deploy:
+      - test-linux-doctest
+
+      - test-osx-35
+      - test-osx-36
+      - test-osx-37
+      - test-osx-38
+      
+      - test-win-35
+      - test-win-36
+      - test-win-37
+      - test-win-38
+
+      - test-linux-35
+      - test-linux-36
+      - test-linux-37
+      - test-linux-38
+
+      - test-linux32-35
+      - test-linux32-36
+      - test-linux32-37
+      - test-linux32-38
+  
+  deploy:
+    jobs:
+      - deploy-osx-35: &deploy-template
           filters:
             tags:
-              only: /^[0-9](\.[0-9]){2}?/
+              only: /^[0-9]+(\.[0-9]+){2}?/
             branches:
               ignore: /.*/
+      - deploy-osx-36:
+          <<: *deploy-template
+      - deploy-osx-37:
+          <<: *deploy-template
+      - deploy-osx-38:
+          <<: *deploy-template
+      - deploy-win-35:
+          <<: *deploy-template
+      - deploy-win-36:
+          <<: *deploy-template
+      - deploy-win-37:
+          <<: *deploy-template
+      - deploy-win-38:
+          <<: *deploy-template
+      - deploy-linux:
+          <<: *deploy-template

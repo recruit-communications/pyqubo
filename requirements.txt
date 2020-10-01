@@ -1,11 +1,7 @@
-dimod>=0.8.4
-numpy==1.15.1
-six==1.11.0
+dimod==0.9.2
+numpy==1.18.2
 coverage==4.5.1
-codecov==2.0.15
+codecov==2.1.9
+dwave-neal==0.5.4
+Deprecated==1.2.10
 nbsphinx==0.3.5
-ipykernel==4.9.0
-runipy==0.1.5
-matplotlib==2.2.3
-networkx==2.0
-dwave-neal>=0.4.5
