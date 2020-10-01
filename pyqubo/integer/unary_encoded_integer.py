@@ -29,14 +29,14 @@ class UnaryEncInteger(Integer):
         upper (int): Upper value of the integer.
 
     Examples:
-        This example finds the value `a`, `b` such that :math:`a+b=3` and :math:`2a-b=1`.
+        This example finds the value `a`, `b` such that :math:`a+b=3` and :math:`2a-b=0`.
         
         >>> from pyqubo import UnaryEncInteger
         >>> import dimod
         >>> a = UnaryEncInteger("a", (0, 3))
         >>> b = UnaryEncInteger("b", (0, 3))
         >>> M=2.0
-        >>> H = (2*a-b-1)**2 + M*(a+b-3)**2
+        >>> H = (2*a-b)**2 + M*(a+b-3)**2
         >>> model = H.compile()
         >>> bqm = model.to_bqm()
         >>> import dimod

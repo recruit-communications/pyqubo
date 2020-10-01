@@ -19,15 +19,19 @@ PyQUBO
 PyQUBO allows you to create QUBOs or Ising models from flexible mathematical expressions easily.
 Some of the features of PyQUBO are
 
-* **Python-based**.
-* **QUBO generation (compile) is fast.**
+* **Python based (C++ backend).**
+* **Fully integrated with Ocean SDK.** (:ref:`details<integration>`)
 * **Automatic validation of constraints.** (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#validation-of-constraints>`__)
 * **Placeholder** for parameter tuning. (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#placeholder>`__)
+
 
 For more details, see `PyQUBO Documentation <https://pyqubo.readthedocs.io/>`_.
 
 Example Usage
 -------------
+
+Creating QUBO
+`````````````
 
 This example constructs a simple expression and compile it to ``model``.
 By calling ``model.to_qubo()``, we get the resulting QUBO.
@@ -50,6 +54,28 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
 ('s4', 's3'): 56.0,
 ('s4', 's4'): -52.0}
 
+.. _integration:
+
+Integration with D-Wave Ocean
+`````````````````````````````
+
+PyQUBO can output the `BinaryQuadraticModel(BQM) <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/reference/bqm.html>`_
+which is compatible with :class:`Sampler` class defined in D-Wave Ocean SDK.
+In the example below, we solve the problem with :class:`SimulatedAnnealingSampler`.
+
+>>> import neal
+>>> sampler = neal.SimulatedAnnealingSampler()
+>>> bqm = model.to_bqm()
+>>> sampleset = sampler.sample(bqm, num_reads=10)
+>>> decoded_samples = model.decode_sampleset(sampleset)
+>>> best_sample = min(decoded_samples, key=lambda x: x.energy)
+>>> best_sample.sample # doctest: +SKIP
+{'s1': 0, 's2': 0, 's3': 1, 's4': 0}
+
+If you want to solve the problem by actual D-Wave machines,
+just replace the `sampler` by a :class:`DWaveCliqueSampler` instance, for example.
+
+
 For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/notebooks>`_.
 
 Installation
@@ -68,7 +94,14 @@ or
 Supported Python Versions
 -------------------------
 
-Python 2.7, 3.4, 3.5, 3.6 and 3.7 are supported.
+Python 3.5, 3.6, 3.7 and 3.8 are supported.
+
+Supported Operating Systems
+---------------------------
+
+- Linux (32/64bit)
+- OSX (64bit, >=10.9)
+- Win (64bit)
 
 .. index-end-marker1
 

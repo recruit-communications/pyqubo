@@ -47,7 +47,7 @@ def solve_qubo(qubo, num_reads=10, sweeps=1000, beta_range=(1.0, 50.0)):
         >>> sampleset = sa.sample(bqm, num_reads=10)
         >>> samples = model.decode_sampleset(sampleset)
         >>> best_sample = min(samples, key=lambda s: s.energy)
-        >>> pprint(best_sample.sample)
+        >>> pprint(best_sample.sample) # doctest: +SKIP
         {'s1': 0, 's2': 0, 's3': 1}
 
     """
@@ -90,7 +90,7 @@ def solve_ising(linear, quad, num_reads=10, sweeps=1000, beta_range=(1.0, 50.0))
         >>> sampleset = sa.sample(bqm, num_reads=10)
         >>> samples = model.decode_sampleset(sampleset)
         >>> best_sample = min(samples, key=lambda s: s.energy)
-        >>> pprint(best_sample.sample)
+        >>> pprint(best_sample.sample) # doctest: +SKIP
         {'s1': 0, 's2': 0, 's3': 1}
     """
     max_abs_value = float(max(abs(v) for v in (list(quad.values()) + list(linear.values()))))
