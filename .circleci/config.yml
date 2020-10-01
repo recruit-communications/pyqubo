@@ -65,7 +65,50 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
+  
+  test-linux-doctest:
+    <<: *linux-test-template
+  
+    steps:
 
+      - checkout
+      
+      - run: *set-python-path
+      
+      - run: *create-virtualenv
+      
+      - restore_cache:
+          keys:
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run:
+          name: install dependencies
+          command: |
+            . env/bin/activate
+            python --version
+            pip install -r requirements.txt
+            pip install -r requirements_doctest.txt
+
+      - save_cache:
+          paths:
+            - ./env
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+
+      - run: *install-package-template
+      
+      - run: *run-tests-template
+      
+      - run:
+          name: test doc build
+          command: |
+            . env/bin/activate
+            sphinx-build -W -b html docs docs/_build/html
+      
+      - run:
+          name: run doctest
+          command: |
+            . env/bin/activate
+            make doctest
   
   test-linux-35:
     <<: *linux-test-template
@@ -445,25 +488,8 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
-      
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      - test-linux-doctest
 
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
-
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
   
   deploy:
     jobs:
