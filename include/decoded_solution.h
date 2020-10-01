@@ -88,7 +88,7 @@ public:
     }
 
     string to_string(){
-        string s = string("DecodedSolution(decoded_subhs=[");
+        string s = string("DecodedSample(decoded_subhs=[");
         for(auto& constraint: decoded_subhs){
             s += constraint.to_string() + ",";
         }

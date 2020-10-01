@@ -11,6 +11,16 @@ from distutils.version import LooseVersion
 from setuptools import Command
 
 
+class PackageInfo(object):
+    def __init__(self, info_file):
+        with open(info_file) as f:
+            exec(f.read(), self.__dict__)
+        self.__dict__.pop('__builtins__', None)
+
+    def __getattribute__(self, name):
+        return super(PackageInfo, self).__getattribute__(name)
+
+package_info = PackageInfo(os.path.join('pyqubo', 'package_info.py'))
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -91,17 +101,32 @@ install_requires = [
     'Deprecated>=1.2.10'
     ]
 
+python_requires = '>=3.5'
 
 setup(
-    name='pyqubo',
-    version='1.0.8',
-    author='Recruit Communications Co.,Ltd.',
-    author_email='',
-    description='PyQUBO',
-    long_description='',
+    name=package_info.__package_name__,
+    version=package_info.__version__,
+    description=package_info.__description__,
+    long_description=open('README.rst').read(),
+    author=package_info.__contact_names__,
+    author_email=package_info.__contact_emails__,
+    maintainer=package_info.__contact_names__,
+    maintainer_email=package_info.__contact_emails__,
+    url=package_info.__repository_url__,
+    download_url=package_info.__download_url__,
+    license=package_info.__license__,
     ext_modules=[CMakeExtension('pyqubo')],
     cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
     zip_safe=False,
     packages=packages,
-    install_requires=install_requires
+    keywords=package_info.__keywords__,
+    install_requires=install_requires,
+    python_requires=python_requires,
+    classifiers=[
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'License :: OSI Approved :: Apache Software License',
+    ]
 )
