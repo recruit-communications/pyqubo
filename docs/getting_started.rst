@@ -48,13 +48,13 @@ Basic Usage
 
 With PyQUBO, you can construct QUBOs with 3 steps:
 
-1. **Define the hamiltonian.**
+1. **Define the Hamiltonian.**
 
 >>> from pyqubo import Spin
 >>> s1, s2, s3, s4 = Spin("s1"), Spin("s2"), Spin("s3"), Spin("s4")
 >>> H = (4*s1 + 2*s2 + 7*s3 + s4)**2
 
-2. **Compile the hamiltonian to get a model.**
+2. **Compile the Hamiltonian to get a model.**
 
 >>> model = H.compile()
 
@@ -92,7 +92,7 @@ In PyQUBO, spin variables are internally converted to binary variables via the r
 
 4. **Call ‘to_ising()’ to get Ising coefficients.**
 
-If you want to get the coefficient of the Ising model, just call :obj:`Model.to_ising()` method like below.
+If you want to get the coefficient of the Ising model, just call :obj:`to_ising()` method like below.
 
 >>> linear, quadratic, offset = model.to_ising()
 >>> pprint(linear) # doctest: +SKIP
@@ -117,24 +117,24 @@ where `linear` represents external magnetic fields :math:`h`, `quadratic` repres
 Variable: Binary and Spin
 -------------------------
 
-When you define a hamiltonian, you can use :class:`Binary` or :class:`Spin` as a variable.
+When you define a Hamiltonian, you can use :class:`Binary` or :class:`Spin` class to represent :math:`\{0,1\}` or :math:`\{1,-1\}` variable.
 
 **Example:**
-If you want to define a hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
+If you want to define a Hamiltonian with binary variables :math:`x \in \{0, 1\}`, use :class:`Binary`.
 
 >>> from pyqubo import Binary
 >>> x1, x2 = Binary('x1'), Binary('x2')
->>> exp = 2*x1*x2 + 3*x1
->>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
+>>> H = 2*x1*x2 + 3*x1
+>>> pprint(H.compile().to_qubo()) # doctest: +SKIP
 ({('x1', 'x1'): 3.0, ('x1', 'x2'): 2.0, ('x2', 'x2'): 0.0}, 0.0)
 
 **Example:**
-If you want to define a hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
+If you want to define a Hamiltonian with spin variables :math:`s \in \{-1, 1\}`, use :class:`Spin`.
 
 >>> from pyqubo import Spin
 >>> s1, s2 = Spin('s1'), Spin('s2')
->>> exp = 2*s1*s2 + 3*s1
->>> pprint(exp.compile().to_qubo()) # doctest: +SKIP
+>>> H = 2*s1*s2 + 3*s1
+>>> pprint(H.compile().to_qubo()) # doctest: +SKIP
 ({('s1', 's1'): 2.0, ('s1', 's2'): 8.0, ('s2', 's2'): -4.0}, -1.0)
 
 
@@ -147,7 +147,7 @@ You can solve BQM by using :class:`Sampler` class.
 Various kinds of sampler class, such as `SimulatedAnnealingSampler <https://docs.ocean.dwavesys.com/en/stable/docs_neal/reference/sampler.html>`_ or `DWaveSampler <https://docs.ocean.dwavesys.com/en/stable/docs_system/reference/samplers.html#dwave.system.samplers.DWaveSampler>`_, inherits `Sampler` class.
 
 First, we craete BQM object using :func:`to_bqm` method.
-(If you want to use DWaveSampler which only takes integer index QUBO,
+(If you want to use DWaveSampler which only takes integer-indexed QUBO,
 you can simply do like ``to_bqm(index_label=True)``.)
 
 >>> from pyqubo import Binary
@@ -157,7 +157,7 @@ you can simply do like ``to_bqm(index_label=True)``.)
 >>> bqm = model.to_bqm()
 
 Next, we create :class:`neal.SimulatedAnnealingSampler` and use :func:`sample` method to get the solutions of QUBO as `SampleSet <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/reference/sampleset.html>`_.
-You can use :func:`Model.decode_sampleset` to interpret the :func:`sampleset` object, and it returns `decoded_samples` which is a list of :class:`pyqubo.DecodedSample` object.
+You can use :func:`Model.decode_sampleset` to interpret the `sampleset` object, and it returns `decoded_samples` which is a list of :class:`pyqubo.DecodedSample` object.
 
 >>> import neal
 >>> sa = neal.SimulatedAnnealingSampler()
@@ -242,8 +242,8 @@ You get a QUBO with different value of M without compile
 
 The actual value of the placeholder :math:`M` is specified in calling :obj:`Model.to_qubo()` as a value of the feed_dict.
 
-Decode Sample
--------------
+Validation of Constraints
+-------------------------
 
 When you get a solution from the Sampler, :obj:`Model.decode_sample()` decodes the sample and returns :class:`DecodedSample` object.
 
@@ -267,6 +267,6 @@ Let's assume that you get a solution :obj:`{'a': 0, 'b': 1}` from the solver.
 {}
 
 You can access to the dict of the sample via :obj:`decoded_sample.sample`.
-You can also access to the the of the constraint part of the Hamiltonian via `decoded_sample.get_constraint_values()`.
+You can also access to the value of the constraint of the Hamiltonian via `decoded_sample.get_constraint_values()`.
 If you specify the argument `only_broken=True`, only broken constraint will be returned.
 If the empty `dict` is returned, it indicates that there is no broken constraint corresponding to the given sample.

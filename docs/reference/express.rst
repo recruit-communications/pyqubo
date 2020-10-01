@@ -277,14 +277,13 @@ UserDefinedExpress
 
         Define the :class:`LogicalAnd` class by inheriting :class:`UserDefinedExpress`.
         
-        >>> from pyqubo import UserDefinedExpress
+        >>> from pyqubo import UserDefinedExpress, Binary
         >>> class LogicalAnd(UserDefinedExpress):
         ...     def __init__(self, bit_a, bit_b):
-        ...         self._express = bit_a * bit_b
-        ...     
-        ...     @property
-        ...     def express(self):
-        ...         return self._express
+        ...         express = bit_a * bit_b
+        ...         super().__init__(express)
+        >>> a, b = Binary('a'), Binary('b')
+        >>> logical_and = LogicalAnd(a, b)
 
 WithPenalty
 -----------
