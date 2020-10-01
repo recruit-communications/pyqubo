@@ -197,7 +197,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.mathjax',
     'sphinx.ext.inheritance_diagram',
-    'sphinx.ext.graphviz',
     'sphinx.ext.doctest',
     'sphinx.ext.autosummary',
     'sphinx.ext.viewcode',

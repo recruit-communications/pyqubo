@@ -10,26 +10,6 @@ Expression
     All basic component class such as :class:`.Binary`, :class:`.Spin` or :class:`.Add`
     inherits :class:`.Base`.
     
-    .. graphviz::
-    
-        digraph {
-            graph [size="2.5, 2.5"]
-            node [shape=rl]
-            add [label=Add]
-            qbit_a [label="Binary(a)"]
-            qbit_b [label="Binary(b)"]
-            mul_1 [label="Mul"]
-            mul_2 [label="Mul"]
-            num_1 [label="Num(1)"]
-            num_2 [label="Num(2)"]
-            add -> num_1
-            add -> mul_1
-            mul_1 -> mul_2
-            mul_1 -> qbit_a
-            mul_2 -> qbit_b
-            mul_2 -> num_2
-        }
-    
     For example, an expression :math:`2ab+1` (where :math:`a, b` is :class:`Binary` variable) is
     represented by the binary tree above.
     
