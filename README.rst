@@ -20,9 +20,9 @@ PyQUBO allows you to create QUBOs or Ising models from flexible mathematical exp
 Some of the features of PyQUBO are
 
 * **Python based (C++ backend).**
-* **Fully integrated with Ocean SDK.** (`details <https://github.com/recruit-communications/pyqubo#integration-with-d-wave-ocean>`_)
-* **Automatic validation of constraints.** (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#validation-of-constraints>`_)
-* **Placeholder** for parameter tuning. (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#placeholder>`_)
+* **Fully integrated with Ocean SDK.** (`details <https://github.com/recruit-communications/pyqubo#integration-with-d-wave-ocean>`__)
+* **Automatic validation of constraints.** (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#validation-of-constraints>`__)
+* **Placeholder** for parameter tuning. (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#placeholder>`__)
 
 
 For more details, see `PyQUBO Documentation <https://pyqubo.readthedocs.io/>`_.
