@@ -65,6 +65,16 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
+      
+      - run:
+          name: codecov
+          command: |
+            . env/bin/activate
+            # skip here when local run
+            if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] || [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
+              codecov
+            fi
+  
   
   test-linux-doctest:
     <<: *linux-test-template
@@ -489,6 +499,8 @@ workflows:
   tests:
     jobs:
       - test-linux-doctest
+
+      - test-linux-35
 
   
   deploy:
