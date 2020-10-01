@@ -109,9 +109,9 @@ class TestModel(unittest.TestCase):
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh_values.items() if energy > 0]) == 1)
         self.assertTrue(decoded_sample.energy == 1)
-        self.assertTrue(decoded_sample.get_get_array_value("x", (0, 0)) == 1)
-        self.assertTrue(decoded_sample.get_get_array_value("x", (0, 1)) == 1)
-        self.assertTrue(decoded_sample.get_get_array_value("x", (1, 1)) == 0)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 0)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (0, 1)) == 1)
+        self.assertTrue(decoded_sample.get_array_value("x", (1, 1)) == 0)
 
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 0}
         list_sample = [sample[v] for v in model.variables]

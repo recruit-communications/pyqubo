@@ -64,8 +64,7 @@ class TestInteger(unittest.TestCase):
         self.assertTrue(decoded.subh_values["b"]==2)
         self.assertTrue(decoded.subh_values["a_const"]==0)
         self.assertTrue(decoded.subh_values["b_const"]==0)
-
-        print(decoded.constraint_values(only_broken=False))
+        self.assertEqual(len(decoded.get_constraint_values(only_broken=True)), 0)
     
     def test_order_enc_integer(self):
         a = OrderEncInteger("a", (0, 4), strength=Placeholder("s"))
