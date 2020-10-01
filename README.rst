@@ -20,7 +20,7 @@ PyQUBO allows you to create QUBOs or Ising models from flexible mathematical exp
 Some of the features of PyQUBO are
 
 * **Python based (C++ backend).**
-* **Fully integrated with Ocean SDK.** (:ref:`details<integration>`)
+* **Fully integrated with Ocean SDK.** (`details <https://github.com/recruit-communications/pyqubo#integration-with-d-wave-ocean>`__)
 * **Automatic validation of constraints.** (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#validation-of-constraints>`__)
 * **Placeholder** for parameter tuning. (`details <https://pyqubo.readthedocs.io/en/latest/getting_started.html#placeholder>`__)
 
@@ -60,8 +60,8 @@ Integration with D-Wave Ocean
 `````````````````````````````
 
 PyQUBO can output the `BinaryQuadraticModel(BQM) <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/reference/bqm.html>`_
-which is compatible with :class:`Sampler` class defined in D-Wave Ocean SDK.
-In the example below, we solve the problem with :class:`SimulatedAnnealingSampler`.
+which is compatible with `Sampler` class defined in D-Wave Ocean SDK.
+In the example below, we solve the problem with `SimulatedAnnealingSampler`.
 
 >>> import neal
 >>> sampler = neal.SimulatedAnnealingSampler()
@@ -73,7 +73,7 @@ In the example below, we solve the problem with :class:`SimulatedAnnealingSample
 {'s1': 0, 's2': 0, 's3': 1, 's4': 0}
 
 If you want to solve the problem by actual D-Wave machines,
-just replace the `sampler` by a :class:`DWaveCliqueSampler` instance, for example.
+just replace the `sampler` by a `DWaveCliqueSampler` instance, for example.
 
 
 For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/notebooks>`_.
