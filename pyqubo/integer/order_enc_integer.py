@@ -47,7 +47,7 @@ class OrderEncInteger(IntegerWithPenalty):
         >>> sampleset = dimod.ExactSolver().sample(bqm)
         >>> decoded_samples = model.decode_sampleset(sampleset)
         >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
-        >>> print(best_sample.subh_values['a'])
+        >>> print(best_sample.subh['a'])
         2.0
     """
 
@@ -106,9 +106,9 @@ class OrderEncInteger(IntegerWithPenalty):
             >>> sampleset = dimod.ExactSolver().sample(bqm)
             >>> decoded_samples = model.decode_sampleset(sampleset)
             >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
-            >>> print(best_sample.subh_values['a'])
+            >>> print(best_sample.subh['a'])
             2.0
-            >>> print(best_sample.subh_values['b'])
+            >>> print(best_sample.subh['b'])
             2.0
         """
         assert isinstance(k, int), "k should be integer"
@@ -144,9 +144,9 @@ class OrderEncInteger(IntegerWithPenalty):
             >>> sampleset = dimod.ExactSolver().sample(bqm)
             >>> decoded_samples = model.decode_sampleset(sampleset)
             >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
-            >>> print(best_sample.subh_values['a'])
+            >>> print(best_sample.subh['a'])
             2.0
-            >>> print(best_sample.subh_values['b'])
+            >>> print(best_sample.subh['b'])
             2.0
         """
         assert isinstance(k, int), "k should be integer"

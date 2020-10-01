@@ -43,9 +43,9 @@ class UnaryEncInteger(Integer):
         >>> sampleset = dimod.ExactSolver().sample(bqm)
         >>> decoded_samples = model.decode_sampleset(sampleset)
         >>> best_sample = min(decoded_samples, key=lambda s: s.energy)
-        >>> print(best_sample.subh_values['a'])
+        >>> print(best_sample.subh['a'])
         1.0
-        >>> print(best_sample.subh_values['b'])
+        >>> print(best_sample.subh['b'])
         2.0
     """
 

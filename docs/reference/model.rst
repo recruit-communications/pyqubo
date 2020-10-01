@@ -161,7 +161,7 @@ Model
     -3.0
     >>> pprint(best_sample.sample)
     {'a': 0, 'b': 1}
-    >>> pprint(best_sample.get_constraint_values())
+    >>> pprint(best_sample.constraints())
     {'const1': (False, -3.0), 'const2': (True, 0.0)}
 
 
@@ -199,7 +199,7 @@ Model
     1.0
     >>> pprint(decoded_sample.sample)
     {'a': 1, 'b': 0}
-    >>> print(decoded_sample.subh_values)
+    >>> print(decoded_sample.subh)
     {'subh1': -1.0}
 
 
@@ -232,7 +232,7 @@ Model
     -3.0
     >>> pprint(best_sample.sample)
     {'a': 0, 'b': 1}
-    >>> pprint(best_sample.get_constraint_values())
+    >>> pprint(best_sample.constraints())
     {'const1': (False, -3.0), 'const2': (True, 0.0)}
 
 
@@ -254,7 +254,7 @@ DecodedSample
 
         The energy of the entire Hamiltonian.
 
-    .. py:attribute:: subh_values
+    .. py:attribute:: subh
         :type: dict[str, int]
 
         The value of the sub-Hamiltonian with the key being the `label` of `SubH` object.
@@ -270,7 +270,7 @@ DecodedSample
     1.0
     >>> pprint(decoded_sample.sample)
     {'a': 1, 'b': 0}
-    >>> print(decoded_sample.subh_values)
+    >>> print(decoded_sample.subh)
     {'subh1': -1.0}
 
     **Methods**
@@ -278,11 +278,11 @@ DecodedSample
     .. csv-table::
         :widths: 30, 70
         
-        :func:`get_array_value`, Get the value of the array element specified.
-        :func:`get_constraint_values`, Returns the information about constraints.
+        :func:`array`, Get the value of the array element specified.
+        :func:`constraints`, Returns the information about constraints.
 
 
-.. py:method:: get_array_value(array_name, index)
+.. py:method:: array(array_name, index)
 
     Get the value of the array specified by `array_name` and `index`.
 
@@ -304,13 +304,13 @@ DecodedSample
     ('x[0][0]', 'x[1][0]'): 2.0,
     ('x[1][0]', 'x[1][0]'): -1.0}
     >>> dec = model.decode_sample({'x[0][0]': 1, 'x[1][0]': 0}, vartype='BINARY')
-    >>> print(dec.get_array_value('x', (0, 0)))
+    >>> print(dec.array('x', (0, 0)))
     1
-    >>> print(dec.get_array_value('x', (1, 0)))
+    >>> print(dec.array('x', (1, 0)))
     0
 
 
-.. py:method:: get_constraint_values(only_broken)
+.. py:method:: constraints(only_broken)
 
     Get the value of the array specified by `array_name` and `index`.
 
@@ -328,7 +328,7 @@ DecodedSample
     >>> H = Constraint(a+b-2, "const1") + Constraint(a+b-1, "const2")
     >>> model = H.compile()
     >>> dec = model.decode_sample({'a': 1, 'b': 0}, vartype='BINARY')
-    >>> pprint(dec.get_constraint_values())
+    >>> pprint(dec.constraints())
     {'const1': (False, -1.0), 'const2': (True, 0.0)}
-    >>> pprint(dec.get_constraint_values(only_broken=True))
+    >>> pprint(dec.constraints(only_broken=True))
     {'const1': (False, -1.0)}

@@ -261,12 +261,12 @@ Let's assume that you get a solution :obj:`{'a': 0, 'b': 1}` from the solver.
 >>> decoded_sample = model.decode_sample(raw_solution, vartype='BINARY')
 >>> pprint(decoded_sample.sample)
 {'a': 0, 'b': 1}
->>> pprint(decoded_sample.get_constraint_values())
+>>> pprint(decoded_sample.constraints())
 {'a+b=1': (True, 0.0)}
->>> pprint(decoded_sample.get_constraint_values(only_broken=True))
+>>> pprint(decoded_sample.constraints(only_broken=True))
 {}
 
 You can access to the dict of the sample via :obj:`decoded_sample.sample`.
-You can also access to the value of the constraint of the Hamiltonian via `decoded_sample.get_constraint_values()`.
+You can also access to the value of the constraint of the Hamiltonian via `decoded_sample.constraints()`.
 If you specify the argument `only_broken=True`, only broken constraint will be returned.
 If the empty `dict` is returned, it indicates that there is no broken constraint corresponding to the given sample.

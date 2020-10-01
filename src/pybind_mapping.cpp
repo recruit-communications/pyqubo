@@ -179,17 +179,16 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         .def("__repr__", &DecodedSolution::to_string)
         .def_readwrite("sample", &DecodedSolution::sample)
         .def_readwrite("energy", &DecodedSolution::energy)
-        .def_readwrite("subh_values", &DecodedSolution::subh_values)
-        .def("get_array_value", pybind_decoded_solution::array_value_int, py::arg("array_name"), py::arg("index"))
-        .def("get_array_value", pybind_decoded_solution::array_value_tuple, py::arg("array_name"), py::arg("index"))
-        .def("get_constraint_values", &DecodedSolution::get_constraints, py::arg("only_broken")=false);
+        .def_readwrite("subh", &DecodedSolution::subh_values)
+        .def("array", pybind_decoded_solution::array_value_int, py::arg("array_name"), py::arg("index"))
+        .def("array", pybind_decoded_solution::array_value_tuple, py::arg("array_name"), py::arg("index"))
+        .def("constraints", &DecodedSolution::get_constraints, py::arg("only_broken")=false);
 
     py::class_<Model>(m, "Model")
         .def("__repr__", &Model::to_string)
         .def("to_qubo", pybind_model::to_qubo, py::arg("index_label")=false, py::arg("feed_dict")=py::dict())
         .def("to_ising", pybind_model::to_ising, py::arg("index_label")=false, py::arg("feed_dict")=py::dict())
         .def("to_bqm", pybind_model::to_bqm, py::arg("index_label")=false, py::arg("feed_dict")=py::dict())
-        //.def("decode_samples", pybind_model::decode_samples, py::arg("samples"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
         .def("decode_sample", pybind_model::decode_sample_dict, py::arg("sample"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
         .def("decode_sample", pybind_model::decode_sample_list, py::arg("sample"), py::arg("vartype"), py::arg("feed_dict")=py::dict())
         .def("decode_sampleset", pybind_model::decode_sampleset, py::arg("sampleset"), py::arg("feed_dict")=py::dict())

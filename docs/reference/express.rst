@@ -177,9 +177,9 @@ Constraint
         >>> H = Constraint(a+b-2, "const1") + Constraint(a+b-1, "const2")
         >>> model = H.compile()
         >>> dec = model.decode_sample({'a': 1, 'b': 0}, vartype='BINARY')
-        >>> pprint(dec.get_constraint_values())
+        >>> pprint(dec.constraints())
         {'const1': (False, -1.0), 'const2': (True, 0.0)}
-        >>> pprint(dec.get_constraint_values(only_broken=True))
+        >>> pprint(dec.constraints(only_broken=True))
         {'const1': (False, -1.0)}
 
 Add
