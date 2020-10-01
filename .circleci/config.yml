@@ -504,7 +504,9 @@ workflows:
   deploy:
     jobs:
       - deploy-osx-35: &deploy-template
-      
+          filters:
+            branches:
+              ignore: /.*/
       - deploy-osx-36:
           <<: *deploy-template
       - deploy-osx-37:
