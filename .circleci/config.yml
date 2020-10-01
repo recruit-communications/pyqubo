@@ -65,15 +65,6 @@ jobs:
             . env/bin/activate
             python --version
             coverage run -m unittest discover
-      
-      - run:
-          name: codecov
-          command: |
-            . env/bin/activate
-            # skip here when local run
-            if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] || [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
-              codecov
-            fi
   
   
   test-linux-doctest:
@@ -288,6 +279,15 @@ jobs:
       - run: *install-package-template
 
       - run: *run-tests-template
+
+      - run:
+          name: codecov
+          command: |
+            . env/bin/activate
+            # skip here when local run
+            if ! ([ -z "$CIRCLE_PROJECT_REPONAME" ] || [ -z "$CIRCLE_PROJECT_USERNAME" ]); then
+              codecov
+            fi
   
   test-osx-35:
     <<: *test-osx-template
@@ -499,26 +499,7 @@ workflows:
   tests:
     jobs:
       - test-linux-doctest
-      
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
-      
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
-
       - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
-
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
 
   
   deploy:
