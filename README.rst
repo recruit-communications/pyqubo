@@ -133,6 +133,13 @@ Run doctest.
 
     make doctest
 
+
+Dependency
+----------
+
+This repository contains the source code of `cimod <https://github.com/OpenJij/cimod>`_ which is licensed under the Apache License 2.0.
+`cimod <https://github.com/OpenJij/cimod>`_ is the C++ header-only library for a binary quadratic model, developed by `OpenJij <https://github.com/OpenJij>`_.
+
 Citation
 --------
 
