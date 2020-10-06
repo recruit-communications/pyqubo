@@ -93,4 +93,22 @@ public:
         BinaryQuadraticModel<uint32_t> bqm(linear, quadratic, offset, vartype);
         return bqm;
     }
+
+    double evaluate_energy(Sample<string> sample, map<string, double> feed_dict, Encoder& encoder){
+        double energy = 0.0;
+        for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
+            int prod_value = 1;
+            for(int i=0; i<it->first.length; i++){
+                string label = encoder.decode(it->first.get_var(i));
+                auto result = sample.find(label);
+                if(result != sample.end()){
+                    prod_value *= result->second;
+                }else{
+                    throw std::runtime_error("The value of " + label + " was not contained in sample.");
+                }
+            }
+            energy += prod_value * it->second->evaluate(feed_dict);
+        }
+        return energy;
+    }
 };

@@ -14,7 +14,7 @@
 
 import unittest
 
-from pyqubo import Binary, Placeholder, Array, SubH
+from pyqubo import Binary, Placeholder, Array, SubH, Constraint
 from pyqubo import assert_qubo_equal
 import numpy as np
 import dimod
@@ -222,7 +222,20 @@ class TestModel(unittest.TestCase):
         self.assertTrue(sol[0].array("S", 1) == 0)
         self.assertTrue(sol[0].array("S", 2) == 1)
         self.assertTrue(np.isclose(sol[0].energy, -1.8))
+    
+    def test_constraint(self):
+        sampler = dimod.ExactSolver()
+        x = Array.create('x',shape=(3),vartype="BINARY")
+        H = Constraint(x[0]*x[1]*x[2],label="C1")
 
+        model = H.compile()
+        bqm = model.to_bqm()
+        responses = sampler.sample(bqm)
+        solutions = model.decode_sampleset(responses)
+
+        for sol in solutions:
+            if sol.energy==1.0:
+                self.assertEqual(sol.subh['C1'], 1.0)
 
 if __name__ == '__main__':
     unittest.main()

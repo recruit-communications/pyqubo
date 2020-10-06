@@ -23,14 +23,15 @@ public:
         Encoder& encoder,
         Vartype vartype
     ){
-        BinaryQuadraticModel<string> bqm = compiled_sub_h.compiled_qubo->evaluate(feed_dict, encoder);
+        //BinaryQuadraticModel<string> bqm = compiled_sub_h.compiled_qubo->evaluate(feed_dict, encoder);
         Sample<string> binary_sample;
         if(vartype == Vartype::BINARY){
             binary_sample = sample;
         }else{
             binary_sample = utils::binary_to_spin(sample);
         }
-        this->energy = bqm.energy(binary_sample);
+        //this->energy = bqm.energy(binary_sample);
+        this->energy = compiled_sub_h.compiled_qubo->evaluate_energy(binary_sample, feed_dict, encoder);
         this->label = compiled_sub_h.label;
         if(compiled_sub_h.condition != nullptr){
             this->is_constraint = true;
