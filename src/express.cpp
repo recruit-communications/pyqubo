@@ -113,9 +113,9 @@ Model Base::compile(CoeffPtr strength){
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
     
-    printf("Model\n");   
+    printf("Model\n");
     auto model = Model(*compiled_qubo, encoder, expanded);
-    cout << model.to_string() << "\n";
+    //cout << model.to_string() << "\n";
 
     printf("delete_linked_list\n");
     //expanded->delete_linked_list();
