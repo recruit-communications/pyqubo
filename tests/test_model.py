@@ -230,8 +230,8 @@ class TestModel(unittest.TestCase):
         H = Constraint(x[0]*x[1]*x[2],label="C1")
 
         model = H.compile()
-        bqm = model.to_bqm()
         """
+        bqm = model.to_bqm()
         responses = sampler.sample(bqm)
         solutions = model.decode_sampleset(responses)
         
