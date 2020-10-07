@@ -52,7 +52,7 @@ public:
         Quadratic<string> quadratic;
         double offset = 0.0;
         for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
-            if(it->first.length == 2){
+            if(it->first.length >= 2){
                 string i = encoder.decode(it->first.get_var(0));
                 string j = encoder.decode(it->first.get_var(1));
                 quadratic[std::make_pair(i, j)] = it->second->evaluate(feed_dict);
