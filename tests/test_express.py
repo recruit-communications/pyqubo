@@ -113,8 +113,9 @@ class TestExpress(unittest.TestCase):
         expected_qubo = {('a', 'a'): 1.0, ('b', 'b'): 1.0}
         expected_offset = 0
         model = exp.compile()
-        """
+        
         bqm = model.to_bqm()
+        """
         sampler = dimod.ExactSolver()
         responses = sampler.sample(bqm)
         solutions = model.decode_sampleset(responses)
