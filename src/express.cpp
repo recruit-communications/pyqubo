@@ -114,8 +114,8 @@ Model Base::compile(CoeffPtr strength){
     printf("Model\n");
     auto model = Model(*compiled_qubo, encoder, expanded);
     printf("delete_linked_list\n");
-    expanded->delete_linked_list();
-    delete expanded;
+    //expanded->delete_linked_list();
+    //delete expanded;
     return model;
 }
 
