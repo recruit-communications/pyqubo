@@ -119,7 +119,7 @@ Model Base::compile(CoeffPtr strength){
     auto poly = new Poly();
     Encoder encoder2 = Encoder();
     Expanded* expanded2 = new Expanded(poly);
-    auto model = Model(compiled_qubo2, encoder2, expanded2);
+    auto model = Model(compiled_qubo, encoder, expanded2);
     //cout << model.to_string() << "\n";
 
     printf("delete_linked_list\n");
