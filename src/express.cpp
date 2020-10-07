@@ -119,8 +119,9 @@ Model Base::compile(CoeffPtr strength){
     Prod prod2 = Prod(indices, 3);
     Prod prod3 = prod1;
 
-
-    auto compiledTerms = CompiledTerms();
+    CoeffProd a = CoeffProd("x", 1);
+    auto poly1 = new PHMono(a, 2.0);
+    CompiledTerms compiledTerms{make_pair(prod1, poly1)};
     auto compiled_qubo2 = new CompiledQubo(compiledTerms);
     auto poly = new Poly();
     Encoder encoder2 = Encoder();
