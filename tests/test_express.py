@@ -108,21 +108,23 @@ class TestExpress(unittest.TestCase):
     def test_compile_constraint(self):
         import dimod
         a, b, c = Binary("a"), Binary("b"), Binary("c")
-        #exp = SubH(a*b*c, label="constraint")
-        exp=a*b*c
+        exp = Constraint(a*b*c, label="constraint")
+        #exp=a*b*c
         expected_qubo = {('a', 'a'): 1.0, ('b', 'b'): 1.0}
         expected_offset = 0
         model = exp.compile()
         bqm = model.to_bqm()
-        
-        """
-        
         sampler = dimod.ExactSolver()
         responses = sampler.sample(bqm)
         solutions = model.decode_sampleset(responses)
         
         for sol in solutions:
             print(sol.subh, sol.sample)
+
+        """
+        
+        
+        
         """
 
 
