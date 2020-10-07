@@ -112,15 +112,11 @@ Model Base::compile(CoeffPtr strength){
     std::cout << compiled_qubo->to_string() << endl;
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
-    printf("Model\n");
     
-    BasePtr a(new Binary("a"));
-    BasePtr b(new Binary("b"));
-    auto H = a->add(b);
-    auto model = H->compile(1.0);
+    printf("Model\n");   
+    auto model = Model(*compiled_qubo, encoder, expanded);
     cout << model.to_string() << "\n";
 
-    //auto model = Model(*compiled_qubo, encoder, expanded);
     printf("delete_linked_list\n");
     //expanded->delete_linked_list();
     //delete expanded;
