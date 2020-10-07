@@ -64,9 +64,9 @@ public:
     }
 
     ~Prod(){
-        /*if(length > OFFSET){
+        if(length > OFFSET){
             delete[] sorted_indices;
-        }*/
+        }
     }
     
     Prod(uint32_t* _sorted_indices, int _length):
