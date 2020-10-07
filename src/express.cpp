@@ -114,7 +114,7 @@ Model Base::compile(CoeffPtr strength){
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
     
     printf("Model\n");
-    uint32_t* indices = new uint32_t[3];
+    /*uint32_t* indices = new uint32_t[3];
     indices[0]=1;
     indices[1]=2;
     indices[2]=3;
@@ -128,7 +128,7 @@ Model Base::compile(CoeffPtr strength){
     auto compiled_qubo2 = new CompiledQubo(compiledTerms);
     auto poly = new Poly();
     Encoder encoder2 = Encoder();
-    Expanded* expanded2 = new Expanded(poly);
+    Expanded* expanded2 = new Expanded(poly);*/
     auto model = Model(compiled_qubo, encoder, expanded);
     //cout << model.to_string() << "\n";
 
