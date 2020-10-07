@@ -103,38 +103,18 @@ Model Base::compile(string placeholder_label){
 Model Base::compile(CoeffPtr strength){
     //clock_t start = clock();
     Encoder encoder = Encoder();
-    printf("expand\n");
     Expanded* expanded = this->expand(encoder);
     //clock_t end = clock();
     //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
-    printf("get_compiled_qubo\n");
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
     //std::cout << compiled_qubo->to_string() << endl;
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
     
-    printf("Model\n");
-    /*uint32_t* indices = new uint32_t[3];
-    indices[0]=1;
-    indices[1]=2;
-    indices[2]=3;
-    Prod prod1 = Prod(indices, 3);
-    Prod prod2 = Prod(indices, 2);
-    Prod prod3 = prod1;
-
-    CoeffProd a = CoeffProd("x", 1);
-    auto poly1 = new PHMono(a, 2.0);
-    CompiledTerms compiledTerms{make_pair(prod1, poly1)};
-    auto compiled_qubo2 = new CompiledQubo(compiledTerms);
-    auto poly = new Poly();
-    Encoder encoder2 = Encoder();
-    Expanded* expanded2 = new Expanded(poly);*/
     auto model = Model(compiled_qubo, encoder, expanded);
-    //cout << model.to_string() << "\n";
-
-    printf("delete_linked_list\n");
-    //expanded->delete_linked_list();
-    //delete expanded;
+    
+    expanded->delete_linked_list();
+    delete expanded;
     return model;
 }
 
