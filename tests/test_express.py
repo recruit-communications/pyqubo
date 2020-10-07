@@ -112,6 +112,7 @@ class TestExpress(unittest.TestCase):
         expected_qubo = {('a', 'a'): 1.0, ('b', 'b'): 1.0}
         expected_offset = 0
         model = exp.compile()
+        """
         bqm = model.to_bqm()
         sampler = dimod.ExactSolver()
         responses = sampler.sample(bqm)
@@ -119,8 +120,8 @@ class TestExpress(unittest.TestCase):
         
         for sol in solutions:
             print(sol.subh, sol.sample)
+        """
 
-        #self.compile_check(exp, expected_qubo, expected_offset)
 
     def test_compile_with_penalty(self):
         class CustomPenalty(WithPenalty):
