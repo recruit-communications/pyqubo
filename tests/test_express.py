@@ -1,5 +1,5 @@
 import unittest
-from pyqubo import Binary, Spin, Add, Num, Mul, WithPenalty, SubH, assert_qubo_equal, Placeholder
+from pyqubo import Binary, Spin, Add, Num, Mul, WithPenalty, SubH, Constraint, assert_qubo_equal, Placeholder
 
 
 class TestExpress(unittest.TestCase):
