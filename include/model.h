@@ -17,13 +17,13 @@ using IsingStr = std::tuple<Linear<std::string>, Quadratic<std::string>, double>
 using FeedDict = map<string, double>;
 
 class Model{
-    CompiledQubo compiled_qubo;
+    CompiledQubo* compiled_qubo;
     Encoder encoder;
     std::vector<CompiledSubH> compiled_sub_hs;
 
 public:
     Model(
-        CompiledQubo _compiled_qubo,
+        CompiledQubo* _compiled_qubo,
         Encoder encoder,
         Expanded* expanded
     ):
@@ -34,7 +34,7 @@ public:
     ~Model(){}
     
     string to_string(){
-        string s = string("Model(") + this->compiled_qubo.to_string() + ", SubHs=[";
+        string s = string("Model(") + this->compiled_qubo->to_string() + ", SubHs=[";
         bool subhs_exists = false;
         for(auto& it: compiled_sub_hs){
             s += it.to_string() + ",";
@@ -50,11 +50,11 @@ public:
     }
 
     BinaryQuadraticModel<uint32_t> to_bqm_with_index(FeedDict feed_dict){
-        return compiled_qubo.evaluate_with_index(feed_dict);
+        return compiled_qubo->evaluate_with_index(feed_dict);
     }
 
     BinaryQuadraticModel<std::string> to_bqm(FeedDict feed_dict){
-        return compiled_qubo.evaluate(feed_dict, this->encoder);
+        return compiled_qubo->evaluate(feed_dict, this->encoder);
     }
 
     QuboInt to_qubo_with_index(FeedDict feed_dict = std::map<string, double>()){
