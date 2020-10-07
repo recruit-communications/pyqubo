@@ -113,8 +113,8 @@ Model Base::compile(CoeffPtr strength){
     
     auto model = Model(compiled_qubo, encoder, expanded);
     
-    expanded->delete_linked_list();
-    delete expanded;
+    //expanded->delete_linked_list();
+    //delete expanded;
     return model;
 }
 
