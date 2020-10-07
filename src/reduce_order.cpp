@@ -117,7 +117,8 @@ namespace reduce_order{
         //clock_t time0 = clock();
         while(has_higher_degree(mp)){
             printf("has_higher_degree\n");
-            //QuboIndex index_pair = find_most_common(mp);
+            QuboIndex index_pair = find_most_common(mp);
+            break;
             //uint32_t new_var = create_new_var(index_pair, encoder);
             //replace_variable(mp, index_pair, new_var);
             //add_and_constraint(mp, index_pair, new_var, strength);
