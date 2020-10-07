@@ -24,7 +24,7 @@ public:
         this->label_to_index = LabelToIndex(encoder.label_to_index);
         this->index_to_label = IndexToLabel(encoder.index_to_label);
         this->variables = std::vector<std::string>(encoder.variables);
-        this -> current_index = 0;
+        this -> current_index = current_index;
     }
 
     uint32_t encode(std::shared_ptr<Binary> exp);
