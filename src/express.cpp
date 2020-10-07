@@ -118,8 +118,8 @@ Model Base::compile(CoeffPtr strength){
     indices[0]=1;
     indices[1]=2;
     indices[2]=3;
-    Prod prod1 = Prod(indices, 3);
-    Prod prod2 = Prod(indices, 3);
+    Prod prod1 = Prod(indices, 2);
+    Prod prod2 = Prod(indices, 2);
     Prod prod3 = prod1;
 
     CoeffProd a = CoeffProd("x", 1);
