@@ -38,6 +38,7 @@ public:
             this->satisfied = compiled_sub_h.condition(this->energy);
         }else{
             this->is_constraint = false;
+            this->satisfied = false;
         }
     }
 
