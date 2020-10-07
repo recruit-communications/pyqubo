@@ -53,7 +53,7 @@ public:
                 this->sorted_indices[i] = from.sorted_indices[i];
             }
         }
-        this->set_hash();
+        this->hash_value = from.hash_value;
     }
 
     Prod &operator=(const Prod& prod){
@@ -150,7 +150,7 @@ public:
         bool ret = true;
         for(int i=0; i < this->length; i++){
             bool match = this->get_raw_var(i) == p.get_raw_var(i);
-            ret = ret && match;
+            ret = ret & match;
         }
         return ret;
     }
