@@ -109,6 +109,7 @@ Model Base::compile(CoeffPtr strength){
     //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
     printf("get_compiled_qubo\n");
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
+    std::cout << compiled_qubo->to_string() << endl;
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
     printf("Model\n");
