@@ -115,6 +115,9 @@ Model Base::compile(CoeffPtr strength){
     
     printf("Model\n");
     uint32_t* indices = new uint32_t[3];
+    indices[0]=1;
+    indices[1]=2;
+    indices[2]=3;
     Prod prod1 = Prod(indices, 3);
     Prod prod2 = Prod(indices, 3);
     Prod prod3 = prod1;
