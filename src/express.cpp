@@ -103,13 +103,17 @@ Model Base::compile(string placeholder_label){
 Model Base::compile(CoeffPtr strength){
     //clock_t start = clock();
     Encoder encoder = Encoder();
+    printf("expand\n");
     Expanded* expanded = this->expand(encoder);
     //clock_t end = clock();
     //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
+    printf("get_compiled_qubo\n");
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
+    printf("Model\n");
     auto model = Model(*compiled_qubo, encoder, expanded);
+    printf("delete_linked_list\n");
     expanded->delete_linked_list();
     delete expanded;
     return model;
