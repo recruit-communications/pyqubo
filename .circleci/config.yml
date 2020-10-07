@@ -421,7 +421,6 @@ jobs:
             export PATH=$PATH:"C:\Program Files\CMake\bin"
             $PYTHON_PATH/python -m pip install -r requirements.txt
             $PYTHON_PATH/python setup.py install
-            $PYTHON_PATH/python setup.py cpp_test
 
       - run:
           name: run unittests
@@ -499,27 +498,27 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-linux-doctest
+      #- test-linux-doctest
 
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
+      #- test-osx-38
       
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      #- test-win-35
+      #- test-win-36
+      #- test-win-37
+      #- test-win-38
 
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
+      #- test-linux-35
+      #- test-linux-36
+      #- test-linux-37
+      #- test-linux-38
 
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
+      #- test-linux32-35
+      #- test-linux32-36
+      #- test-linux32-37
+      #- test-linux32-38
   
   deploy:
     jobs:
