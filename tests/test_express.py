@@ -108,7 +108,7 @@ class TestExpress(unittest.TestCase):
     def test_compile_constraint(self):
         import dimod
         a, b, c = Binary("a"), Binary("b"), Binary("c")
-        exp = Constraint(a+b, label="constraint")
+        exp = Constraint(a*b*c, label="constraint")
         expected_qubo = {('a', 'a'): 1.0, ('b', 'b'): 1.0}
         expected_offset = 0
         model = exp.compile()
