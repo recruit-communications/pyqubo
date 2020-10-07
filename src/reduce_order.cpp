@@ -115,14 +115,14 @@ namespace reduce_order{
 
     void make_quadratic(Poly* mp, Encoder& encoder, CoeffPtr strength){
         //clock_t time0 = clock();
-        while(has_higher_degree(mp)){
+        /*while(has_higher_degree(mp)){
             printf("has_higher_degree\n");
             //QuboIndex index_pair = find_most_common(mp);
             break;
             //uint32_t new_var = create_new_var(index_pair, encoder);
             //replace_variable(mp, index_pair, new_var);
             //add_and_constraint(mp, index_pair, new_var, strength);
-        }
+        }*/
         //clock_t time3 = clock();
         //printf("make_quadratic2 %lf[ms]\n", static_cast<double>(time3-time0) / CLOCKS_PER_SEC * 1000.0);
     }
