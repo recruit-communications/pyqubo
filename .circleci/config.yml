@@ -506,7 +506,7 @@ workflows:
       #- test-osx-37
       #- test-osx-38
       
-      - test-win-35
+      #- test-win-35
       #- test-win-36
       #- test-win-37
       #- test-win-38
