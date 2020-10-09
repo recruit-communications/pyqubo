@@ -162,6 +162,8 @@ jobs:
       GIT_REVISION: << pipeline.git.revision >>
       GIT_TAG: << pipeline.git.tag >>
     
+    working_directory: ~/repo
+
     steps:
       - run:
           name: check env vars
@@ -169,8 +171,10 @@ jobs:
             echo $GIT_URL
             echo $GIT_REVISION
             echo $GIT_TAG
-            git clone $GIT_URL
-            cd pyqubo
+            cd ../
+            rm -rf repo
+            git clone $GIT_URL repo
+            cd repo
             git checkout -b workbranch $GIT_REVISION
       
       - run:
@@ -531,26 +535,7 @@ workflows:
   
   deploy:
     jobs:
-      - deploy-osx-35: &deploy-template
-          filters:
-            tags:
-              only: /^[0-9]+(\.[0-9]+){2}?/
-            branches:
-              ignore: /.*/
-      - deploy-osx-36:
-          <<: *deploy-template
-      - deploy-osx-37:
-          <<: *deploy-template
-      - deploy-osx-38:
-          <<: *deploy-template
-      - deploy-win-35:
-          <<: *deploy-template
-      - deploy-win-36:
-          <<: *deploy-template
-      - deploy-win-37:
-          <<: *deploy-template
-      - deploy-win-38:
-          <<: *deploy-template
+      
       - deploy-linux:
           <<: *deploy-template
       - deploy-linux32:
