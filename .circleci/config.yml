@@ -496,3 +496,7 @@ jobs:
       PYTHON_PATH: C:/Python35/
 
 
+workflows:
+  tests:
+    jobs:
+      - test-win-37
