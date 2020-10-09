@@ -207,11 +207,11 @@ jobs:
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             
             # for testpypi
-            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            #echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
 
             # for actual pypi
-            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
           name: python setup
