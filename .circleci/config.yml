@@ -154,7 +154,7 @@ jobs:
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
 
-  deploy-linux:
+  deploy-linux: &deploy-linux-template
     docker:
       - image: pyqubo/manylinux_cmake_wo_ssh:latest
     
@@ -215,6 +215,10 @@ jobs:
             pip install twine
             twine upload --skip-existing ./dist/*
 
+  deploy-linux32:
+    <<: *deploy-linux-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
 
 ##################################################################################################
 # Mac OSX
@@ -495,6 +499,7 @@ workflows:
   tests:
     jobs:
       - deploy-linux
+      - deploy-linux32
   
   deploy:
     jobs:
