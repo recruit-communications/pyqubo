@@ -109,18 +109,9 @@ class TestExpress(unittest.TestCase):
         import dimod
         a, b, c = Binary("a"), Binary("b"), Binary("c")
         exp = Constraint(a*b*c, label="constraint")
-        #exp=a*b*c
-        expected_qubo = {('a', 'a'): 1.0, ('b', 'b'): 1.0}
+        expected_qubo = {('a', '0*1'): -10.0, ('b', '0*1'): -10.0, ('0*1', '0*1'): 15.0, ('a', 'a'): 0.0, ('a', 'b'): 5.0, ('c', '0*1'): 1.0, ('b', 'b'): 0.0, ('c', 'c'): 0.0}
         expected_offset = 0
-        model = exp.compile()
-        
-        bqm = model.to_bqm()
-        sampler = dimod.ExactSolver()
-        responses = sampler.sample(bqm)
-        solutions = model.decode_sampleset(responses)
-        
-        for sol in solutions:
-            print(sol.subh, sol.sample)
+        self.compile_check(exp, expected_qubo, expected_offset, feed_dict={})
         
 
     def test_compile_with_penalty(self):

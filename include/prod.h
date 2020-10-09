@@ -48,7 +48,7 @@ public:
         }
         if(from.length > OFFSET){
             size_t indice_size = from.length - OFFSET;
-            this->sorted_indices = new uint32_t[indice_size];
+            this->sorted_indices = new uint32_t[indice_size+1];
             for(int i=0; i < indice_size; i++){
                 this->sorted_indices[i] = from.sorted_indices[i];
             }
@@ -79,7 +79,7 @@ public:
             }
             if(_length > OFFSET){
                 size_t indice_size = _length - OFFSET;
-                this->sorted_indices = new uint32_t[indice_size];
+                this->sorted_indices = new uint32_t[indice_size+1];
                 for(int i=0; i<indice_size; i++){
                     this->sorted_indices[i] = _sorted_indices[i+OFFSET];
                 }

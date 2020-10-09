@@ -22,19 +22,6 @@ import numpy
 
 class TestLogicalConstraint(unittest.TestCase):
 
-    def test_module(self):
-        a, b = Binary("a"), Binary("b")
-        exp = NotConst(a, b, label="not")
-        model = exp.compile()
-        bqm = model.to_bqm()
-        sa_sample = neal.SimulatedAnnealingSampler()
-        sampler = neal.SimulatedAnnealingSampler()
-        sampleset = sampler.sample(bqm, num_reads=10)
-        s = sampleset.record["sample"]
-        print(sampleset.variables)
-        print(dimod.BINARY.name == "BINARY")
-        print(model.decode_sampleset(sampleset))
-
     def test_not(self):
         a, b = Binary("a"), Binary("b")
         exp = NotConst(a, b, label="not")
