@@ -162,8 +162,6 @@ jobs:
       GIT_REVISION: << pipeline.git.revision >>
       GIT_TAG: << pipeline.git.tag >>
     
-    working_directory: ~/pyqubo
-
     steps:
       - run:
           name: check env vars
