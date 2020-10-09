@@ -171,8 +171,9 @@ jobs:
             echo $GIT_URL
             echo $GIT_REVISION
             echo $GIT_TAG
-
-      - checkout
+            git clone $GIT_URL
+            cd pyqubo
+            checkout -b workbranch $GIT_REVISION
       
       - run:
           name: build wheels
