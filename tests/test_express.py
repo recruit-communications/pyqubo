@@ -115,14 +115,13 @@ class TestExpress(unittest.TestCase):
         model = exp.compile()
         
         bqm = model.to_bqm()
-        """
         sampler = dimod.ExactSolver()
         responses = sampler.sample(bqm)
         solutions = model.decode_sampleset(responses)
         
         for sol in solutions:
             print(sol.subh, sol.sample)
-        """
+        
 
     def test_compile_with_penalty(self):
         class CustomPenalty(WithPenalty):
