@@ -174,7 +174,7 @@ public:
         int j = 0; // index for other.sorted_indices
         int k = 0; // index for new_sorted_indices
         size_t max_size = std::max(this->length, other.length);
-        uint32_t* new_sorted_indices = new uint32_t[max_size];
+        uint32_t* new_sorted_indices = new uint32_t[max_size+1];
         
         uint32_t previous_index = -1;
         // merge sorted_indices
