@@ -425,7 +425,7 @@ jobs:
       - run:
           name: run unittests
           command: |
-            $PYTHON_PATH/python -m coverage run -m unittest discover
+            $PYTHON_PATH/python -m unittest
 
   test-win-37:
     <<: *test-win-template

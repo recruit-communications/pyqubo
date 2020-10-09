@@ -107,11 +107,14 @@ Model Base::compile(CoeffPtr strength){
     //clock_t end = clock();
     //printf("compile0 %lf[ms]\n", static_cast<double>(end-start) / CLOCKS_PER_SEC * 1000.0);
     CompiledQubo* compiled_qubo = expanded->get_compiled_qubo(encoder, strength);
+    //std::cout << compiled_qubo->to_string() << endl;
     //clock_t end2 = clock();
     //printf("compile1 %lf[ms]\n", static_cast<double>(end2-end) / CLOCKS_PER_SEC * 1000.0);
+    
     auto model = Model(*compiled_qubo, encoder, expanded);
-    expanded->delete_linked_list();
-    delete expanded;
+    
+    //expanded->delete_linked_list();
+    //delete expanded;
     return model;
 }
 

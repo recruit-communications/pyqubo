@@ -48,12 +48,12 @@ public:
         }
         if(from.length > OFFSET){
             size_t indice_size = from.length - OFFSET;
-            this->sorted_indices = new uint32_t[indice_size];
+            this->sorted_indices = new uint32_t[indice_size+1];
             for(int i=0; i < indice_size; i++){
                 this->sorted_indices[i] = from.sorted_indices[i];
             }
         }
-        this->set_hash();
+        this->hash_value = from.hash_value;
     }
 
     Prod &operator=(const Prod& prod){
@@ -79,7 +79,7 @@ public:
             }
             if(_length > OFFSET){
                 size_t indice_size = _length - OFFSET;
-                this->sorted_indices = new uint32_t[indice_size];
+                this->sorted_indices = new uint32_t[indice_size+1];
                 for(int i=0; i<indice_size; i++){
                     this->sorted_indices[i] = _sorted_indices[i+OFFSET];
                 }
@@ -150,7 +150,7 @@ public:
         bool ret = true;
         for(int i=0; i < this->length; i++){
             bool match = this->get_raw_var(i) == p.get_raw_var(i);
-            ret = ret && match;
+            ret = ret & match;
         }
         return ret;
     }
@@ -174,7 +174,7 @@ public:
         int j = 0; // index for other.sorted_indices
         int k = 0; // index for new_sorted_indices
         size_t max_size = std::max(this->length, other.length);
-        uint32_t* new_sorted_indices = new uint32_t[max_size];
+        uint32_t* new_sorted_indices = new uint32_t[max_size+1];
         
         uint32_t previous_index = -1;
         // merge sorted_indices

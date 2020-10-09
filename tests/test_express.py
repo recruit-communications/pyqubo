@@ -1,5 +1,5 @@
 import unittest
-from pyqubo import Binary, Spin, Add, Num, Mul, WithPenalty, SubH, assert_qubo_equal, Placeholder
+from pyqubo import Binary, Spin, Add, Num, Mul, WithPenalty, SubH, Constraint, assert_qubo_equal, Placeholder
 
 
 class TestExpress(unittest.TestCase):
@@ -104,6 +104,15 @@ class TestExpress(unittest.TestCase):
         expected_offset = 3
         feed_dict={"p": 3}
         self.compile_check(exp, expected_qubo, expected_offset, feed_dict)
+    
+    def test_compile_constraint(self):
+        import dimod
+        a, b, c = Binary("a"), Binary("b"), Binary("c")
+        exp = Constraint(a*b*c, label="constraint")
+        expected_qubo = {('a', '0*1'): -10.0, ('b', '0*1'): -10.0, ('0*1', '0*1'): 15.0, ('a', 'a'): 0.0, ('a', 'b'): 5.0, ('c', '0*1'): 1.0, ('b', 'b'): 0.0, ('c', 'c'): 0.0}
+        expected_offset = 0
+        self.compile_check(exp, expected_qubo, expected_offset, feed_dict={})
+        
 
     def test_compile_with_penalty(self):
         class CustomPenalty(WithPenalty):

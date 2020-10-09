@@ -207,6 +207,7 @@ public:
     ){
         vector<DecodedSolution> decoded_solutions;
         BinaryQuadraticModel<std::string> bqm = to_bqm(feed_dict);
+
         for(auto& sample: samples){
             Sample<string> binary_sample;
             if(vartype == Vartype::BINARY){

@@ -74,3 +74,6 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(xor1 == xor2)
         self.assertFalse(xor1 == or1)
         self.assertFalse(xor1 == xor3)
+
+if __name__ == '__main__':
+    unittest.main()
