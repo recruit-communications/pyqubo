@@ -154,21 +154,15 @@ jobs:
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
 
-  deploy-linux:
+  deploy-linux: &deploy-linux-template
     docker:
       - image: pyqubo/manylinux_cmake_wo_ssh:latest
-
-    environment:
-      PYENV_ROOT: tmp/.pyenv
-      PYTHON: 3.6.5
     
     working_directory: ~/repo
 
     steps:
 
       - checkout
-
-      - run: *set-python-path
       
       - run:
           name: build wheels
@@ -196,12 +190,14 @@ jobs:
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
-            # for testpypi
-            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-            #echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
-
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            
+            # for testpypi
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+
+            # for actual pypi
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
           name: python setup
@@ -216,9 +212,13 @@ jobs:
           name: install twine and deploy
           command: |
             . env/bin/activate
-            pip install twine
+            pip install twine==1.15.0
             twine upload --skip-existing ./dist/*
 
+  deploy-linux32:
+    <<: *deploy-linux-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
 
 ##################################################################################################
 # Mac OSX
@@ -543,4 +543,6 @@ workflows:
       - deploy-win-38:
           <<: *deploy-template
       - deploy-linux:
+          <<: *deploy-template
+      - deploy-linux32:
           <<: *deploy-template
