@@ -156,11 +156,21 @@ jobs:
 
   deploy-linux: &deploy-linux-template
     docker:
-      - image: colon0722/manylinux_cmake
+      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+    environment:
+      GIT_URL: << pipeline.project.git_url >>
+      GIT_REVISION: << pipeline.git.revision >>
+      GIT_TAG: << pipeline.git.tag >>
     
     working_directory: ~/repo
 
     steps:
+      - run:
+          name: check env vars
+          command: |
+            echo $GIT_URL
+            echo $GIT_REVISION
+            echo $GIT_TAG
 
       - checkout
       
@@ -500,25 +510,25 @@ workflows:
     jobs:
       - test-linux-doctest
 
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
+      #- test-osx-38
       
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      #- test-win-35
+      #- test-win-36
+      #- test-win-37
+      #- test-win-38
 
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
+      #- test-linux-35
+      #- test-linux-36
+      #- test-linux-37
+      #- test-linux-38
 
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
+      #- test-linux32-35
+      #- test-linux32-36
+      #- test-linux32-37
+      #- test-linux32-38
   
   deploy:
     jobs:
@@ -543,8 +553,6 @@ workflows:
       - deploy-win-38:
           <<: *deploy-template
       - deploy-linux:
-          filters:
-            tags:
-              only: /^[0-9]+(\.[0-9]+){2}?/
+          <<: *deploy-template
       - deploy-linux32:
           <<: *deploy-template
