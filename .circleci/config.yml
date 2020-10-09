@@ -212,7 +212,7 @@ jobs:
           name: install twine and deploy
           command: |
             . env/bin/activate
-            pip install twine
+            pip install twine==1.15.0
             twine upload --skip-existing ./dist/*
 
   deploy-linux32:
