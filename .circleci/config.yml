@@ -157,18 +157,12 @@ jobs:
   deploy-linux:
     docker:
       - image: pyqubo/manylinux_cmake_wo_ssh:latest
-
-    environment:
-      PYENV_ROOT: tmp/.pyenv
-      PYTHON: 3.6.5
     
     working_directory: ~/repo
 
     steps:
 
       - checkout
-
-      - run: *set-python-path
       
       - run:
           name: build wheels
@@ -196,12 +190,14 @@ jobs:
           name: init .pypirc
           command: |
             echo -e "[pypi]" >> ~/.pypirc
-            # for testpypi
-            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-            #echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
-
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            
+            # for testpypi
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+
+            # for actual pypi
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
           name: python setup
@@ -498,27 +494,7 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-linux-doctest
-
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
-      
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
-
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
-
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
+      - deploy-linux
   
   deploy:
     jobs:
