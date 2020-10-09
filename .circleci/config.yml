@@ -156,7 +156,7 @@ jobs:
 
   deploy-linux: &deploy-linux-template
     docker:
-      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+      - image: colon0722/manylinux_cmake
     
     working_directory: ~/repo
 
