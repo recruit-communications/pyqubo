@@ -542,7 +542,6 @@ workflows:
           <<: *deploy-template
       - deploy-win-38:
           <<: *deploy-template
-      - deploy-linux:
-          <<: *deploy-template
+      - deploy-linux
       - deploy-linux32:
           <<: *deploy-template
