@@ -5,10 +5,16 @@ import platform
 import subprocess
 import sysconfig
 
-from setuptools import setup, Extension
+from setuptools import Extension
 from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 from setuptools import Command
+
+
+if os.getenv('READTHEDOCS'):
+    from skbuild import setup
+else:
+    from setuptools import setup
 
 
 class PackageInfo(object):
