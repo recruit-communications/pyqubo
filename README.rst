@@ -88,6 +88,8 @@ The result shows the new PyQUBO runs 1000 times faster as the problem size incre
 
 .. image:: https://raw.githubusercontent.com/recruit-communications/pyqubo/images/benchmark.svg
    :scale: 60%
+   :width: 550
+   :height: 440
    :align: center
 
 Execution time includes building Hamiltonian, compilation, and producing QUBOs. The code to produce the above result is found in `here <https://github.com/recruit-communications/pyqubo/tree/master/benchmark/>`_.
