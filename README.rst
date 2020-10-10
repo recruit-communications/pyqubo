@@ -78,6 +78,23 @@ just replace the `sampler` by a `DWaveCliqueSampler` instance, for example.
 
 For more examples, see `example notebooks <https://github.com/recruit-communications/pyqubo/tree/master/notebooks>`_.
 
+
+Benchmarking
+------------
+
+Since the core logic of the new PyQUBO (>=1.0.0) is written in C++ and the logic itself is also optimized, the execution time to produce QUBO has become shorter.
+We benchmarked the execution time to produce QUBOs of TSP with the new PyQUBO (1.0.0) and the previous PyQUBO (0.4.0).
+The result shows the new PyQUBO runs 1000 times faster as the problem size increases.
+
+.. image:: https://raw.githubusercontent.com/recruit-communications/pyqubo/images/benchmark.svg
+   :scale: 60%
+   :width: 550
+   :height: 440
+   :align: center
+
+Execution time includes building Hamiltonian, compilation, and producing QUBOs. The code to produce the above result is found in `here <https://github.com/recruit-communications/pyqubo/tree/master/benchmark/>`_.
+
+
 Installation
 ------------
 
