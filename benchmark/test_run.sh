@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -eu
 
-INIT_SIZE=35
+INIT_SIZE=5
 MAX_SIZE=100
 STEP=5
 TIMEOUT=1500

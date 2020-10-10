@@ -86,7 +86,7 @@ Since the core logic of the new PyQUBO (>=1.0.0) is written in C++ and the logic
 We benchmarked the execution time to produce QUBOs of TSP with the new PyQUBO (1.0.0) and the previous PyQUBO (0.4.0).
 The result shows the new PyQUBO runs 1000 times faster as the problem size increases.
 
-.. image:: https://raw.githubusercontent.com/recruit-communications/pyqubo/images/benchmark.svg
+.. image:: https://raw.githubusercontent.com/recruit-communications/pyqubo/master/images/benchmark.svg
    :scale: 60%
    :width: 550
    :height: 440
