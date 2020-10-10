@@ -139,3 +139,4 @@ CMakeCache.txt
 _build/
 _generate/
 cmake-build-debug/
+_skbuild
