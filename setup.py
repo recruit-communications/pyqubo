@@ -12,7 +12,6 @@ from setuptools import Command
 
 
 if os.getenv('READTHEDOCS'):
-    print(os.getenv('READTHEDOCS'))
     from skbuild import setup
 else:
     from setuptools import setup
