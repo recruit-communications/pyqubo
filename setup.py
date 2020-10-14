@@ -105,7 +105,7 @@ install_requires = [
     'dimod>=0.9.2',
     'dwave-neal>=0.5.4',
     'Deprecated>=1.2.10',
-    'six>=1.13.0'
+    'six>=1.11.0'
     ]
 
 python_requires = '>=3.5'
