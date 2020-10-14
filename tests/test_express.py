@@ -106,7 +106,6 @@ class TestExpress(unittest.TestCase):
         self.compile_check(exp, expected_qubo, expected_offset, feed_dict)
     
     def test_compile_constraint(self):
-        import dimod
         a, b, c = Binary("a"), Binary("b"), Binary("c")
         exp = Constraint(a*b*c, label="constraint")
         expected_qubo = {('a', '0*1'): -10.0, ('b', '0*1'): -10.0, ('0*1', '0*1'): 15.0, ('a', 'a'): 0.0, ('a', 'b'): 5.0, ('c', '0*1'): 1.0, ('b', 'b'): 0.0, ('c', 'c'): 0.0}
@@ -126,6 +125,6 @@ class TestExpress(unittest.TestCase):
         expected_offset = 0.0
         feed_dict={"p": 2}
         self.compile_check(custom_penalty, expected_qubo, expected_offset, feed_dict)
-
+    
 if __name__ == '__main__':
     unittest.main()

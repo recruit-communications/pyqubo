@@ -10,11 +10,8 @@ namespace reduce_order{
         void add_term(Terms* terms, Prod prod, CoeffPtr coeff){
             auto result = terms->find(prod);
             if(result == terms->end()){
-                //terms->at(prod) = coeff;
                 terms->insert(TermsPair{prod, coeff});
             }else{
-                //terms->at(prod) = coeff->add(result->second);
-                //terms->insert(TermsPair{prod, coeff->add(result->second)});
                 result->second = coeff->add(result->second);
             }
         }
@@ -71,9 +68,7 @@ namespace reduce_order{
         }
 
         void replace_variable(Poly* mp, QuboIndex index_pair, int new_variable){
-            int loop_cnt = 0;
             for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
-                loop_cnt++;
                 Prod prod = it->first;
                 CoeffPtr coeff = it->second;
                 bool first_in, second_in = false;
@@ -82,7 +77,7 @@ namespace reduce_order{
                     if(prod.get_var(i) == index_pair.second) second_in = true;
                 }
                 if(first_in && second_in){
-                    uint32_t indices[4] = {0};
+                    uint32_t* indices = new uint32_t[it->first.length+1];
                     int index = 0;
                     for(int i=0; i < it->first.length; i++){
                         if(prod.get_var(i) != index_pair.first && prod.get_var(i) != index_pair.second){

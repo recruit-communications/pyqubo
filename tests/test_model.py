@@ -236,6 +236,22 @@ class TestModel(unittest.TestCase):
             if sol.energy==1.0:
                 self.assertEqual(sol.subh['C1'], 1.0)
         
+    def test_higher_order(self):
+        x = Array.create('x', 5, 'BINARY')
+        exp = x[0]*x[1]*x[2]*x[3]
+        model = exp.compile(strength=10)
+
+        sample = {'x[0]': 1, 'x[1]': 1, 'x[2]': 1, 'x[3]': 1, '0*1': 1, '2*3': 1}
+        e = model.energy(sample, vartype='BINARY')
+        self.assertEqual(e, 1.0)
+
+        sample = {'x[0]': 0, 'x[1]': 1, 'x[2]': 1, 'x[3]': 1, '0*1': 0, '2*3': 1}
+        e = model.energy(sample, vartype='BINARY')
+        self.assertEqual(e, 0.0)
+        
+        sample = {'x[0]': 1, 'x[1]': 1, 'x[2]': 1, 'x[3]': 1, '0*1': 0, '2*3': 1}
+        e = model.energy(sample, vartype='BINARY')
+        self.assertEqual(e, 10.0)
 
 if __name__ == '__main__':
     unittest.main()
