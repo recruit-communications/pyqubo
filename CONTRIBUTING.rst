@@ -49,7 +49,7 @@ To run all tests with unittest, execute
 
 .. code-block:: shell
 
-    python -m unittest discover test
+    python -m unittest discover tests
 
 To generate coverage reports, execute
 
