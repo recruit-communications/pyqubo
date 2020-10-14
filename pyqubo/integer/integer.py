@@ -13,7 +13,6 @@
 # limitations under the License.
 
 import abc
-import six
 from cpp_pyqubo import UserDefinedExpress, WithPenalty
 
 
