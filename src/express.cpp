@@ -7,7 +7,6 @@
 
 using namespace::std;
 
-/*---------- Base ------------*/
 BasePtr Base::add(BasePtr other){
     BasePtr this_ptr = shared_from_this();
     AddPtr new_base(new Add(this_ptr, other));
@@ -118,7 +117,6 @@ Model Base::compile(CoeffPtr strength){
     return model;
 }
 
-/*---------- Add ------------*/
 BasePtr Add::add(BasePtr other){
     BasePtr this_ptr = shared_from_this();
     AddPtr new_base(new Add(static_pointer_cast<Add>(this_ptr), other));
@@ -139,7 +137,6 @@ Expanded* Add::expand(Encoder& encoder){
     return new_expanded;
 };
 
-/*---------Mul------------*/
 Expanded* Mul::expand(Encoder& encoder){
     Expanded* left_expanded = this->left->expand(encoder);
     Expanded* right_expanded = this->right->expand(encoder);
@@ -147,7 +144,6 @@ Expanded* Mul::expand(Encoder& encoder){
     return new_expanded;
 };
 
-/*---------Binary------------*/
 Expanded* Binary::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Binary>(this_ptr), encoder);
@@ -162,14 +158,12 @@ Expanded* Spin::expand(Encoder& encoder){
     return new_expanded;
 };
 
-/*---------Num------------*/
 Expanded* Num::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Num>(this_ptr));
     return new Expanded(poly);
 };
 
-/*---------Placeholder------------*/
 Expanded* Placeholder::expand(Encoder& encoder){
     BasePtr this_ptr = shared_from_this();
     Mono* poly = new Mono(static_pointer_cast<Placeholder>(this_ptr));

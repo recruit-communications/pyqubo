@@ -120,15 +120,11 @@ public:
     Add(shared_ptr<Add> add_left, shared_ptr<Add> add_right):
         node(create_node(add_left, add_right)){}
     
-    //Add(double add_left, shared_ptr<Add> add_right):
-    //    node(create_node(make_shared<Num>(add_left), add_right)){}
-
     Add(shared_ptr<Base> child){
         this->node = new AddList(child);
     }
 
     Add(shared_ptr<Base> left, shared_ptr<Base> right){
-        //cout << "Add::add\n";
         this->node = new AddList(left);
         this->node->next = new AddList(right);
     }
@@ -136,15 +132,11 @@ public:
     Add(shared_ptr<Base> left, double right_num){
         BasePtr right = static_pointer_cast<Base>(make_shared<Num>(right_num));
         Add(left, right);
-        //this->node = new AddList(left);
-        //this->node->next = new AddList(right);
     }
 
     Add(double left_num, shared_ptr<Base> right){
         BasePtr left = static_pointer_cast<Base>(make_shared<Num>(left_num));
         Add(left, right);
-        //this->node = new AddList(left);
-        //this->node->next = new AddList(right);
     }
 
     ~Add(){}
@@ -501,8 +493,6 @@ public:
 
     ~SubH(){}
 
-    //virtual BasePtr express() = 0;
-    //virtual BasePtr penalty() = 0;
     virtual ExpressType get_type() const override {
         return ExpressType::SUBH;
     }
@@ -553,7 +543,6 @@ public:
     }
 
     std::string to_string(bool with_symbol) override {
-        //check_instance_variable();
         return string("Constraint(label=") + label + "," + this->hamiltonian->to_string(with_symbol) + ")";
     }
 

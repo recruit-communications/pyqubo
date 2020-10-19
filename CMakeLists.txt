@@ -7,7 +7,6 @@ set(CMAKE_CXX_FLAGS "-std=c++11 -O4")
 
 include(external/pybind11.cmake)
 include_directories(cpp_dimod)
-#add_subdirectory(include)
 add_subdirectory(src)
 
 

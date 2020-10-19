@@ -60,14 +60,6 @@ public:
         );
     }
 
-    /*Poly* expand() override {
-        PYBIND11_OVERLOAD_PURE(
-                Poly*,
-                Base,
-                expand
-        );
-    };*/
-
     Expanded* expand(Encoder& encoder) override {return NULL;}
 
     bool equal_to(BasePtr other) override {
