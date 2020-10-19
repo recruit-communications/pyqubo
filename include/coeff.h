@@ -46,7 +46,6 @@ public:
     PlPolyPtr expand() override {
         auto prod = CoeffProd(label, 1);
         auto poly = new PHMono(prod, 1.0);
-        //cout << "CoeffPlaceholder::expand " << poly->to_string() << "\n";
         return poly;
     }
     
@@ -131,9 +130,7 @@ public:
     PlPolyPtr expand() override {
         auto poly_right = right->expand();
         auto poly_left = left->expand();
-        //auto new_poly = poly_right->mul(poly_left);
         auto new_poly = PlPolyOperation::mul(poly_right, poly_left);
-        //cout << "mul::expand " << new_poly->to_string() << "\n";
         return new_poly;
     }  
 };
@@ -167,9 +164,7 @@ public:
     PlPolyPtr expand() override {
         auto poly_right = right->expand();
         auto poly_left = left->expand();
-        //auto new_poly = poly_right->add(poly_left);
         auto new_poly = PlPolyOperation::add(poly_right, poly_left);
-        //cout << "add::expand " << new_poly->to_string() << "\n";
         return new_poly;
     }
 };

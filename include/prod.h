@@ -170,9 +170,9 @@ public:
     }
 
     Prod merge(Prod& other){
-        int i = 0; // index for this->sorted_indices
-        int j = 0; // index for other.sorted_indices
-        int k = 0; // index for new_sorted_indices
+        int i = 0;
+        int j = 0;
+        int k = 0;
         size_t max_size = std::max(this->length, other.length);
         uint32_t* new_sorted_indices = new uint32_t[max_size+1];
         
