@@ -10,6 +10,8 @@
 .. image:: https://circleci.com/gh/recruit-communications/pyqubo.svg?style=svg
     :target: https://circleci.com/gh/recruit-communications/pyqubo
 
+.. image:: https://pepy.tech/badge/pyqubo
+    :target: https://pepy.tech/project/pyqubo
 
 .. index-start-marker1
 
