@@ -53,11 +53,14 @@ public:
         double offset = 0.0;
         for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
             if(it->first.length == 2){
-                string i = encoder.decode(it->first.get_var(0));
-                string j = encoder.decode(it->first.get_var(1));
+                auto var_it = it->first.prodset.begin();
+                string i = encoder.decode(*var_it-1);
+                var_it++;
+                string j = encoder.decode(*var_it-1);
                 quadratic[std::make_pair(i, j)] = it->second->evaluate(feed_dict);
             }else if(it->first.length == 1){
-                string i = encoder.decode(it->first.get_var(0));
+                auto var_it = it->first.prodset.begin();
+                string i = encoder.decode(*var_it-1);
                 linear[i] = it->second->evaluate(feed_dict);
             }else if(it->first.length == 0){
                 offset = it->second->evaluate(feed_dict);
@@ -77,11 +80,14 @@ public:
         double offset = 0.0;
         for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
             if(it->first.length == 2){
-                uint32_t i = it->first.get_var(0);
-                uint32_t j = it->first.get_var(1);
+                auto var_it = it->first.prodset.begin();
+                uint32_t i = *var_it - 1;
+                var_it++;
+                uint32_t j = *var_it - 1;
                 quadratic[std::make_pair(i, j)] = it->second->evaluate(feed_dict);
             }else if(it->first.length == 1){
-                uint32_t i = it->first.get_var(0);
+                auto var_it = it->first.prodset.begin();
+                uint32_t i = *var_it-1;
                 linear[i] = it->second->evaluate(feed_dict);
             }else if(it->first.length == 0){
                 offset = it->second->evaluate(feed_dict);
@@ -98,8 +104,8 @@ public:
         double energy = 0.0;
         for (auto it = this->terms.begin(); it != this->terms.end(); it++) {
             int prod_value = 1;
-            for(int i=0; i<it->first.length; i++){
-                string label = encoder.decode(it->first.get_var(i));
+            for(auto& it_var: it->first.prodset){
+                string label = encoder.decode(it_var-1);
                 auto result = sample.find(label);
                 if(result != sample.end()){
                     prod_value *= result->second;

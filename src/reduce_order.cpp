@@ -77,18 +77,21 @@ namespace reduce_order{
                     if(prod.get_var(i) == index_pair.second) second_in = true;
                 }
                 if(first_in && second_in){
-                    uint32_t* indices = new uint32_t[it->first.length+1];
+                    //uint32_t* indices = new uint32_t[it->first.length+1];
+                    ProdSet indices;
                     int index = 0;
                     for(int i=0; i < it->first.length; i++){
                         if(prod.get_var(i) != index_pair.first && prod.get_var(i) != index_pair.second){
                             // increment the index when creating prod.indices
-                            indices[index++] = prod.get_var(i) + 1;
+                            //indices[index++] = prod.get_var(i) + 1;
+                            indices.insert(prod.get_var(i) + 1);
                         }
                     }
                     mp->terms->erase(it);
                     // increment the index when creating prod.indices
-                    indices[index++] = new_variable + 1;
-                    Prod new_prod = Prod(indices, index);
+                    //indices[index++] = new_variable + 1;
+                    indices.insert(new_variable + 1);
+                    Prod new_prod = Prod(indices);
                     mp->terms->insert(TermsPair{new_prod, coeff});
                     it = mp->terms->begin();
                 }
