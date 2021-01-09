@@ -73,7 +73,7 @@ namespace pybind_model{
 
     py::object decode_sampleset(Model model, py::object const sampleset, py::dict feed_dict){
         
-        vector<string> variables = model.variables();
+        vector<string> variables = sampleset.attr("variables").cast<vector<string>>();
         
         // sort samples by energy
         sampleset.attr("record").attr("sort")("order"_a="energy");
