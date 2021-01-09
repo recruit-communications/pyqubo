@@ -200,7 +200,7 @@ public:
         return decode_sample(new_sample, vartype, feed_dict);
     }
 
-    template <class T>
+    template <class T, class Dummy=int>
     vector<DecodedSolution> decode_samples_general(
         vector<Sample<T>>& samples,
         Vartype vartype,
@@ -209,7 +209,7 @@ public:
         throw std::runtime_error("Incompatible type. Please contact developers.");
     }
 
-    template <>
+    template <class Dummy=int>
     vector<DecodedSolution> decode_samples_general(
         vector<Sample<uint32_t>>& samples,
         Vartype vartype,
@@ -218,7 +218,7 @@ public:
         return decode_samples_with_index(samples, vartype, feed_dict);
     }
 
-    template <>
+    template <class Dummy=int>
     vector<DecodedSolution> decode_samples_general(
         vector<Sample<string>>& samples,
         Vartype vartype,
