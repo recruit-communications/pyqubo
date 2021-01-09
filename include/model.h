@@ -200,6 +200,34 @@ public:
         return decode_sample(new_sample, vartype, feed_dict);
     }
 
+    template <class T>
+    vector<DecodedSolution> decode_samples_general(
+        vector<Sample<T>>& samples,
+        Vartype vartype,
+        FeedDict feed_dict = std::map<string, double>()
+    ){
+        throw std::runtime_error("Incompatible type. Please contact developers.");
+    }
+
+    template <>
+    vector<DecodedSolution> decode_samples_general(
+        vector<Sample<uint32_t>>& samples,
+        Vartype vartype,
+        FeedDict feed_dict
+    ){ 
+        return decode_samples_with_index(samples, vartype, feed_dict);
+    }
+
+    template <>
+    vector<DecodedSolution> decode_samples_general(
+        vector<Sample<string>>& samples,
+        Vartype vartype,
+        FeedDict feed_dict
+    ){ 
+        return decode_samples(samples, vartype, feed_dict);
+    }
+
+
     vector<DecodedSolution> decode_samples(
         vector<Sample<string>>& samples,
         Vartype vartype,
@@ -221,6 +249,8 @@ public:
         }
         return decoded_solutions;
     }
+
+    
 
     DecodedSolution decode_sample(
         Sample<string>& sample,
