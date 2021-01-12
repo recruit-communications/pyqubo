@@ -454,9 +454,7 @@ public:
 
     std::string to_string(bool with_symbol) override {
         check_instance_variable();
-        const type_info& id = typeid(*this);
-        std::string s(id.name());
-        return s + this->hamiltonian->to_string(with_symbol) + ")";
+        return "UserDefinedExpress(" + this->hamiltonian->to_string(with_symbol) + ")";
     }
 
     void check_instance_variable(){
