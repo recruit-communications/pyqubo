@@ -57,16 +57,22 @@ namespace pybind_model{
     py::object to_bqm(Model model, bool index_label, py::dict feed_dict){
         py::module dimod = py::module::import("dimod");
         auto BQM = dimod.attr("BinaryQuadraticModel");
-        auto qubo = model.to_qubo(feed_dict.cast<FeedDict>());
-        auto q = py::cast(std::get<0>(qubo));
-        double offset = std::get<1>(qubo);
-        return BQM.attr("from_qubo")(q, offset);
+
+        if(index_label){
+            auto qubo = model.to_qubo_with_index(feed_dict.cast<FeedDict>());
+            auto q = py::cast(std::get<0>(qubo));
+            double offset = std::get<1>(qubo);
+            return BQM.attr("from_qubo")(q, offset);
+        }else{
+            auto qubo = model.to_qubo(feed_dict.cast<FeedDict>());
+            auto q = py::cast(std::get<0>(qubo));
+            double offset = std::get<1>(qubo);
+            return BQM.attr("from_qubo")(q, offset);
+        }
     }
 
-    py::object decode_sampleset(Model model, py::object const sampleset, py::dict feed_dict){
-        
-        vector<string> variables = sampleset.attr("variables").cast<vector<string>>();
-        
+    template <class T>
+    py::object decode_sampleset_inner(Model model, py::object const sampleset, py::dict feed_dict, vector<T> variables){
         // sort samples by energy
         sampleset.attr("record").attr("sort")("order"_a="energy");
         
@@ -77,10 +83,10 @@ namespace pybind_model{
         int n_rows = info.shape[0];
         int n_cols = info.shape[1];
 
-        vector<Sample<string>> samples;
+        vector<Sample<T>> samples;
         samples.reserve(n_rows);
         for(int i=0; i < n_rows; i++){
-            Sample<string> sample;
+            Sample<T> sample;
             for(int j=0; j < n_cols; j++){
                 sample[variables[j]] = *(array.data(i, j));
             }
@@ -88,8 +94,22 @@ namespace pybind_model{
         }
         string vartype = sampleset.attr("vartype").attr("name").cast<std::string>();
         auto map_feed_dict = feed_dict.cast<FeedDict>();
-        auto decoded_sample = model.decode_samples(samples, parse_vartype(vartype), map_feed_dict);
+        auto decoded_sample = model.decode_samples_general<T>(samples, parse_vartype(vartype), map_feed_dict);
         return py::cast(decoded_sample);
+    }
+
+    py::object decode_sampleset(Model model, py::object const sampleset, py::dict feed_dict){
+        
+        // depending on the type of the label, determine the decode_sampleset function
+        try{
+            vector<string> variables = sampleset.attr("variables").cast<vector<string>>();
+            return decode_sampleset_inner(model, sampleset, feed_dict, variables);
+        }catch(...){}
+
+        try{
+            vector<uint32_t> variables = sampleset.attr("variables").cast<vector<uint32_t>>();
+            return decode_sampleset_inner(model, sampleset, feed_dict, variables);
+        }catch(...){}
     }
 
     double energy(Model model, py::dict py_sample, string py_vartype, py::dict feed_dict){
@@ -100,6 +120,7 @@ namespace pybind_model{
     }
 
     py::object decode_sample_dict(Model model, py::dict py_sample, string py_vartype, py::dict feed_dict){
+        
         // todo: need to validate if py_sample constains float value
         int input_size = py_sample.attr("__len__")().cast<int>();
         int model_size = model.variables().size();
@@ -113,16 +134,19 @@ namespace pybind_model{
             auto sample = py_sample.cast<Sample<std::string>>();
             auto sol = model.decode_sample(sample, vartype, map_feed_dict);
             return py::cast(sol);
-        }catch(char* error){
-            cout << "error:" << error << endl;
-        }
+        }catch(const std::invalid_argument& e){
+            //cout << "error" << e.what() << endl;
+            throw e;
+        }catch(...){}
+        
         try{
             auto sample = py_sample.cast<Sample<uint32_t>>();
             auto sol = model.decode_sample_with_index(sample, vartype, map_feed_dict);
             return py::cast(sol);
-        }catch(char* error){
-            cout << "error:" << error << endl;
-        }
+        }catch(const std::out_of_range& e){
+            //cout << "error" << e.what() << endl;
+            throw e;
+        }catch(...){}
     }
 
     py::object decode_sample_list(Model model, py::list py_sample, string py_vartype, py::dict feed_dict){
@@ -249,7 +273,6 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         .def_readwrite("right", &Mul::right);
 
     py::class_<WithPenalty, shared_ptr<WithPenalty>, Base>(m, "WithPenalty")
-        //.def(py::init<>())
         .def(py::init<BasePtr, BasePtr, string>(), py::arg("express"), py::arg("penalty"), py::arg("label"))
         .def_readwrite("express", &WithPenalty::hamiltonian)
         .def_readwrite("penalty", &WithPenalty::penalty);

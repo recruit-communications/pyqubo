@@ -26,8 +26,10 @@ class Integer(UserDefinedExpress):
         super().__init__(express)
     
     def __str__(self):
-        return "{}({},value_range={})".format(type(self).__name__, self.label, self.value_range)
+        return "{}({},value_range={})".format(self.__class__.__name__, self.label, self.value_range)
 
+    def __repr__(self):
+        return self.__str__()
 
 class IntegerWithPenalty(WithPenalty):
     """Binary encoded integer with penalty function
@@ -39,4 +41,7 @@ class IntegerWithPenalty(WithPenalty):
         super().__init__(express, penalty, label)
     
     def __str__(self):
-        return "{}({},value_range={})".format(type(self).__name__, self.label, self.value_range)
+        return "{}({},value_range={})".format(self.__class__.__name__, self.label, self.value_range)
+
+    def __repr__(self):
+        return self.__str__()

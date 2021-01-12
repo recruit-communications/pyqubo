@@ -147,7 +147,7 @@ class TestModel(unittest.TestCase):
         # type of solution is dict[index_label(int), bit]
         ## vartype = BINARY
         sample = {'x[0][1]': 1, 'x[1][1]': 0, 'x[0][0]': 1}
-        sample_index = {v: sample[v] for v in model.variables}
+        sample_index = {i: sample[v] for i, v in enumerate(model.variables)}
         decoded_sample = model.decode_sample(sample_index, vartype="BINARY")
         self.assertTrue(decoded_sample.sample == sample)
         self.assertTrue(len([label for label, energy in decoded_sample.subh.items() if energy > 0]) == 1)
@@ -198,15 +198,30 @@ class TestModel(unittest.TestCase):
         S = Array.create('S', 3, "SPIN")
         H = 0.8 * S[0] * S[1] + S[1] * S[2] + 1.1 * S[2] * S[0] + 0.5 * S[0]
         model = H.compile()
-        binary_bqm = model.to_bqm()
+
+        # with index_label=False
+        binary_bqm = model.to_bqm(index_label=False)
         sampler = dimod.ExactSolver()
         sampleset = sampler.sample(binary_bqm)
-        sol = model.decode_sampleset(sampleset)
-        self.assertTrue(sol[0].array("S", 0) == 0)
-        self.assertTrue(sol[0].array("S", 1) == 0)
-        self.assertTrue(sol[0].array("S", 2) == 1)
-        self.assertTrue(np.isclose(sol[0].energy, -1.8))
-    
+        decoded_samples = model.decode_sampleset(sampleset)
+        best_sample = min(decoded_samples, key=lambda s: s.energy)
+        self.assertTrue(best_sample.array("S", 0) == 0)
+        self.assertTrue(best_sample.array("S", 1) == 0)
+        self.assertTrue(best_sample.array("S", 2) == 1)
+        self.assertTrue(np.isclose(best_sample.energy, -1.8))
+
+        # with index_label=True
+        binary_bqm = model.to_bqm(index_label=True)
+        sampler = dimod.ExactSolver()
+        sampleset = sampler.sample(binary_bqm)
+        decoded_samples = model.decode_sampleset(sampleset)
+        best_sample = min(decoded_samples, key=lambda s: s.energy)
+        self.assertTrue(best_sample.array("S", 0) == 0)
+        self.assertTrue(best_sample.array("S", 1) == 0)
+        self.assertTrue(best_sample.array("S", 2) == 1)
+        self.assertTrue(np.isclose(best_sample.energy, -1.8))
+
+
     def test_placeholders(self):
 
         S = Array.create('S', 3, "SPIN")
@@ -217,11 +232,13 @@ class TestModel(unittest.TestCase):
         binary_bqm = model.to_bqm(feed_dict=feed_dict)
         sampler = dimod.ExactSolver()
         sampleset = sampler.sample(binary_bqm)
-        sol = model.decode_sampleset(sampleset, feed_dict=feed_dict)
-        self.assertTrue(sol[0].array("S", 0) == 0)
-        self.assertTrue(sol[0].array("S", 1) == 0)
-        self.assertTrue(sol[0].array("S", 2) == 1)
-        self.assertTrue(np.isclose(sol[0].energy, -1.8))
+        decoded_samples = model.decode_sampleset(sampleset, feed_dict=feed_dict)
+        best_sample = min(decoded_samples, key=lambda s: s.energy)
+
+        self.assertTrue(best_sample.array("S", 0) == 0)
+        self.assertTrue(best_sample.array("S", 1) == 0)
+        self.assertTrue(best_sample.array("S", 2) == 1)
+        self.assertTrue(np.isclose(best_sample.energy, -1.8))
     
     def test_constraint(self):
         sampler = dimod.ExactSolver()

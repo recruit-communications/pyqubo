@@ -27,8 +27,9 @@ class TestInteger(unittest.TestCase):
         q, offset = model.to_qubo(feed_dict={"s": 10.0})
         sampleset = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(
-            sampleset, feed_dict={"s": 10.0})[0]
-        self.assertTrue(decoded.subh["a"]==3)
+            sampleset, feed_dict={"s": 10.0})
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"]==3)
         self.assertTrue(a.value_range == (0, 4))
 
         expected_q = {('a[0]', 'a[1]'): 20.0,
@@ -59,12 +60,13 @@ class TestInteger(unittest.TestCase):
         q, offset = model.to_qubo(feed_dict={"s": 10.0})
         sampleset = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(
-            sampleset, feed_dict={"s": 10.0})[0]
-        self.assertTrue(decoded.subh["a"]==3)
-        self.assertTrue(decoded.subh["b"]==2)
-        self.assertTrue(decoded.subh["a_const"]==0)
-        self.assertTrue(decoded.subh["b_const"]==0)
-        self.assertEqual(len(decoded.constraints(only_broken=True)), 0)
+            sampleset, feed_dict={"s": 10.0})
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"]==3)
+        self.assertTrue(best.subh["b"]==2)
+        self.assertTrue(best.subh["a_const"]==0)
+        self.assertTrue(best.subh["b_const"]==0)
+        self.assertEqual(len(best.constraints(only_broken=True)), 0)
     
     def test_order_enc_integer(self):
         a = OrderEncInteger("a", (0, 4), strength=Placeholder("s"))
@@ -84,8 +86,9 @@ class TestInteger(unittest.TestCase):
         }
         response = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(
-            response, feed_dict={"s": 10.0})[0]
-        self.assertTrue(decoded.subh["a"]==3)
+            response, feed_dict={"s": 10.0})
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"]==3)
         self.assertTrue(a.value_range == (0, 4))
         assert_qubo_equal(q, expected_q)
     
@@ -95,9 +98,10 @@ class TestInteger(unittest.TestCase):
         model = ((a - b) ** 2 + (1 - a.more_than(1)) ** 2 + (1 - b.less_than(3)) ** 2).compile()
         q, offset = model.to_qubo()
         sampleset = dimod.ExactSolver().sample_qubo(q)
-        decoded = model.decode_sampleset(sampleset)[0]
-        self.assertTrue(decoded.subh["a"]==2)
-        self.assertTrue(decoded.subh["b"]==2)
+        decoded = model.decode_sampleset(sampleset)
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"]==2)
+        self.assertTrue(best.subh["b"]==2)
 
     def test_log_enc_integer(self):
         a = LogEncInteger("a", (0, 4))
@@ -107,10 +111,10 @@ class TestInteger(unittest.TestCase):
         model = H.compile()
         q, offset = model.to_qubo()
         sampleset = dimod.ExactSolver().sample_qubo(q)
-        decoded = model.decode_sampleset(sampleset)[0]
-        
-        self.assertTrue(decoded.subh["a"] == 2)
-        self.assertTrue(decoded.subh["b"] == 3)
+        decoded = model.decode_sampleset(sampleset)
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"] == 2)
+        self.assertTrue(best.subh["b"] == 3)
         self.assertTrue(a.value_range == (0, 4))
         self.assertTrue(b.value_range == (0, 4))
 
@@ -123,9 +127,10 @@ class TestInteger(unittest.TestCase):
         model = H.compile()
         q, offset = model.to_qubo()
         sampleset = dimod.ExactSolver().sample_qubo(q)
-        decoded = model.decode_sampleset(sampleset)[0]
-        self.assertTrue(decoded.subh["a"] == 1)
-        self.assertTrue(decoded.subh["b"] == 2)
+        decoded = model.decode_sampleset(sampleset)
+        best = min(decoded, key=lambda x: x.energy)
+        self.assertTrue(best.subh["a"] == 1)
+        self.assertTrue(best.subh["b"] == 2)
         self.assertTrue(a.value_range == (0, 3))
         self.assertTrue(b.value_range == (0, 3))
 
