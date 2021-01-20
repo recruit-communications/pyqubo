@@ -263,19 +263,28 @@ jobs:
     steps:
       - checkout
 
-      - run: &brew-update
-          name: brew update
-          command: |
-            brew --version
-            brew install cmake
-            if [ $PYTHON = 3.9.1 ]; then brew update; fi
-            echo $(brew --cache)
-
       - run: &install-cmake
           name: install cmake
           command: |
             brew --version
             brew install cmake
+
+      - restore_cache:
+          keys:
+            - v1-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run: &brew-update
+          name: brew update
+          command: |
+            brew --version
+            if [ $PYTHON = 3.9.1 ]; then brew update; fi
+            brew --version
+            echo $(brew --cache)
+      
+      - save_cache:
+          paths:
+            - /Users/distiller/Library/Caches/Homebrew/
+          key: v1-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
 
       - restore_cache:
           keys:
