@@ -266,6 +266,7 @@ jobs:
       - run: &install-cmake-pyenv
           name: install cmake and pyenv
           command: |
+            if [ $PYTHON = 3.9.1 ]; then brew update; fi
             brew --version
             brew install cmake
             brew install pyenv
