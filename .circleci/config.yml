@@ -268,7 +268,6 @@ jobs:
           command: |
             brew --version
             brew install cmake
-            brew update
             brew install pyenv
 
       - restore_cache:
@@ -339,7 +338,7 @@ jobs:
     <<: *test-osx-template
     environment:
       PYTHON: 3.9.1
-      HOMEBREW_NO_AUTO_UPDATE: 1
+      HOMEBREW_NO_AUTO_UPDATE: 0
       
   deploy-osx-36: &deploy-osx-template
     macos:
@@ -540,9 +539,9 @@ workflows:
     jobs:
       #- test-linux-doctest
 
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
       - test-osx-38
       - test-osx-39
       
