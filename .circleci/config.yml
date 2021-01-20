@@ -546,8 +546,8 @@ workflows:
       #- test-osx-35
       #- test-osx-36
       #- test-osx-37
-      - test-osx-38
-      #- test-osx-39
+      #- test-osx-38
+      - test-osx-39
       
       #- test-win-35
       #- test-win-36
