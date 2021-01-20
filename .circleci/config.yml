@@ -271,7 +271,10 @@ jobs:
           name: brew update
           command: |
             brew --version
-            if [ $PYTHON = 3.9.1 ]; then brew update; fi
+            brew_version="$(brew -v)" | head -n 1 | awk '{print $2}'
+            if [ $PYTHON = 3.9.1 -a $brew_version = 2.1.16 ]; then
+              brew update
+            fi
             brew --version
       
       - save_cache:
