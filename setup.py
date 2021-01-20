@@ -11,7 +11,7 @@ from distutils.version import LooseVersion
 from setuptools import Command
 
 
-if os.getenv('READTHEDOCS'):
+if os.getenv('READTHEDOCS') or platform.system() == "Linux":
     from skbuild import setup
 else:
     from setuptools import setup
@@ -101,14 +101,19 @@ class CppTest(Command):
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
-    'numpy>=1.16.0,<2.0.0',
-    'dimod>=0.9.2',
-    'dwave-neal>=0.5.4',
+    'numpy<1.20,>=1.17.3',
+    'dimod>=0.9.13',
+    'dwave-neal>=0.5.7',
     'Deprecated>=1.2.10',
     'six>=1.11.0'
     ]
 
-python_requires = '>=3.5'
+setup_requires = [
+    'scikit-build>=0.11.1',
+    'cmake>=3.18.2'
+]
+
+python_requires = '>=3.5, <3.10'
 
 setup(
     name=package_info.__package_name__,
@@ -134,6 +139,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'License :: OSI Approved :: Apache Software License',
     ]
 )

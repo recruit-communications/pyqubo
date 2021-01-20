@@ -11,7 +11,7 @@ jobs:
 
   test-linux-36: &linux-test-template
     docker:
-      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_x86_64:latest
     
     environment:
       PYTHON_PATH: /opt/python/cp36-cp36m
@@ -134,35 +134,35 @@ jobs:
   test-linux32-35:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp35-cp35m
   
   test-linux32-36:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp36-cp36m
   
   test-linux32-37:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp37-cp37m
   
   test-linux32-38:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
   
   test-linux32-39:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp39-cp39
 
@@ -267,7 +267,7 @@ jobs:
           command: |
             brew --version
             brew install cmake
-            brew update && brew upgrade pyenv
+            brew update
             brew install pyenv
 
       - restore_cache:
@@ -543,24 +543,24 @@ workflows:
       #- test-osx-36
       #- test-osx-37
       #- test-osx-38
-      - test-osx-39
+      #- test-osx-39
       
       #- test-win-35
       #- test-win-36
       #- test-win-37
       #- test-win-38
-      - test-win-39
+      #- test-win-39
 
-      #- test-linux-35
-      #- test-linux-36
-      #- test-linux-37
-      #- test-linux-38
+      - test-linux-35
+      - test-linux-36
+      - test-linux-37
+      - test-linux-38
       - test-linux-39
 
-      #- test-linux32-35
-      #- test-linux32-36
-      #- test-linux32-37
-      #- test-linux32-38
+      - test-linux32-35
+      - test-linux32-36
+      - test-linux32-37
+      - test-linux32-38
       - test-linux32-39
   
   deploy:
