@@ -263,6 +263,14 @@ jobs:
     steps:
       - checkout
 
+      - run: &brew-update
+          name: brew update
+          command: |
+            brew --version
+            brew install cmake
+            if [ $PYTHON = 3.9.1 ]; then brew update; fi
+            echo $(brew --cache)
+
       - run: &install-cmake
           name: install cmake
           command: |
@@ -276,17 +284,8 @@ jobs:
       - run: &install-python
           name: install python
           command: |
-            #brew install pyenv
-            #git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
-            #pyenv update
-            #pyenv install $PYTHON -s
-            
-            DIR="~/.pyenv/versions/"$PYTHON
-            if [!-d "$DIR" ]; then
-                if [ $PYTHON = 3.9.1 ]; then brew update; fi
-            fi
             brew install pyenv
-            if [!-d "$DIR" ]; then pyenv install $PYTHON -s; fi
+            pyenv install $PYTHON -s
 
       - save_cache:
           paths:
