@@ -267,6 +267,7 @@ jobs:
           command: |
             brew --version
             brew install cmake
+            brew update && brew upgrade pyenv
             brew install pyenv
 
       - restore_cache:
