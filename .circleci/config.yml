@@ -280,7 +280,6 @@ jobs:
             - /Users/distiller/Library/Caches/Homebrew
             - /usr/local/Homebrew
       
-      
       - run: &install-cmake
           name: install cmake
           command: |
@@ -372,6 +371,18 @@ jobs:
 
     steps:
       - checkout
+
+      - restore_cache:
+          keys:
+          - v5-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+      
+      - run: *brew-update
+      
+      - save_cache:
+          key: v5-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          paths:
+            - /Users/distiller/Library/Caches/Homebrew
+            - /usr/local/Homebrew
 
       - run: *install-cmake
 
