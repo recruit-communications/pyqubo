@@ -263,27 +263,27 @@ jobs:
     steps:
       - checkout
 
-      - run: &install-cmake-pyenv
+      - run: &install-cmake
           name: install cmake and pyenv
           command: |
-            if [ $PYTHON = 3.9.1 ]; then brew update; fi
             brew --version
             brew install cmake
-            brew install pyenv
 
       - restore_cache:
           keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+            - v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
 
-      - run:
+      - run: &install-pyenv
           name: install python
           command: |
+            if [ $PYTHON = 3.9.1 ]; then brew update; fi
+            brew install pyenv
             pyenv install $PYTHON -s
 
       - save_cache:
           paths:
             - ~/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          key: v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
       
       - run: &create-virtualenv-using-pyenv
           name: create virtualenv
@@ -355,22 +355,18 @@ jobs:
     steps:
       - checkout
 
-      - run: *install-cmake-pyenv
+      - run: *install-cmake
 
       - restore_cache:
           keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
+            - v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
 
-      - run:
-          name: install python
-          command: |
-            pyenv install -l
-            pyenv install $PYTHON -s
+      - run: *install-pyenv
 
       - save_cache:
           paths:
             - ~/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
+          key: v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
       
       - run: *create-virtualenv-using-pyenv
       
