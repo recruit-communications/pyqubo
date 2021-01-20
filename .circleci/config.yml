@@ -263,11 +263,11 @@ jobs:
     steps:
       - checkout
 
-      - run: &install-cmake
-          name: install cmake
-          command: |
-            brew --version
-            brew install cmake
+      - save_cache:
+          key: v4-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          paths:
+            - /Users/distiller/Library/Caches/Homebrew
+            - /usr/local/Homebrew
 
       - run: &brew-update
           name: brew update
@@ -275,6 +275,16 @@ jobs:
             brew --version
             if [ $PYTHON = 3.9.1 ]; then brew update; fi
             brew --version
+  
+      - restore_cache:
+          keys:
+          - v4-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run: &install-cmake
+          name: install cmake
+          command: |
+            brew --version
+            brew install cmake
             brew install pyenv
 
       - restore_cache:
