@@ -273,12 +273,22 @@ jobs:
           keys:
             - v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
 
-      - run: &install-pyenv
+      - run: &install-python
           name: install python
           command: |
-            if [ $PYTHON = 3.9.1 ]; then brew update; fi
             brew install pyenv
+            git clone https://github.com/pyenv/pyenv-update.git $(pyenv root)/plugins/pyenv-update
+            pyenv update
             pyenv install $PYTHON -s
+            
+            #DIR="~/.pyenv/versions/3.9.1"
+            #if [ -d "$DIR" ]; then
+            #  echo "Python 3.9.1 is already installed"
+            #else
+            #  if [ $PYTHON = 3.9.1 ]; then brew update; fi
+            #  brew install pyenv
+            #  pyenv install $PYTHON -s
+            #fi
 
       - save_cache:
           paths:
@@ -361,7 +371,7 @@ jobs:
           keys:
             - v2-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
 
-      - run: *install-pyenv
+      - run: *install-python
 
       - save_cache:
           paths:
