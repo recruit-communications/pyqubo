@@ -126,6 +126,11 @@ jobs:
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
   
+  test-linux-39:
+    <<: *linux-test-template
+    environment:
+      PYTHON_PATH: /opt/python/cp39-cp39
+  
   test-linux32-35:
     <<: *linux-test-template
     docker:
@@ -153,6 +158,13 @@ jobs:
       - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
+  
+  test-linux32-39:
+    <<: *linux-test-template
+    docker:
+      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp39-cp39
 
   deploy-linux: &deploy-linux-template
     docker:
@@ -320,6 +332,12 @@ jobs:
     environment:
       PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
+  
+  test-osx-39:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.9.1
+      HOMEBREW_NO_AUTO_UPDATE: 1
       
   deploy-osx-36: &deploy-osx-template
     macos:
@@ -426,7 +444,7 @@ jobs:
             choco install -y cmake
             
             if [ $PYTHON != '3.7.3' ]; then
-            choco install -y python --version "${PYTHON}"      
+            choco install -y python --version "${PYTHON}"
             fi
       
       - run:
@@ -452,6 +470,12 @@ jobs:
     environment:
       PYTHON: 3.8.5
       PYTHON_PATH: C:/Python38/
+  
+  test-win-39:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.9.1
+      PYTHON_PATH: C:/Python39/
   
   test-win-35:
     <<: *test-win-template
@@ -512,27 +536,31 @@ jobs:
 workflows:
   tests:
     jobs:
-      - test-linux-doctest
+      #- test-linux-doctest
 
-      - test-osx-35
-      - test-osx-36
-      - test-osx-37
-      - test-osx-38
+      #- test-osx-35
+      #- test-osx-36
+      #- test-osx-37
+      #- test-osx-38
+      - test-osx-39
       
-      - test-win-35
-      - test-win-36
-      - test-win-37
-      - test-win-38
+      #- test-win-35
+      #- test-win-36
+      #- test-win-37
+      #- test-win-38
+      - test-win-39
 
-      - test-linux-35
-      - test-linux-36
-      - test-linux-37
-      - test-linux-38
+      #- test-linux-35
+      #- test-linux-36
+      #- test-linux-37
+      #- test-linux-38
+      - test-linux-39
 
-      - test-linux32-35
-      - test-linux32-36
-      - test-linux32-37
-      - test-linux32-38
+      #- test-linux32-35
+      #- test-linux32-36
+      #- test-linux32-37
+      #- test-linux32-38
+      - test-linux32-39
   
   deploy:
     jobs:
