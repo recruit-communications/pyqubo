@@ -108,10 +108,6 @@ install_requires = [
     'six>=1.11.0'
     ]
 
-setup_requires = [
-    'scikit-build>=0.11.1',
-    'cmake>=3.18.2'
-]
 
 python_requires = '>=3.5, <3.10'
 
