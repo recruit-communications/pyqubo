@@ -81,7 +81,7 @@ jobs:
       
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_doctest.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run:
           name: install dependencies
@@ -94,7 +94,7 @@ jobs:
       - save_cache:
           paths:
             - ./env
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          key: - v2-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_doctest.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run: *install-package-template
       
@@ -485,6 +485,7 @@ jobs:
           command: |
             choco install -y cmake
             
+            # Python 3.7 is already installed
             if [ $PYTHON != '3.7.3' ]; then
             choco install -y python --version "${PYTHON}"
             fi
@@ -567,6 +568,12 @@ jobs:
     environment:
       PYTHON: 3.8.5
       PYTHON_PATH: C:/Python38/
+  
+  deploy-win-39:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.9.1
+      PYTHON_PATH: C:/Python39/
 
   deploy-win-35:
     <<: *deploy-win-template
@@ -586,11 +593,12 @@ workflows:
       #- test-osx-38
       #- test-osx-39
       
-      #- test-win-35
-      #- test-win-36
-      #- test-win-37
-      #- test-win-38
-      - test-win-39
+      - test-win-35
+      - test-win-36
+      - test-win-37
+      - test-win-38
+      #- test-win-39
+      - deploy-win-39
 
       #- test-linux-35
       #- test-linux-36
