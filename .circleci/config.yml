@@ -590,7 +590,7 @@ workflows:
       #- test-win-36
       #- test-win-37
       #- test-win-38
-      #- test-win-39
+      - test-win-39
 
       #- test-linux-35
       #- test-linux-36
@@ -604,8 +604,8 @@ workflows:
       #- test-linux32-38
       #- test-linux32-39
 
-      - deploy-linux
-      - deploy-linux32
+      #- deploy-linux
+      #- deploy-linux32
 
       #- deploy-osx-36
       #- deploy-osx-37
