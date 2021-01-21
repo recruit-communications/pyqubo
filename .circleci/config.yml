@@ -604,10 +604,13 @@ workflows:
       #- test-linux32-38
       #- test-linux32-39
 
-      #- deploy-linux
-      #- deploy-linux32
+      - deploy-linux
+      - deploy-linux32
 
       - deploy-osx-36
+      - deploy-osx-37
+      - deploy-osx-38
+      - deploy-osx-39
   
   deploy:
     jobs:
