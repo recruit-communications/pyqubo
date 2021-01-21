@@ -43,6 +43,7 @@ jobs:
       - run: &install-dependencies-template
           name: install dependencies
           command: |
+            # Install dependencies such that pre-release versions are not installed when executing `setup.py install`
             . env/bin/activate
             python --version
             pip install -r requirements.txt
@@ -168,7 +169,7 @@ jobs:
 
   deploy-linux: &deploy-linux-template
     docker:
-      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_x86_64:latest
     
     environment:
       GIT_URL: << pipeline.project.git_url >>
@@ -181,6 +182,7 @@ jobs:
       - run:
           name: checkout directory
           command: |
+            # For the bug of CircleCI that checkout doesn't work when the tag is added
             echo $GIT_URL
             echo $GIT_REVISION
             echo $GIT_TAG
@@ -195,7 +197,7 @@ jobs:
           command: |
             for PYBIN in /opt/python/*/bin; do
               echo $PYBIN
-              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 9))"; then continue; fi;
+              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 10))"; then continue; fi;
               "${PYBIN}/pip" install -r requirements.txt
               #"${PYBIN}/pip" wheel . -w ./wheelhouse
               "${PYBIN}/python" setup.py bdist_wheel -d ./wheelhouse
@@ -220,11 +222,11 @@ jobs:
             echo -e "username = $PYPI_USERNAME" >> ~/.pypirc
             
             # for testpypi
-            #echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
-            #echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
+            echo -e "repository = https://test.pypi.org/legacy/" >> ~/.pypirc
+            echo -e "password = $TEST_PYPI_PASSWORD" >> ~/.pypirc
 
             # for actual pypi
-            echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
+            #echo -e "password = $PYPI_PASSWORD" >> ~/.pypirc
 
       - run:
           name: python setup
@@ -245,7 +247,7 @@ jobs:
   deploy-linux32:
     <<: *deploy-linux-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
 
 ##################################################################################################
 # Mac OSX
@@ -270,6 +272,9 @@ jobs:
       - run: &brew-update
           name: brew update
           command: |
+            # Only when the brew is not updated and Python=3.9, we update the brew
+            # since the older pyenv doesn't contain Python3.9.
+            
             brew --version
             brew_version=`echo "$(brew -v)" | head -n 1 | awk '{print $2}'`
             if [ $PYTHON = 3.9.1 -a $brew_version = 2.1.16 ]; then
@@ -283,7 +288,7 @@ jobs:
             - /Users/distiller/Library/Caches/Homebrew
             - /usr/local/Homebrew
       
-      - run: &install-cmake
+      - run: &install-cmake-pyenv
           name: install cmake
           command: |
             brew --version
@@ -377,17 +382,17 @@ jobs:
 
       - restore_cache:
           keys:
-          - v5-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          - v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
       
       - run: *brew-update
       
       - save_cache:
-          key: v5-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          key: v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
           paths:
             - /Users/distiller/Library/Caches/Homebrew
             - /usr/local/Homebrew
 
-      - run: *install-cmake
+      - run: *install-cmake-pyenv
 
       - restore_cache:
           keys:
@@ -449,6 +454,13 @@ jobs:
     environment:
       PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
+      MACOSX_DEPLOYMENT_TARGET: 10.9
+  
+  deploy-osx-39:
+    <<: *deploy-osx-template
+    environment:
+      PYTHON: 3.9.1
+      HOMEBREW_NO_AUTO_UPDATE: 0
       MACOSX_DEPLOYMENT_TARGET: 10.9
 
   
@@ -572,7 +584,7 @@ workflows:
       #- test-osx-36
       #- test-osx-37
       #- test-osx-38
-      - test-osx-39
+      #- test-osx-39
       
       #- test-win-35
       #- test-win-36
@@ -591,6 +603,11 @@ workflows:
       #- test-linux32-37
       #- test-linux32-38
       #- test-linux32-39
+
+      #- deploy-linux
+      #- deploy-linux32
+
+      - deploy-osx-36
   
   deploy:
     jobs:
