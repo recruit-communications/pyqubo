@@ -626,6 +626,8 @@ workflows:
           <<: *deploy-template
       - deploy-osx-38:
           <<: *deploy-template
+      - deploy-osx-39:
+          <<: *deploy-template
       - deploy-win-35:
           <<: *deploy-template
       - deploy-win-36:
@@ -633,6 +635,8 @@ workflows:
       - deploy-win-37:
           <<: *deploy-template
       - deploy-win-38:
+          <<: *deploy-template
+      - deploy-win-39:
           <<: *deploy-template
       - deploy-linux:
           <<: *deploy-template
