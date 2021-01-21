@@ -199,8 +199,8 @@ jobs:
               echo $PYBIN
               if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 10))"; then continue; fi;
               "${PYBIN}/pip" install -r requirements.txt
-              #"${PYBIN}/pip" wheel . -w ./wheelhouse
-              "${PYBIN}/python" setup.py bdist_wheel -d ./wheelhouse
+              "${PYBIN}/pip" wheel . -w ./wheelhouse
+              #"${PYBIN}/python" setup.py bdist_wheel -d ./wheelhouse
               "${PYBIN}/python" setup.py sdist -d ./dist
             done
       
