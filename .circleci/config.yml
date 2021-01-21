@@ -11,7 +11,7 @@ jobs:
 
   test-linux-36: &linux-test-template
     docker:
-      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_x86_64:latest
     
     environment:
       PYTHON_PATH: /opt/python/cp36-cp36m
@@ -43,6 +43,7 @@ jobs:
       - run: &install-dependencies-template
           name: install dependencies
           command: |
+            # Install dependencies such that pre-release versions are not installed when executing `setup.py install`
             . env/bin/activate
             python --version
             pip install -r requirements.txt
@@ -80,7 +81,7 @@ jobs:
       
       - restore_cache:
           keys:
-          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          - v2-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_doctest.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run:
           name: install dependencies
@@ -93,7 +94,7 @@ jobs:
       - save_cache:
           paths:
             - ./env
-          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ .Environment.CIRCLE_JOB }}
+          key: v2-dependencies-{{ checksum "requirements.txt" }}-{{ checksum "requirements_doctest.txt" }}-{{ .Environment.CIRCLE_JOB }}
 
       - run: *install-package-template
       
@@ -126,37 +127,49 @@ jobs:
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
   
+  test-linux-39:
+    <<: *linux-test-template
+    environment:
+      PYTHON_PATH: /opt/python/cp39-cp39
+  
   test-linux32-35:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp35-cp35m
   
   test-linux32-36:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp36-cp36m
   
   test-linux32-37:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp37-cp37m
   
   test-linux32-38:
     <<: *linux-test-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
     environment:
       PYTHON_PATH: /opt/python/cp38-cp38
+  
+  test-linux32-39:
+    <<: *linux-test-template
+    docker:
+      - image: quay.io/pypa/manylinux1_i686:latest
+    environment:
+      PYTHON_PATH: /opt/python/cp39-cp39
 
   deploy-linux: &deploy-linux-template
     docker:
-      - image: pyqubo/manylinux_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_x86_64:latest
     
     environment:
       GIT_URL: << pipeline.project.git_url >>
@@ -169,6 +182,7 @@ jobs:
       - run:
           name: checkout directory
           command: |
+            # For the bug of CircleCI that checkout doesn't work when the tag is added
             echo $GIT_URL
             echo $GIT_REVISION
             echo $GIT_TAG
@@ -183,9 +197,10 @@ jobs:
           command: |
             for PYBIN in /opt/python/*/bin; do
               echo $PYBIN
-              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 9))"; then continue; fi;
+              if "${PYBIN}/python" -c "import sys; sys.exit(sys.version_info>=(3, 5) and sys.version_info<(3, 10))"; then continue; fi;
               "${PYBIN}/pip" install -r requirements.txt
-              "${PYBIN}/pip" wheel . -w ./wheelhouse
+              #"${PYBIN}/pip" wheel . -w ./wheelhouse
+              PATH=$PYBIN:$PATH python setup.py bdist_wheel -d ./wheelhouse
               "${PYBIN}/python" setup.py sdist -d ./dist
             done
       
@@ -232,7 +247,7 @@ jobs:
   deploy-linux32:
     <<: *deploy-linux-template
     docker:
-      - image: pyqubo/manylinux1_i686_cmake_wo_ssh:latest
+      - image: quay.io/pypa/manylinux1_i686:latest
 
 ##################################################################################################
 # Mac OSX
@@ -250,8 +265,31 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+          - v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+
+      - run: &brew-update
+          name: brew update
+          command: |
+            # Only when the brew is not updated and Python=3.9, we update the brew
+            # since the older pyenv doesn't contain Python3.9.
+            
+            brew --version
+            brew_version=`echo "$(brew -v)" | head -n 1 | awk '{print $2}'`
+            if [ $PYTHON = 3.9.1 -a $brew_version = 2.1.16 ]; then
+              brew update
+            fi
+            brew --version
+      
+      - save_cache:
+          key: v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          paths:
+            - /Users/distiller/Library/Caches/Homebrew
+            - /usr/local/Homebrew
+      
       - run: &install-cmake-pyenv
-          name: install cmake and pyenv
+          name: install cmake
           command: |
             brew --version
             brew install cmake
@@ -259,9 +297,9 @@ jobs:
 
       - restore_cache:
           keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+            - v4-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
 
-      - run:
+      - run: &install-python
           name: install python
           command: |
             pyenv install $PYTHON -s
@@ -269,13 +307,14 @@ jobs:
       - save_cache:
           paths:
             - ~/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          key: v4-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
       
       - run: &create-virtualenv-using-pyenv
           name: create virtualenv
           command: |
             eval "$(pyenv init -)"
             pyenv local $PYTHON
+            which python
             python -m pip install virtualenv
             python -m virtualenv env
       
@@ -320,6 +359,12 @@ jobs:
     environment:
       PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
+  
+  test-osx-39:
+    <<: *test-osx-template
+    environment:
+      PYTHON: 3.9.1
+      HOMEBREW_NO_AUTO_UPDATE: 0
       
   deploy-osx-36: &deploy-osx-template
     macos:
@@ -335,22 +380,30 @@ jobs:
     steps:
       - checkout
 
+      - restore_cache:
+          keys:
+          - v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+      
+      - run: *brew-update
+      
+      - save_cache:
+          key: v6-brew_cache-{{ .Environment.CIRCLE_JOB }}-xcode11.2.1
+          paths:
+            - /Users/distiller/Library/Caches/Homebrew
+            - /usr/local/Homebrew
+
       - run: *install-cmake-pyenv
 
       - restore_cache:
           keys:
-            - v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
+            - v4-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
 
-      - run:
-          name: install python
-          command: |
-            pyenv install -l
-            pyenv install $PYTHON -s
+      - run: *install-python
 
       - save_cache:
           paths:
             - ~/.pyenv
-          key: v1-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
+          key: v4-pyenv-{{ .Environment.CIRCLE_JOB }}-xcode11.2.0
       
       - run: *create-virtualenv-using-pyenv
       
@@ -402,6 +455,13 @@ jobs:
       PYTHON: 3.8.0
       HOMEBREW_NO_AUTO_UPDATE: 1
       MACOSX_DEPLOYMENT_TARGET: 10.9
+  
+  deploy-osx-39:
+    <<: *deploy-osx-template
+    environment:
+      PYTHON: 3.9.1
+      HOMEBREW_NO_AUTO_UPDATE: 0
+      MACOSX_DEPLOYMENT_TARGET: 10.9
 
   
 ##################################################################################################
@@ -425,8 +485,9 @@ jobs:
           command: |
             choco install -y cmake
             
+            # Python 3.7 is already installed
             if [ $PYTHON != '3.7.3' ]; then
-            choco install -y python --version "${PYTHON}"      
+            choco install -y python --version "${PYTHON}"
             fi
       
       - run:
@@ -452,6 +513,12 @@ jobs:
     environment:
       PYTHON: 3.8.5
       PYTHON_PATH: C:/Python38/
+  
+  test-win-39:
+    <<: *test-win-template
+    environment:
+      PYTHON: 3.9.1
+      PYTHON_PATH: C:/Python39/
   
   test-win-35:
     <<: *test-win-template
@@ -501,6 +568,12 @@ jobs:
     environment:
       PYTHON: 3.8.5
       PYTHON_PATH: C:/Python38/
+  
+  deploy-win-39:
+    <<: *deploy-win-template
+    environment:
+      PYTHON: 3.9.1
+      PYTHON_PATH: C:/Python39/
 
   deploy-win-35:
     <<: *deploy-win-template
@@ -518,21 +591,25 @@ workflows:
       - test-osx-36
       - test-osx-37
       - test-osx-38
+      - test-osx-39
       
       - test-win-35
       - test-win-36
       - test-win-37
       - test-win-38
+      - test-win-39
 
       - test-linux-35
       - test-linux-36
       - test-linux-37
       - test-linux-38
+      - test-linux-39
 
       - test-linux32-35
       - test-linux32-36
       - test-linux32-37
       - test-linux32-38
+      - test-linux32-39
   
   deploy:
     jobs:
