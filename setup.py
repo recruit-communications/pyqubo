@@ -111,8 +111,8 @@ class CppTest(Command):
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
-        'numpy>=1.17.3, <1.20.2',
-        'dimod>=0.9.14, <0.10.0',
+        'numpy>=1.17.3, <=1.20.2',
+        'dimod>=0.9.14, <=0.10.0',
         'dwave-neal>=0.5.7',
         'Deprecated>=1.2.12',
         'six>=1.15.0'
@@ -125,7 +125,8 @@ extras_require = [
         'wheel>=0.36.2',
         'ninja>=1.10.0',
         'Sphinx>=3.5.4',
-        'sphinx-rtd-theme>=0.5.2'
+        'sphinx-rtd-theme>=0.5.2',
+        'Cython>=0.29.21'
         ]
 
 python_requires = '>=3.5, <3.10'
