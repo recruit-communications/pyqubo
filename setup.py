@@ -126,12 +126,13 @@ setup_requires = [
         'Cython>=0.29.21'
         "cmake>=3.18.4",
         'setuptools',
+        'nbsphinx'
         ]
 
 extras_require = [
         'Sphinx>=3.5.4',
         'sphinx-rtd-theme>=0.5.2',
-        'nbsphinx>=0.8.3'
+        'nbsphinx'
         ]
 
 tests_require = [
