@@ -27,6 +27,7 @@ else:
 
 CPU_COUNT = "-j" + str(cpu_count() + 1)
 
+
 class PackageInfo(object):
     def __init__(self, info_file):
         with open(info_file) as f:
@@ -36,7 +37,9 @@ class PackageInfo(object):
     def __getattribute__(self, name):
         return super(PackageInfo, self).__getattribute__(name)
 
+
 package_info = PackageInfo(os.path.join('pyqubo', 'package_info.py'))
+
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -70,7 +73,7 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
+            if sys.maxsize > 2 ** 32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
         else:
@@ -108,6 +111,7 @@ class CppTest(Command):
         subprocess.call(['./tests/pyqubo_test'],
                         cwd=os.path.join('build', self.cpplibdir), shell=True)
 
+
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
@@ -118,44 +122,55 @@ install_requires = [
         'six>=1.15.0'
         ]
 
-extras_require = [
-        "cmake>=3.18.4",
-        'setuptools>=56.0.0',
+setup_requires = [
+        'numpy>=1.17.3, <=1.20.2',
         'scikit-build>=0.11.1',
         'wheel>=0.36.2',
         'ninja>=1.10.0',
-        'Sphinx>=3.5.4',
-        'sphinx-rtd-theme>=0.5.2',
         'Cython>=0.29.21'
+        "cmake>=3.18.4",
+        'setuptools>=56.0.0',
+        ]
+
+extras_require = [
+        'Sphinx>=3.5.4',
+        'sphinx-rtd-theme>=0.5.2'
+        ]
+
+tests_require = [
+        'coverage>=4.5.1',
+        'codecov>=2.1.9'
         ]
 
 python_requires = '>=3.5, <3.10'
 
 setup(
-    name=package_info.__package_name__,
-    version=package_info.__version__,
-    description=package_info.__description__,
-    long_description=open('README.rst').read(),
-    author=package_info.__contact_names__,
-    author_email=package_info.__contact_emails__,
-    maintainer=package_info.__contact_names__,
-    maintainer_email=package_info.__contact_emails__,
-    url=package_info.__repository_url__,
-    download_url=package_info.__download_url__,
-    license=package_info.__license__,
-    ext_modules=[CMakeExtension('pyqubo')],
-    cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
-    zip_safe=False,
-    packages=packages,
-    keywords=package_info.__keywords__,
-    install_requires=install_requires,
-    python_requires=python_requires,
-    classifiers=[
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'License :: OSI Approved :: Apache Software License',
-    ]
-)
+        name=package_info.__package_name__,
+        version=package_info.__version__,
+        description=package_info.__description__,
+        long_description=open('README.rst').read(),
+        author=package_info.__contact_names__,
+        author_email=package_info.__contact_emails__,
+        maintainer=package_info.__contact_names__,
+        maintainer_email=package_info.__contact_emails__,
+        url=package_info.__repository_url__,
+        download_url=package_info.__download_url__,
+        license=package_info.__license__,
+        ext_modules=[CMakeExtension('pyqubo')],
+        cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
+        zip_safe=False,
+        packages=packages,
+        keywords=package_info.__keywords__,
+        install_requires=install_requires,
+        setup_requires=setup_requires,
+        python_requires=python_requires,
+        tests_require=tests_require,
+        classifiers=[
+                'Programming Language :: Python :: 3.5',
+                'Programming Language :: Python :: 3.6',
+                'Programming Language :: Python :: 3.7',
+                'Programming Language :: Python :: 3.8',
+                'Programming Language :: Python :: 3.9',
+                'License :: OSI Approved :: Apache Software License',
+                ]
+        )
