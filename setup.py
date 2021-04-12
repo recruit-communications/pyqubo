@@ -11,7 +11,9 @@ from multiprocessing import cpu_count
 from setuptools import Command, Extension
 from setuptools.command.build_ext import build_ext
 
-if find_spec('skbuild'):
+if platform.system() == "Windows":
+    from setuptools import setup
+elif find_spec('skbuild'):
     from skbuild import setup
 elif os.getenv('NOT_USE_SKBUILD'):
     from setuptools import setup
