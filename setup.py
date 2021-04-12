@@ -121,7 +121,6 @@ setup_requires = [
         'numpy>=1.17.3, <=1.20.0',
         'scikit-build>=0.11.1',
         'wheel>=0.36.2',
-        'ninja>=1.10.0',
         'Cython>=0.29.21'
         "cmake>=3.18.4",
         'setuptools',
