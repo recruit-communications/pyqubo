@@ -128,7 +128,8 @@ setup_requires = [
 
 extras_require = [
         'Sphinx>=3.5.4',
-        'sphinx-rtd-theme>=0.5.2'
+        'sphinx-rtd-theme>=0.5.2',
+        'nbsphinx>=0.8.3'
         ]
 
 tests_require = [
