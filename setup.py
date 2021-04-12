@@ -124,7 +124,7 @@ setup_requires = [
         'ninja>=1.10.0',
         'Cython>=0.29.21'
         "cmake>=3.18.4",
-        'setuptools>=56.0.0',
+        'setuptools',
         ]
 
 extras_require = [
