@@ -4,7 +4,7 @@ project(cpp_pyqubo)
 
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE )
-find_program(CMAKE_MAKE_PROGRAM NAMES Ninja Ninja.exe)
+#find_program(CMAKE_MAKE_PROGRAM NAMES Ninja Ninja.exe)
 
 
 set(CMAKE_CXX_STANDARD 14)
