@@ -5,22 +5,17 @@ import subprocess
 import sys
 import sysconfig
 from distutils.version import LooseVersion
+from importlib.util import find_spec
 from multiprocessing import cpu_count
 
 from setuptools import Command, Extension
 from setuptools.command.build_ext import build_ext
 
-if os.getenv('USE_POETRY'):
+if find_spec('skbuild'):
+    from skbuild import setup
+elif os.getenv('NOT_USE_SKBUILD'):
     from setuptools import setup
-elif os.getenv('USE_SKBUILD'):
-    from skbuild import setup
 elif os.getenv('READTHEDOCS'):
-    from skbuild import setup
-elif platform.system() == "Linux":
-    from skbuild import setup
-elif platform.system() == "Darwin":
-    from skbuild import setup
-elif platform.system() == "Windows":
     from skbuild import setup
 else:
     from setuptools import setup
@@ -165,6 +160,7 @@ setup(
         setup_requires=setup_requires,
         python_requires=python_requires,
         tests_require=tests_require,
+        include_package_data=True,
         classifiers=[
                 'Programming Language :: Python :: 3.5',
                 'Programming Language :: Python :: 3.6',
