@@ -1,21 +1,31 @@
 import os
-import re
-import sys
 import platform
+import re
 import subprocess
+import sys
 import sysconfig
-
-from setuptools import Extension
-from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
-from setuptools import Command
+from multiprocessing import cpu_count
 
+from setuptools import Command, Extension
+from setuptools.command.build_ext import build_ext
 
-if os.getenv('READTHEDOCS') or platform.system() == "Linux":
+if os.getenv('USE_POETRY'):
+    from setuptools import setup
+elif os.getenv('USE_SKBUILD'):
+    from skbuild import setup
+elif os.getenv('READTHEDOCS'):
+    from skbuild import setup
+elif platform.system() == "Linux":
+    from skbuild import setup
+elif platform.system() == "Darwin":
+    from skbuild import setup
+elif platform.system() == "Windows":
     from skbuild import setup
 else:
     from setuptools import setup
 
+CPU_COUNT = "-j" + str(cpu_count() + 1)
 
 class PackageInfo(object):
     def __init__(self, info_file):
@@ -65,7 +75,7 @@ class CMakeBuild(build_ext):
             build_args += ['--', '/m']
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+            build_args += ['--', CPU_COUNT]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
@@ -101,13 +111,22 @@ class CppTest(Command):
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
-    'numpy<1.20,>=1.17.3',
-    'dimod>=0.9.13',
-    'dwave-neal>=0.5.7',
-    'Deprecated>=1.2.10',
-    'six>=1.11.0'
-    ]
+        'numpy>=1.17.3,<2.0.0',
+        'dimod>=0.9.14',
+        'dwave-neal>=0.5.7',
+        'Deprecated>=1.2.12',
+        'six>=1.15.0'
+        ]
 
+extras_require = [
+        "cmake>=3.18.4",
+        'setuptools>=56.0.0',
+        'scikit-build>=0.11.1',
+        'wheel>=0.36.2',
+        'ninja>=1.10.0',
+        'Sphinx>=3.5.4',
+        'sphinx-rtd-theme>=0.5.2'
+        ]
 
 python_requires = '>=3.5, <3.10'
 

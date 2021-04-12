@@ -1,1 +1,14 @@
 include README.rst
+include *.cmake
+include FetchContent/*.cmake.in
+include CMakeLists.txt
+include pyproject.toml
+include requirements.txt
+include setup.py
+
+recursive-include pyqubo *
+recursive-include tests *
+recursive-include src *
+recursive-include external *
+recursive-include include *
+recursive-include cpp_dimod *
