@@ -9,8 +9,8 @@ set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE )
 
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-set(CMAKE_C_FLAGS "-std=c++11 -Ofast -pipe -mtune=native -march=native" )
-set(CMAKE_CXX_FLAGS "-std=c++11 -Ofast -pipe -mtune=native -march=native")
+set(CMAKE_C_FLAGS "-std=c++11 -Ofast -pipe " )
+set(CMAKE_CXX_FLAGS "-std=c++11 -Ofast -pipe ")
 
 
 include(external/pybind11.cmake)
