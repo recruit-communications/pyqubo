@@ -6,13 +6,6 @@ project(cpp_pyqubo)
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT result)
-if(result)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
-  set_property(TARGET ... PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
-endif()
-
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
 set(CMAKE_C_FLAGS "-Ofast -pipe" )
