@@ -76,7 +76,7 @@ class CMakeBuild(build_ext):
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             cmake_args += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
-            build_wargs += ['--', '-j '+str(CPU_COUNT)]
+            build_args += ['--', '-j '+str(CPU_COUNT)]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
