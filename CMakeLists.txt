@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(cpp_pyqubo C CXX)
+project(cpp_pyqubo)
 
-find_package(Python3 REQUIRED)
 
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
