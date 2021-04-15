@@ -22,7 +22,7 @@ elif os.getenv('READTHEDOCS'):
 else:
     from setuptools import setup
 
-CPU_COUNT = "-j" + str(cpu_count() + 1)
+CPU_COUNT = "-j " + str(cpu_count() + 1)
 
 
 class PackageInfo(object):
@@ -75,7 +75,7 @@ class CMakeBuild(build_ext):
             build_args += ['--', '/m']
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            cmake_args += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
+            cmake_args += ['-DCMAKE_MAKE_PROGRAM=' + '\"make ' + str(CPU_COUNT) + '\"']
             build_args += ['--', str(CPU_COUNT)]
 
         env = os.environ.copy()
