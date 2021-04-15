@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.11)
 
 project(cpp_pyqubo)
 
+include(CheckIPOSupported)
+check_ipo_supported(RESULT result)
+if(result)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
+  set_property(TARGET ... PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
 
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
