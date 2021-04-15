@@ -74,8 +74,9 @@ class CMakeBuild(build_ext):
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
         else:
-            cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', CPU_COUNT]
+            cmake_kwargs += ['-DCMAKE_BUILD_TYPE=' + cfg]
+            cmake_kwargs += ['-DCMAKE_MAKE_PROGRAM=' + '\"make -j ' + str(CPU_COUNT) + '\"']
+            build_kwargs += ['--', '-j '+str(CPU_COUNT)]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
