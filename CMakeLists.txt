@@ -1,17 +1,20 @@
 cmake_minimum_required(VERSION 3.11)
 
-project(cpp_pyqubo)
+project(cpp_pyqubo C CXX)
 
+find_package(Python3 REQUIRED)
+find_package(PythonExtensions REQUIRED)
+
+set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE )
-#find_program(CMAKE_MAKE_PROGRAM NAMES Ninja Ninja.exe)
-
 
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-set(CMAKE_C_FLAGS "-std=c++11 -Ofast -pipe " )
-set(CMAKE_CXX_FLAGS "-std=c++11 -Ofast -pipe ")
-
+set(CMAKE_C_FLAGS "-Ofast -pipe" )
+set(CMAKE_CXX_FLAGS "-Ofast -pipe")
+set(CMAKE_C_FLAGS_RELEASE "-Ofast -pipe")
+set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -pipe")
 
 include(external/pybind11.cmake)
 include_directories(cpp_dimod)
