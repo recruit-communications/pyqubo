@@ -146,7 +146,7 @@ You can solve BQM by using :class:`Sampler` class.
 :class:`Sampler` is an abstract class defined by `dimod <https://docs.ocean.dwavesys.com/en/stable/docs_dimod/>`_ package.
 Various kinds of sampler class, such as `SimulatedAnnealingSampler <https://docs.ocean.dwavesys.com/en/stable/docs_neal/reference/sampler.html>`_ or `DWaveSampler <https://docs.ocean.dwavesys.com/en/stable/docs_system/reference/samplers.html#dwave.system.samplers.DWaveSampler>`_, inherits `Sampler` class.
 
-First, we craete BQM object using :func:`to_bqm` method.
+First, we create BQM object using :func:`to_bqm` method.
 (If you want to use DWaveSampler which only takes integer-indexed QUBO,
 you can simply do like ``to_bqm(index_label=True)``.)
 
