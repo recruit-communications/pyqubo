@@ -129,11 +129,6 @@ setup_requires = [
         'nbsphinx'
         ]
 
-extras_require = [
-        'Sphinx>=3.5.4',
-        'sphinx-rtd-theme>=0.5.2',
-        'nbsphinx'
-        ]
 
 tests_require = [
         'coverage>=4.5.1',
