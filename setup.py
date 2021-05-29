@@ -1,20 +1,28 @@
 import os
-import re
-import sys
 import platform
+import re
 import subprocess
+import sys
 import sysconfig
-
-from setuptools import Extension
-from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
-from setuptools import Command
+from importlib.util import find_spec
+from multiprocessing import cpu_count
 
+from setuptools import Command, Extension
+from setuptools.command.build_ext import build_ext
 
-if os.getenv('READTHEDOCS') or platform.system() == "Linux":
+if platform.system() == "Windows":
+    from setuptools import setup
+elif find_spec('skbuild'):
+    from skbuild import setup
+elif os.getenv('NOT_USE_SKBUILD'):
+    from setuptools import setup
+elif os.getenv('READTHEDOCS'):
     from skbuild import setup
 else:
     from setuptools import setup
+
+CPU_COUNT = "-j" + str(cpu_count() + 1)
 
 
 class PackageInfo(object):
@@ -26,7 +34,9 @@ class PackageInfo(object):
     def __getattribute__(self, name):
         return super(PackageInfo, self).__getattribute__(name)
 
+
 package_info = PackageInfo(os.path.join('pyqubo', 'package_info.py'))
+
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir=''):
@@ -60,12 +70,12 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), extdir)]
-            if sys.maxsize > 2**32:
+            if sys.maxsize > 2 ** 32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+            build_args += ['--', str(CPU_COUNT)]
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
@@ -98,44 +108,63 @@ class CppTest(Command):
         subprocess.call(['./tests/pyqubo_test'],
                         cwd=os.path.join('build', self.cpplibdir), shell=True)
 
+
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
-    'numpy<1.20,>=1.17.3',
-    'dimod>=0.9.13',
-    'dwave-neal>=0.5.7',
-    'Deprecated>=1.2.10',
-    'six>=1.11.0'
-    ]
+        'numpy>=1.17.3',
+        'dimod>=0.9.14, <=0.10.0',
+        'dwave-neal>=0.5.7',
+        'Deprecated>=1.2.12',
+        'six>=1.15.0'
+        ]
 
+setup_requires = [
+        'numpy>=1.17.3, <=1.20.0',
+        'scikit-build>=0.11.1',
+        'wheel>=0.36.2',
+        'Cython>=0.29.21'
+        "cmake>=3.18.4",
+        'setuptools',
+        'nbsphinx'
+        ]
+
+
+tests_require = [
+        'coverage>=4.5.1',
+        'codecov>=2.1.9'
+        ]
 
 python_requires = '>=3.5, <3.10'
 
 setup(
-    name=package_info.__package_name__,
-    version=package_info.__version__,
-    description=package_info.__description__,
-    long_description=open('README.rst').read(),
-    author=package_info.__contact_names__,
-    author_email=package_info.__contact_emails__,
-    maintainer=package_info.__contact_names__,
-    maintainer_email=package_info.__contact_emails__,
-    url=package_info.__repository_url__,
-    download_url=package_info.__download_url__,
-    license=package_info.__license__,
-    ext_modules=[CMakeExtension('pyqubo')],
-    cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
-    zip_safe=False,
-    packages=packages,
-    keywords=package_info.__keywords__,
-    install_requires=install_requires,
-    python_requires=python_requires,
-    classifiers=[
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'License :: OSI Approved :: Apache Software License',
-    ]
-)
+        name=package_info.__package_name__,
+        version=package_info.__version__,
+        description=package_info.__description__,
+        long_description=open('README.rst').read(),
+        author=package_info.__contact_names__,
+        author_email=package_info.__contact_emails__,
+        maintainer=package_info.__contact_names__,
+        maintainer_email=package_info.__contact_emails__,
+        url=package_info.__repository_url__,
+        download_url=package_info.__download_url__,
+        license=package_info.__license__,
+        ext_modules=[CMakeExtension('pyqubo')],
+        cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
+        zip_safe=False,
+        packages=packages,
+        keywords=package_info.__keywords__,
+        install_requires=install_requires,
+        setup_requires=setup_requires,
+        python_requires=python_requires,
+        tests_require=tests_require,
+        include_package_data=True,
+        classifiers=[
+                'Programming Language :: Python :: 3.5',
+                'Programming Language :: Python :: 3.6',
+                'Programming Language :: Python :: 3.7',
+                'Programming Language :: Python :: 3.8',
+                'Programming Language :: Python :: 3.9',
+                'License :: OSI Approved :: Apache Software License',
+                ]
+        )
