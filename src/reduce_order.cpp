@@ -71,7 +71,7 @@ namespace reduce_order{
             for(auto it = mp->terms->begin(); it != mp->terms->end(); it++){
                 Prod prod = it->first;
                 CoeffPtr coeff = it->second;
-                bool first_in, second_in = false;
+                bool first_in = false, second_in = false;
                 for(int i=0; i < it->first.length; i++){
                     if(prod.get_var(i) == index_pair.first) first_in = true;
                     if(prod.get_var(i) == index_pair.second) second_in = true;
