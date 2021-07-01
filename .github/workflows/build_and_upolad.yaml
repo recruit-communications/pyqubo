@@ -21,7 +21,7 @@ jobs:
           python-version: ${{env.Python_Version}}
       - name: Build sdist
         run: |
-          pip install scikit-build
+          pip install -r requirements.txt
           python setup.py sdist
       - uses: actions/upload-artifact@v2
         with:
