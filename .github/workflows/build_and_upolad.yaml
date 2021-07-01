@@ -1,0 +1,99 @@
+name: Build&Upload
+
+on:
+  workflow_dispatch:
+  pull_request:
+  release:
+    types:
+      - released
+
+env:
+  Python_Version: 3.9
+
+jobs:
+  build_sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Build sdist
+        run: python setup.py sdist
+      - uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: dist/*.tar.gz
+          retention-days: 1
+          
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+      fail-fast: false 
+      max-parallel: 3
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
+        with:
+          platforms: all
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v1.12.0
+        env:
+          CIBW_PLATFORM: auto 
+          CIBW_BUILD: "cp3*-*"
+          CIBW_SKIP: "cp35-* cp36-* *-win32 pp*"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7.8"
+          CIBW_ENVIRONMENT: "CFLAGS='-Ofast' CXXFLAGS='-Ofast' BUILD_TIME=$(date)"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 i686 ppc64le s390x"
+          CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
+          CIBW_ARCHS_WINDOWS: "AMD64"
+          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
+          CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux2014_i686:latest
+          CIBW_MANYLINUX_PPC64LE_IMAGE: quay.io/pypa/manylinux2014_ppc64le:latest
+          CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux2014_s390x:latest
+          CIBW_DEPENDENCY_VERSIONS: latest
+          
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} {wheel}"
+          
+          CIBW_ENVIRONMENT_MACOS: 
+            USE_OMP=True
+            CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
+            CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include"
+            CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include"
+            LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
+          CIBW_BEFORE_ALL_MACOS:
+            brew install libomp
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: artifact
+          path: ./wheelhouse/*.whl
+          retention-days: 1
+          
+  upload_pypi:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: artifact
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: ${{ secrets.PYPI_USERNAME }}
+          password: ${{ secrets.PYPI_PASSWORD }}
