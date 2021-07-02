@@ -54,17 +54,15 @@ jobs:
         env:
           CIBW_PLATFORM: auto 
           CIBW_BUILD: "cp3*-*"
-          CIBW_SKIP: "cp35-* cp36-* *-win32 pp*"
-          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7.8"
-          CIBW_ENVIRONMENT: "CFLAGS='-Ofast' CXXFLAGS='-Ofast' BUILD_TIME=$(date)"
-          CIBW_ARCHS_LINUX: "x86_64 aarch64 i686 ppc64le s390x"
+          CIBW_SKIP: "cp35-* cp36-* cp37-* *-win32 pp*"
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.8.10"
+          CIBW_ENVIRONMENT: "CFLAGS='-Ofast -pipe' CXXFLAGS='-Ofast -pipe' BUILD_TIME=$(date)"
+          CIBW_ARCHS_LINUX: "x86_64 aarch64 i686"
           CIBW_ARCHS_MACOS: "x86_64 universal2 arm64"
           CIBW_ARCHS_WINDOWS: "AMD64"
-          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
-          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
-          CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux2014_i686:latest
-          CIBW_MANYLINUX_PPC64LE_IMAGE: quay.io/pypa/manylinux2014_ppc64le:latest
-          CIBW_MANYLINUX_S390X_IMAGE: quay.io/pypa/manylinux2014_s390x:latest
+          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux_2_24_x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux_2_24_aarch64:latest
+          CIBW_MANYLINUX_I686_IMAGE: quay.io/pypa/manylinux_2_24_i686:latest
           CIBW_DEPENDENCY_VERSIONS: latest
           
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
