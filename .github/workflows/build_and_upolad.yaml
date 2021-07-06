@@ -54,6 +54,8 @@ jobs:
          - os: windows-latest
            arch: x86_64
          - os: windows-latest
+           arch: arm64
+         - os: windows-latest
            arch: aarch64
          - os: windows-latest
            arch: i686
@@ -64,6 +66,9 @@ jobs:
          - os: ubuntu-latest
            CIBW_PLATFORM: linux
            CIBW_BUILD: "{cp,pp}3*-manylinux*"
+           CIBW_BEFORE_ALL: ""
+           CIBW_BEFORE_BUILD: ""
+           CIBW_REPAIR_WHEEL_COMMAND: ""
            CIBW_ENVIRONMENT:
               CFLAGS="-flto -Ofast -pipe"
               CXXFLAGS="-flto -Ofast -pipe"
@@ -72,6 +77,7 @@ jobs:
            CIBW_PLATFORM: macos
            CIBW_BUILD: "{cp,pp}3*-macosx*"
            CIBW_BEFORE_ALL: "brew install libomp"
+           CIBW_BEFORE_BUILD: ""
            CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
            CIBW_ENVIRONMENT:
               CPPFLAGS="$CPPFLAGS -flto -Xpreprocessor -fopenmp"
@@ -82,6 +88,7 @@ jobs:
          - os: windows-latest
            CIBW_PLATFORM: windows
            CIBW_BUILD: "{cp,pp}3*-win_amd64"
+           CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: "pip install delvewheel"
            CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
            CIBW_ENVIRONMENT:
@@ -89,12 +96,11 @@ jobs:
               CXXFLAGS="-flto -Ofast -pipe"
            
       fail-fast: false 
-      max-parallel: 3
     
     steps:
       - uses: actions/checkout@v2
       - name: Set up QEMU
-        if: runner.os == 'Linux' && ${{matrix.CIBW_ARCHS}} == 'aarch64'
+        if: ${{ CIBW_PLATFORM == 'linux' && matrix.CIBW_ARCHS == 'aarch64' }}
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
