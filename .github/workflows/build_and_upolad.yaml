@@ -38,6 +38,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x86_64, AMD64, aarch64, i686, arm64, universal2]
+        python: [36, 37, 38, 39]
         exclude:
          - os: ubuntu-latest
            arch: AMD64
@@ -67,8 +68,6 @@ jobs:
         include:
          - os: ubuntu-latest
            CIBW_PLATFORM: linux
-           CIBW_BUILD: "{cp,pp}3*-manylinux*"
-           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: ""
            CIBW_REPAIR_WHEEL_COMMAND: ""
@@ -78,8 +77,6 @@ jobs:
               
          - os: macos-latest
            CIBW_PLATFORM: macos
-           CIBW_BUILD: "{cp,pp}3*-macosx*"
-           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: "brew install libomp"
            CIBW_BEFORE_BUILD: ""
            CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
@@ -91,8 +88,6 @@ jobs:
               
          - os: windows-latest
            CIBW_PLATFORM: windows
-           CIBW_BUILD: "{cp,pp}3*-win_amd64"
-           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: "pip install delvewheel"
            CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
@@ -117,8 +112,7 @@ jobs:
         uses: pypa/cibuildwheel@v1.12.0
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
-          CIBW_BUILD: ${{ matrix.CIBW_BUILD}}
-          CIBW_SKIP: ${{matrix.CIBW_SKIP}}
+          CIBW_BUILD: "{cp,pp}${{matrix.python}}-*"
           CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
