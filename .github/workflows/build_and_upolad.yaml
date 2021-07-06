@@ -68,6 +68,7 @@ jobs:
          - os: ubuntu-latest
            CIBW_PLATFORM: linux
            CIBW_BUILD: "{cp,pp}3*-manylinux*"
+           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: ""
            CIBW_REPAIR_WHEEL_COMMAND: ""
@@ -78,6 +79,7 @@ jobs:
          - os: macos-latest
            CIBW_PLATFORM: macos
            CIBW_BUILD: "{cp,pp}3*-macosx*"
+           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: "brew install libomp"
            CIBW_BEFORE_BUILD: ""
            CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
@@ -90,6 +92,7 @@ jobs:
          - os: windows-latest
            CIBW_PLATFORM: windows
            CIBW_BUILD: "{cp,pp}3*-win_amd64"
+           CIBW_SKIP: "cp35-*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: "pip install delvewheel"
            CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
