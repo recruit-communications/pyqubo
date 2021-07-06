@@ -49,6 +49,8 @@ jobs:
          - os: macos-latest
            arch: AMD64
          - os: macos-latest
+           arch: i686
+         - os: macos-latest
            arch: aarch64
          
          - os: windows-latest
