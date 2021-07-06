@@ -30,35 +30,35 @@ jobs:
           retention-days: 1
           
   build_wheels:
-    name: Build wheels on ${{ matrix.os }}
+    name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
     env:
       CIBW_DEPENDENCY_VERSIONS: latest
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        CIBW_ARCHS: [x86_64, AMD64, aarch64, i686, arm64, universal2]
+        arch: [x86_64, AMD64, aarch64, i686, arm64, universal2]
         exclude:
          - os: ubuntu-latest
-           CIBW_ARCHS: AMD64
+           arch: AMD64
          - os: ubuntu-latest
-           CIBW_ARCHS: arm64
+           arch: arm64
          - os: ubuntu-latest
-           CIBW_ARCHS: universal2
+           arch: universal2
            
          - os: macos-latest
-           CIBW_ARCHS: AMD64
+           arch: AMD64
          - os: macos-latest
-           CIBW_ARCHS: aarch64
+           arch: aarch64
          
          - os: windows-latest
-           CIBW_ARCHS: x86_64
+           arch: x86_64
          - os: windows-latest
-           CIBW_ARCHS: aarch64
+           arch: aarch64
          - os: windows-latest
-           CIBW_ARCHS: i686
+           arch: i686
          - os: windows-latest
-           CIBW_ARCHS: universal2
+           arch: universal2
            
         include:
          - os: ubuntu-latest
@@ -98,13 +98,13 @@ jobs:
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
-      - name: Build wheels
+      - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
         uses: pypa/cibuildwheel@v1.12.0
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: ${{ matrix.CIBW_BUILD}}
-          CIBW_ENVIRONMENT: ${{env.CIBW_ENVIRONMENT}}
-          CIBW_ARCHS: ${{env.CIBW_ARCHS}}
+          CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
+          CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: ${{ matrix.CIBW_DEPENDENCY_VERSIONS }}
           CIBW_BEFORE_BUILD: $${{matrix.CIBW_BEFORE_BUILD}}        
           CIBW_BEFORE_ALL: $${{matrix.CIBW_BEFORE_ALL}}
