@@ -104,6 +104,10 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
       - name: Set up QEMU
         if: ${{ matrix.CIBW_PLATFORM == 'linux' && matrix.arch == 'aarch64' }}
         uses: docker/setup-qemu-action@v1
@@ -116,7 +120,7 @@ jobs:
           CIBW_BUILD: ${{ matrix.CIBW_BUILD}}
           CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
           CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_DEPENDENCY_VERSIONS: ${{ matrix.CIBW_DEPENDENCY_VERSIONS }}
+          CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
           CIBW_BEFORE_BUILD: ${{matrix.CIBW_BEFORE_BUILD}}        
           CIBW_BEFORE_ALL: ${{matrix.CIBW_BEFORE_ALL}}
           CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
