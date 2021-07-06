@@ -112,9 +112,9 @@ jobs:
           CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: ${{ matrix.CIBW_DEPENDENCY_VERSIONS }}
-          CIBW_BEFORE_BUILD: $${{matrix.CIBW_BEFORE_BUILD}}        
-          CIBW_BEFORE_ALL: $${{matrix.CIBW_BEFORE_ALL}}
-          CIBW_REPAIR_WHEEL_COMMAND: $${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
+          CIBW_BEFORE_BUILD: ${{matrix.CIBW_BEFORE_BUILD}}        
+          CIBW_BEFORE_ALL: ${{matrix.CIBW_BEFORE_ALL}}
+          CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
 
       - uses: actions/upload-artifact@v2
         with:
