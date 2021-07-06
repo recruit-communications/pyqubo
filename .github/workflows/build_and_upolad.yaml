@@ -33,8 +33,8 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     env:
-      CFLAGS: "$CFLAGS -flto -Ofast -pipe"
-      CXXFLAGS: "$CXXFLAGS -flto -Ofast -pipe"
+      CFLAGS: "-flto -Ofast -pipe"
+      CXXFLAGS: "-flto -Ofast -pipe"
       BUILD_TIME: $(date)
       CIBW_DEPENDENCY_VERSIONS: latest
     strategy:
