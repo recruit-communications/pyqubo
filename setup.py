@@ -113,7 +113,7 @@ packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
         'numpy>=1.17.3',
-        'dimod>=0.9.14, <=0.10.0',
+        'dimod>=0.9.14',
         'dwave-neal>=0.5.7',
         'Deprecated>=1.2.12',
         'six>=1.15.0'
@@ -135,7 +135,7 @@ tests_require = [
         'codecov>=2.1.9'
         ]
 
-python_requires = '>=3.5, <3.10'
+python_requires = '>=3.5, <=3.10'
 
 setup(
         name=package_info.__package_name__,
@@ -160,11 +160,14 @@ setup(
         tests_require=tests_require,
         include_package_data=True,
         classifiers=[
-                'Programming Language :: Python :: 3.5',
                 'Programming Language :: Python :: 3.6',
                 'Programming Language :: Python :: 3.7',
                 'Programming Language :: Python :: 3.8',
                 'Programming Language :: Python :: 3.9',
+                'Programming Language :: Python :: 3.10',
                 'License :: OSI Approved :: Apache Software License',
+                'Operating System :: MacOS :: MacOS X',
+                'Operating System :: Microsoft :: Windows :: Windows 10', 
+                'Operating System :: POSIX :: Linux',
                 ]
         )
