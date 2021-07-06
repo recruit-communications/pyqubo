@@ -118,7 +118,7 @@ jobs:
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: ${{ matrix.CIBW_BUILD}}
-          CIBW_SKIP: ${matrix.CIBW_SKIP}}
+          CIBW_SKIP: ${{matrix.CIBW_SKIP}}
           CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
