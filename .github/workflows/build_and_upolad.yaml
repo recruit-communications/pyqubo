@@ -30,7 +30,7 @@ jobs:
           retention-days: 1
           
   build_wheels:
-    name: Build wheels Python ${{matrix.CIBW_BUILD}} on ${{ matrix.os }} ${{matrix.arch}}
+    name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
     env:
       CIBW_DEPENDENCY_VERSIONS: latest
