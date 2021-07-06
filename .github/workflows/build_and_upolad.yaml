@@ -33,9 +33,6 @@ jobs:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     env:
-      CFLAGS: "-flto -Ofast -pipe"
-      CXXFLAGS: "-flto -Ofast -pipe"
-      BUILD_TIME: $(date)
       CIBW_DEPENDENCY_VERSIONS: latest
     strategy:
       matrix:
@@ -68,9 +65,8 @@ jobs:
            CIBW_PLATFORM: linux
            CIBW_BUILD: "{cp,pp}3*-manylinux*"
            CIBW_ENVIRONMENT:
-              CFLAGS=${{env.CFLAGS}}
-              CXXFLAGS=${{env.CXXFLAGS}}
-              ${{env.BUILD_TIME}}
+              CFLAGS="-flto -Ofast -pipe"
+              CXXFLAGS="-flto -Ofast -pipe"
               
          - os: macos-latest
            CIBW_PLATFORM: macos
@@ -79,19 +75,18 @@ jobs:
            CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
            CIBW_ENVIRONMENT:
               CPPFLAGS="$CPPFLAGS -flto -Xpreprocessor -fopenmp"
-              CFLAGS="${{env.CFLAGS}} -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              CXXFLAGS="${{env.CXXFLAGS}} -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CFLAGS="-flto -Ofast -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CXXFLAGS="-flto -Ofast -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
               LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
-              ${{env.BUILD_TIME}}
+              
          - os: windows-latest
            CIBW_PLATFORM: windows
            CIBW_BUILD: "{cp,pp}3*-win_amd64"
            CIBW_BEFORE_BUILD: "pip install delvewheel"
            CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
            CIBW_ENVIRONMENT:
-              CFLAGS=${{env.CFLAGS}}
-              CXXFLAGS=${{env.CXXFLAGS}}
-              ${{env.BUILD_TIME}}
+              CFLAGS="-flto -Ofast -pipe"
+              CXXFLAGS="-flto -Ofast -pipe"
            
       fail-fast: false 
       max-parallel: 3
