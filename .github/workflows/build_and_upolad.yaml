@@ -70,7 +70,7 @@ jobs:
            CIBW_BUILD: "{cp,pp}3*-manylinux*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: "pip install scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: ""
+           CIBW_REPAIR_WHEEL_COMMAND: "auditwheel repair -w {dest_dir} {wheel}"
            CIBW_ENVIRONMENT:
               CFLAGS="-flto -Ofast -pipe"
               CXXFLAGS="-flto -Ofast -pipe"
