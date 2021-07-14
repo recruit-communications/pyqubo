@@ -46,4 +46,4 @@ else()
     poly.cpp
   )
 endif()
-target_include_directories(cpp_pyqubo PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(cpp_pyqubo PRIVATE ${PROJECT_SOURCE_DIR}/include)
