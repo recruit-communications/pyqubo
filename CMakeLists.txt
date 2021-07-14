@@ -4,6 +4,11 @@ project(cpp_pyqubo)
 
 option(PYQUBO_BUILD_SHARED_LIBS "build mylib as a shared library" OFF)
 
+if (APPLE)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
+endif()
+
 
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
@@ -27,9 +32,7 @@ if(USE_OMP)
 endif()
 
 if (APPLE)
-    find_package(BLAS)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
+    find_package(BLAS REQUIRED)
 endif()
 
 include(external/pybind11.cmake)
