@@ -28,6 +28,8 @@ endif()
 
 if (APPLE)
     find_package(BLAS)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
 endif()
 
 include(external/pybind11.cmake)
