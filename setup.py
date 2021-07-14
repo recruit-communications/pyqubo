@@ -115,12 +115,11 @@ install_requires = [
         ]
 
 setup_requires = [
-     'cmake>=3.20.5',
+    'cmake>=3.20.5',
     'pip>=19.3',
     'setuptools>=57.1.0',
     'wheel>=0.36.2',
     'build>=0.5.1',
-    'numpy>=1.17.3, <=1.20.0',
     'Cython>=0.29.24', 
      ]
 
@@ -130,7 +129,7 @@ tests_require = [
         'codecov>=2.1.9'
         ]
 
-python_requires = '>=3.5, <=3.10'
+python_requires = '>=3.7, <=3.10'
 
 setup(
         name=package_info.__package_name__,
@@ -155,7 +154,6 @@ setup(
         tests_require=tests_require,
         include_package_data=True,
         classifiers=[
-                'Programming Language :: Python :: 3.6',
                 'Programming Language :: Python :: 3.7',
                 'Programming Language :: Python :: 3.8',
                 'Programming Language :: Python :: 3.9',
