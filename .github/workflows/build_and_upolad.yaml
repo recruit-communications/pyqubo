@@ -127,7 +127,7 @@ jobs:
           CIBW_ARCHS: ${{matrix.arch}}
           CIBW_DEPENDENCY_VERSIONS: latest 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
-          CIBW_BUILD_VERBOSITY: 3
+          CIBW_BUILD_VERBOSITY: 1
           
           CIBW_BEFORE_ALL: "" 
           CIBW_BEFORE_ALL_LINUX: ""
@@ -148,8 +148,8 @@ jobs:
               CXXFLAGS="-flto -O3 -pipe"
           CIBW_ENVIRONMENT_MACOS:
               CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
-              CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CXXFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
               LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
 
       - uses: actions/upload-artifact@v2
@@ -165,7 +165,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: artifact
+          name: WHEEL
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
