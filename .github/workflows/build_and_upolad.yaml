@@ -148,6 +148,7 @@ jobs:
               CFLAGS="-flto -O3 -pipe"
               CXXFLAGS="-flto -O3 -pipe"
           CIBW_ENVIRONMENT_MACOS:
+              USE_OMP=True
               CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
               CFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
               CXXFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
