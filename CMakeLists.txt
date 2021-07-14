@@ -27,7 +27,10 @@ if (APPLE)
 endif()
 
 include(external/pybind11.cmake)
+target_include_directories(cpp_pyqubo_body PRIVATE cpp_dimod)
 target_include_directories(cpp_pyqubo PRIVATE cpp_dimod)
+target_include_directories(cpp_pyqubo_body PRIVATE include)
+target_include_directories(cpp_pyqubo PRIVATE include)
 add_subdirectory(src)
 
 
