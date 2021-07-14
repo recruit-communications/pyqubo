@@ -120,14 +120,15 @@ jobs:
         with:
             install: true
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v1.12.0
+        uses: pypa/cibuildwheel@v2.0.0b2
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: ${{matrix.CIBW_BUILD}}
           CIBW_ARCHS: ${{matrix.arch}}
+          CIBW_BUILD_FRONTEND: "build"
           CIBW_DEPENDENCY_VERSIONS: latest 
           CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
-          CIBW_BUILD_VERBOSITY: 1
+          #CIBW_BUILD_VERBOSITY: 1
           
           CIBW_BEFORE_ALL: "" 
           CIBW_BEFORE_ALL_LINUX: ""
