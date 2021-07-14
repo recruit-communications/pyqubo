@@ -14,4 +14,4 @@ if(NOT pybind11_fetch_POPULATED)
     add_subdirectory(${pybind11_SOURCE_DIR})
 endif()
 
-#set(PYBIND11_CPP_STANDARD -std=c++11)
+FetchContent_MakeAvailable(pybind11)
