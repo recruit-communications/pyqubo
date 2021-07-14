@@ -11,6 +11,10 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 set(CMAKE_CXX_STANDARD 14)
 
 set(DEFAULT_USE_OMP Yes)
+# Use OpenMP as default behavior
+if(NOT DEFINED USE_OMP)
+    set(USE_OMP ${DEFAULT_USE_OMP})
+endif()
 message(STATUS "USE_OMP = ${USE_OMP}")
 
 if(USE_OMP)
