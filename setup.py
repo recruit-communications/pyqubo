@@ -68,6 +68,9 @@ class CMakeBuild(build_ext):
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
             build_args += ['--', str(CPU_COUNT)]
+        # disable macos openmp since addtional dependency is needed.
+        if platform.system() == 'Darwin' and (not {'True': True, 'False': False}[os.getenv('USE_OMP', 'False')]):
+            cmake_args += ['-DUSE_OMP=No']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
