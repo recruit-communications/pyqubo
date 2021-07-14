@@ -1,22 +1,22 @@
 if (PYQUBO_BUILD_SHARED_LIBS)
   pybind11_add_module(cpp_pyqubo SHARED
-    ${PROJECT_SOURCE_DIR}/pybind_mapping.cpp
-    ${PROJECT_SOURCE_DIR}/express.cpp
-    ${PROJECT_SOURCE_DIR}/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/poly.cpp
+    ${PROJECT_SOURCE_DIR}/src/pybind_mapping.cpp
+    ${PROJECT_SOURCE_DIR}/src/express.cpp
+    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
+    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
+    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
+    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
+    ${PROJECT_SOURCE_DIR}/src/poly.cpp
   )
 else()
   pybind11_add_module(cpp_pyqubo MODULE
-    ${PROJECT_SOURCE_DIR}/pybind_mapping.cpp
-    ${PROJECT_SOURCE_DIR}/express.cpp
-    ${PROJECT_SOURCE_DIR}/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/poly.cpp
+    ${PROJECT_SOURCE_DIR}/src/pybind_mapping.cpp
+    ${PROJECT_SOURCE_DIR}/src/express.cpp
+    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
+    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
+    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
+    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
+    ${PROJECT_SOURCE_DIR}/src/poly.cpp
   )
 endif()
 
