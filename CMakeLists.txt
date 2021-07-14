@@ -27,11 +27,11 @@ if (APPLE)
     find_package(BLAS)
 endif()
 
-include(${PROJECT_SOURCE_DIR}/external/pybind11.cmake)
-include_directories(${PROJECT_SOURCE_DIR}/cpp_dimod)
-add_subdirectory(${PROJECT_SOURCE_DIR}/src)
+include(external/pybind11.cmake)
+include_directories(cpp_dimod)
+add_subdirectory(src)
 
 
 
-include(${PROJECT_SOURCE_DIR}/external/googletest.cmake)
-add_subdirectory(${PROJECT_SOURCE_DIR}/tests)
+include(external/googletest.cmake)
+add_subdirectory(tests)
