@@ -46,3 +46,8 @@ else()
     poly.cpp
   )
 endif()
+target_include_directories(cpp_pyqubo_body PRIVATE ${PROJECT_SOURCE_DIR}/cpp_dimod)
+target_include_directories(cpp_pyqubo_body PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+target_include_directories(cpp_pyqubo PRIVATE ${PROJECT_SOURCE_DIR}/cpp_dimod)
+target_include_directories(cpp_pyqubo PRIVATE ${PROJECT_SOURCE_DIR}/include)
