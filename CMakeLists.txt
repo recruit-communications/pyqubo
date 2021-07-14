@@ -23,7 +23,7 @@ endif()
 message(STATUS "USE_OMP = ${USE_OMP}")
 
 if(USE_OMP)
-    if((${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64") or (${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64;x86_64"))    
+    if((${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64") OR (${CMAKE_OSX_ARCHITECTURES} STREQUAL "arm64;x86_64"))    
       add_definitions(-DUSE_OMP)
     else()
       find_package(OpenMP REQUIRED)
