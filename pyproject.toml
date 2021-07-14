@@ -6,6 +6,6 @@ requires = [
     'wheel>=0.36.2',
     'build>=0.5.1',
     'Cython>=0.29.24', 
-    "ninja; sys_platform != 'win32' and platform_machine != 'arm64'",
+    "ninja; platform_machine!='aarch64' and platform_machine != 'arm64'",
 ]
 build-backend = "setuptools.build_meta"
