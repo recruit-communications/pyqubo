@@ -7,11 +7,8 @@ import sysconfig
 from distutils.version import LooseVersion
 from importlib.util import find_spec
 
-from setuptools import Command, Extension
+from setuptools import setup, Command, Extension
 from setuptools.command.build_ext import build_ext
-
-
-from setuptools import setup
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
