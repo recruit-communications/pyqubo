@@ -25,109 +25,138 @@ jobs:
           python setup.py sdist
       - uses: actions/upload-artifact@v2
         with:
-          name: artifact
+          name: WHEEL
           path: dist/*.tar.gz
-          retention-days: 1
+          retention-days: 30
           
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
+    name: Build wheels ${{ matrix.CIBW_BUILD }} 
     runs-on: ${{ matrix.os }}
-    env:
-      CIBW_DEPENDENCY_VERSIONS: latest
     strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        arch: [x86_64, AMD64, aarch64, i686, arm64, universal2]
-        exclude:
-         - os: ubuntu-latest
-           arch: AMD64
-         - os: ubuntu-latest
-           arch: arm64
-         - os: ubuntu-latest
-           arch: universal2
-           
-         - os: macos-latest
-           arch: AMD64
-         - os: macos-latest
-           arch: i686
-         - os: macos-latest
-           arch: aarch64
-         
-         - os: windows-latest
-           arch: x86_64
-         - os: windows-latest
-           arch: arm64
-         - os: windows-latest
-           arch: aarch64
-         - os: windows-latest
-           arch: i686
-         - os: windows-latest
-           arch: universal2
-           
-        include:
-         - os: ubuntu-latest
-           CIBW_PLATFORM: linux
-           CIBW_BUILD: "{cp,pp}3*-manylinux*"
-           CIBW_BEFORE_ALL: ""
-           CIBW_BEFORE_BUILD: "pip install scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: "auditwheel repair -w {dest_dir} {wheel}"
-           CIBW_ENVIRONMENT:
-              CFLAGS="-flto -Ofast -pipe"
-              CXXFLAGS="-flto -Ofast -pipe"
-              
-         - os: macos-latest
-           CIBW_PLATFORM: macos
-           CIBW_BUILD: "{cp,pp}3*-macosx*"
-           CIBW_BEFORE_ALL: "brew install libomp"
-           CIBW_BEFORE_BUILD: "pip install scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps --all --depending {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
-           CIBW_ENVIRONMENT:
-              CPPFLAGS="$CPPFLAGS -flto -Xpreprocessor -fopenmp"
-              CFLAGS="-flto -Ofast -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              CXXFLAGS="-flto -Ofast -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
-              
-         - os: windows-latest
-           CIBW_PLATFORM: windows
-           CIBW_BUILD: "{cp,pp}3*-win_amd64*"
-           CIBW_BEFORE_ALL: ""
-           CIBW_BEFORE_BUILD: "pip install delvewheel scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
-           CIBW_ENVIRONMENT:
-              CFLAGS="-flto -Ofast -pipe"
-              CXXFLAGS="-flto -Ofast -pipe"
-           
       fail-fast: false 
-    
+      matrix:       
+        include:  
+         - CIBW_BUILD: cp37-manylinux_x86_64
+           os: ubuntu-latest
+           arch: x86_64
+           CIBW_PLATFORM: linux
+         - CIBW_BUILD: cp38-manylinux_x86_64
+           os: ubuntu-latest
+           arch: x86_64
+           CIBW_PLATFORM: linux
+         - CIBW_BUILD: cp39-manylinux_x86_64
+           os: ubuntu-latest
+           arch: x86_64
+           CIBW_PLATFORM: linux 
+         
+         - CIBW_BUILD: cp37-manylinux_aarch64
+           os: ubuntu-latest
+           arch: aarch64
+           CIBW_PLATFORM: linux  
+         - CIBW_BUILD: cp38-manylinux_aarch64
+           os: ubuntu-latest
+           arch: aarch64
+           CIBW_PLATFORM: linux  
+         - CIBW_BUILD: cp39-manylinux_aarch64
+           os: ubuntu-latest
+           arch: aarch64
+           CIBW_PLATFORM: linux 
+         
+         - CIBW_BUILD: cp37-macosx_x86_64
+           os: macos-latest
+           arch: x86_64
+           CIBW_PLATFORM: macos  
+         - CIBW_BUILD: cp38-macosx_x86_64
+           os: macos-latest
+           arch: x86_64
+           CIBW_PLATFORM: macos  
+         - CIBW_BUILD: cp39-macosx_x86_64
+           os: macos-latest
+           arch: x86_64
+           CIBW_PLATFORM: macos 
+         
+         - CIBW_BUILD: cp38-macosx_arm64
+           os: macos-latest
+           arch: arm64
+           CIBW_PLATFORM: macos 
+         - CIBW_BUILD: cp39-macosx_arm64
+           os: macos-latest
+           arch: arm64
+           CIBW_PLATFORM: macos 
+         
+         - CIBW_BUILD: cp38-macosx_universal2
+           os: macos-latest
+           arch: universal2
+           CIBW_PLATFORM: macos 
+         - CIBW_BUILD: cp39-macosx_universal2
+           os: macos-latest
+           arch: universal2
+           CIBW_PLATFORM: macos 
+         
+         - CIBW_BUILD: cp38-win_amd64
+           os: windows-latest
+           arch: AMD64
+           CIBW_PLATFORM: windows  
+         - CIBW_BUILD: cp38-win_amd64
+           os: windows-latest
+           arch: AMD64
+           CIBW_PLATFORM: windows  
+         - CIBW_BUILD: cp39-win_amd64
+           os: windows-latest
+           arch: AMD64
+           CIBW_PLATFORM: windows               
+           
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        name: Install Python
-        with:
-          python-version: ${{env.Python_Version}}
+      - uses: actions/checkout@v2         
       - name: Set up QEMU
         if: ${{ matrix.CIBW_PLATFORM == 'linux' && matrix.arch == 'aarch64' }}
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
+      - name: Set up Docker Buildx
+        if: ${{ matrix.CIBW_PLATFORM  == 'linux' }}
+        id: buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+            install: true
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
         uses: pypa/cibuildwheel@v1.12.0
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: ${{matrix.CIBW_BUILD}}
-          CIBW_SKIP: "cp35-*"
-          CIBW_ENVIRONMENT: ${{matrix.CIBW_ENVIRONMENT}}
           CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
-          CIBW_BEFORE_BUILD: ${{matrix.CIBW_BEFORE_BUILD}}        
-          CIBW_BEFORE_ALL: ${{matrix.CIBW_BEFORE_ALL}}
-          CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
+          CIBW_DEPENDENCY_VERSIONS: latest 
+          CIBW_PROJECT_REQUIRES_PYTHON: ">=3.7"
+          CIBW_BUILD_VERBOSITY: 3
+          
+          CIBW_BEFORE_ALL: "" 
+          CIBW_BEFORE_ALL_LINUX: ""
+          CIBW_BEFORE_ALL_MACOS: "brew install libomp"
+          CIBW_BEFORE_ALL_WINDOWS: ""
+          
+          CIBW_BEFORE_BUILD: "pip install cmake"      
+          CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel"
+          
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps --all --depending {wheel} && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel show {wheel} && delvewheel repair -w {dest_dir} {wheel}"
+          
+          CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
+          CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
+          
+          CIBW_ENVIRONMENT:
+              CFLAGS="-flto -O3 -pipe"
+              CXXFLAGS="-flto -O3 -pipe"
+          CIBW_ENVIRONMENT_MACOS:
+              CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
+              CFLAGS="$CFLAGS -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CXXFLAGS="$CXXFLAGS -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
 
       - uses: actions/upload-artifact@v2
         with:
-          name: artifact
+          name: WHEEL
           path: ./wheelhouse/*.whl
-          retention-days: 1
+          retention-days: 7 
           
   upload_pypi:
     needs: [build_wheels, build_sdist]
