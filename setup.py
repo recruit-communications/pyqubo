@@ -11,16 +11,8 @@ from multiprocessing import cpu_count
 from setuptools import Command, Extension
 from setuptools.command.build_ext import build_ext
 
-if platform.system() == "Windows":
-    from setuptools import setup
-elif find_spec('skbuild'):
-    from skbuild import setup
-elif os.getenv('NOT_USE_SKBUILD'):
-    from setuptools import setup
-elif os.getenv('READTHEDOCS'):
-    from skbuild import setup
-else:
-    from setuptools import setup
+
+from setuptools import setup
 
 CPU_COUNT = "-j" + str(cpu_count() + 1)
 
@@ -120,14 +112,14 @@ install_requires = [
         ]
 
 setup_requires = [
-        'numpy>=1.17.3, <=1.20.0',
-        'scikit-build>=0.11.1',
-        'wheel>=0.36.2',
-        'Cython>=0.29.21'
-        "cmake>=3.18.4",
-        'setuptools',
-        'nbsphinx'
-        ]
+     'cmake>=3.20.5',
+    'pip>=19.3',
+    'setuptools>=57.1.0',
+    'wheel>=0.36.2',
+    'build>=0.5.1',
+    'numpy>=1.17.3, <=1.20.0',
+    'Cython>=0.29.24', 
+     ]
 
 
 tests_require = [
