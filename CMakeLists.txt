@@ -8,11 +8,22 @@ set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 set(CMAKE_CXX_STANDARD 14)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-set(CMAKE_C_FLAGS "-Ofast -pipe" )
-set(CMAKE_CXX_FLAGS "-Ofast -pipe")
-set(CMAKE_C_FLAGS_RELEASE "-Ofast -pipe")
-set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -pipe")
+
+set(DEFAULT_USE_OMP Yes)
+message(STATUS "USE_OMP = ${USE_OMP}")
+
+if(USE_OMP)
+    find_package(OpenMP REQUIRED)
+    if(OpenMP_FOUND)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        add_definitions(-DUSE_OMP)
+    endif()
+endif()
+
+if (APPLE)
+    find_package(BLAS)
+endif()
 
 include(external/pybind11.cmake)
 include_directories(cpp_dimod)
