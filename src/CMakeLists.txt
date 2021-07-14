@@ -1,22 +1,22 @@
 if (PYQUBO_BUILD_SHARED_LIBS)
   pybind11_add_module(cpp_pyqubo SHARED
-    ${PROJECT_SOURCE_DIR}/src/pybind_mapping.cpp
-    ${PROJECT_SOURCE_DIR}/src/express.cpp
-    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/src/poly.cpp
+    pybind_mapping.cpp
+    express.cpp
+    coeff.cpp
+    encoder.cpp
+    placeholderpoly.cpp
+    expanded.cpp
+    poly.cpp
   )
 else()
   pybind11_add_module(cpp_pyqubo MODULE
-    ${PROJECT_SOURCE_DIR}/src/pybind_mapping.cpp
-    ${PROJECT_SOURCE_DIR}/src/express.cpp
-    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/src/poly.cpp
+    pybind_mapping.cpp
+    express.cpp
+    coeff.cpp
+    encoder.cpp
+    placeholderpoly.cpp
+    expanded.cpp
+    poly.cpp
   )
 endif()
 
@@ -29,21 +29,21 @@ set_target_properties(cpp_pyqubo PROPERTIES
 
 if (PYQUBO_BUILD_SHARED_LIBS)
   add_library(cpp_pyqubo_body SHARED
-    ${PROJECT_SOURCE_DIR}/src/express.cpp
-    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/src/poly.cpp
+    express.cpp
+    coeff.cpp
+    encoder.cpp
+    placeholderpoly.cpp
+    expanded.cpp
+    poly.cpp
   )
 else()
   add_library(cpp_pyqubo_body STATIC
-    ${PROJECT_SOURCE_DIR}/src/express.cpp
-    ${PROJECT_SOURCE_DIR}/src/coeff.cpp
-    ${PROJECT_SOURCE_DIR}/src/encoder.cpp
-    ${PROJECT_SOURCE_DIR}/src/placeholderpoly.cpp
-    ${PROJECT_SOURCE_DIR}/src/expanded.cpp
-    ${PROJECT_SOURCE_DIR}/src/poly.cpp
+    express.cpp
+    coeff.cpp
+    encoder.cpp
+    placeholderpoly.cpp
+    expanded.cpp
+    poly.cpp
   )
 endif()
 target_include_directories(cpp_pyqubo PUBLIC ${PROJECT_SOURCE_DIR}/include)
