@@ -14,3 +14,4 @@ if(NOT cimod_POPULATED)
     include_directories(${cimod_SOURCE_DIR}/src)
 endif()
 
+FetchContent_MakeAvailable(cimod)
