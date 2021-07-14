@@ -4,7 +4,6 @@ project(cpp_pyqubo)
 
 option(PYQUBO_BUILD_SHARED_LIBS "build mylib as a shared library" OFF)
 
-set(CMAKE_INTERPROCEDURAL_OPTIMIZATION True)
 
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
