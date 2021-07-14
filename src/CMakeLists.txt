@@ -1,6 +1,3 @@
-target_include_directories(cpp_pyqubo
-  PUBLIC ${PROJECT_SOURCE_DIR}/include
-  )
 if (PYQUBO_BUILD_SHARED_LIBS)
   pybind11_add_module(cpp_pyqubo SHARED
     ${PROJECT_SOURCE_DIR}/pybind_mapping.cpp
@@ -49,3 +46,4 @@ else()
     ${PROJECT_SOURCE_DIR}/src/poly.cpp
   )
 endif()
+target_include_directories(cpp_pyqubo PUBLIC ${PROJECT_SOURCE_DIR}/include)
