@@ -67,7 +67,7 @@ class CMakeBuild(build_ext):
                      ]
         build_args = []
         
-        if self.compiler.compiler_type != "msvc":
+        if platform.system() != "Windows":
             # Using Ninja-build since it a) is available as a wheel and b)
             # multithreads automatically. MSVC would require all variables be
             # exported for Ninja to pick it up, which is a little tricky to do.
