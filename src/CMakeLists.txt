@@ -1,4 +1,4 @@
-if (PYQUBO_BUILD_SHARED_LIBS)
+if (${PYQUBO_BUILD_SHARED_LIBS})
   pybind11_add_module(cpp_pyqubo SHARED
     pybind_mapping.cpp
     express.cpp
