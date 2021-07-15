@@ -84,15 +84,6 @@ jobs:
            arch: arm64
            CIBW_PLATFORM: macos 
          
-         - CIBW_BUILD: cp38-macosx_universal2
-           os: macos-latest
-           arch: universal2
-           CIBW_PLATFORM: macos 
-         - CIBW_BUILD: cp39-macosx_universal2
-           os: macos-latest
-           arch: universal2
-           CIBW_PLATFORM: macos 
-         
          - CIBW_BUILD: cp38-win_amd64
            os: windows-latest
            arch: AMD64
