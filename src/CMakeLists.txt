@@ -22,9 +22,16 @@ endif()
 
 set_target_properties(cpp_pyqubo PROPERTIES
     CXX_VISIBILITY_PRESET "hidden"
+    VISIBLITY_INLINES_HIDDEN ON
     INTERPROCEDURAL_OPTIMIZATION TRUE
+    POSITION_INDEPENDENT_CODE ON
     PREFIX "${PYTHON_MODULE_PREFIX}"
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
+)
+
+target_link_libraries(cpp_pyqubo PRIVATE 
+    pybind11::lto
+    $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
 
 if (PYQUBO_BUILD_SHARED_LIBS)
