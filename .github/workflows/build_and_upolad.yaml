@@ -2,7 +2,6 @@ name: Build&Upload
 
 on:
   workflow_dispatch:
-  pull_request:
   release:
     types:
       - released
@@ -122,14 +121,17 @@ jobs:
           #CIBW_BUILD_VERBOSITY: 1
           
           CIBW_BEFORE_ALL: "" 
-          CIBW_BEFORE_ALL_LINUX: ""
-          CIBW_BEFORE_ALL_MACOS: "brew install libomp"
+          CIBW_BEFORE_ALL_LINUX: "yum install -y centos-release-scl && yum install -y devtoolset-10"
+          CIBW_BEFORE_ALL_MACOS: ""
           CIBW_BEFORE_ALL_WINDOWS: ""
           
           CIBW_BEFORE_BUILD: "pip install cmake"      
+          CIBW_BEFORE_BUILD_MACOS: "pip install cmake"
+          CIBE_BEFORE_BUILD_LINUX: "source scl_source enable devtoolset-10 && pip install cmake"
           CIBW_BEFORE_BUILD_WINDOWS: "pip install delvewheel cmake"
+                 
           
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "delocate-listdeps --all --depending {wheel} && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel}"
+          CIBW_REPAIR_WHEEL_COMMAND_MACOS: "echo '::group::delocate-listdeps' && delocate-listdeps --all --depending {wheel} && echo '::endgroup::' && echo '::group::delocate-wheel' && delocate-wheel  --require-archs {delocate_archs} -w {dest_dir} -v {wheel} && echo '::endgroup::' && echo '::group::delocate-listdeps' && delocate-listdeps --all --depending {wheel} && echo '::endgroup::'"
           CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel show {wheel} && delvewheel repair -w {dest_dir} {wheel}"
           
           CIBW_MANYLINUX_X86_64_IMAGE: quay.io/pypa/manylinux2014_x86_64:latest
@@ -139,11 +141,8 @@ jobs:
               CFLAGS="-flto -O3 -pipe"
               CXXFLAGS="-flto -O3 -pipe"
           CIBW_ENVIRONMENT_MACOS:
-              USE_OMP=True
-              CPPFLAGS="$CPPFLAGS -Xpreprocessor -fopenmp"
-              CFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              CXXFLAGS="-flto -O3 -pipe -I/usr/local/opt/libomp/include -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              LDFLAGS="$LDFLAGS -Wl,-rpath,/usr/local/opt/libomp/lib -L/usr/local/opt/libomp/lib -lomp"
+              CFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CXXFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"          
 
       - uses: actions/upload-artifact@v2
         with:
