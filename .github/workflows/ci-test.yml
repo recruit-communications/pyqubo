@@ -1,0 +1,47 @@
+name: build-test
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+  pull_request: 
+    types: [opened, reopened, synchronize]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
+
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version : ${{ matrix.python-version }}
+    - name: Set up Python ${{ matrix.python-version }} cache 
+      run: which python > ~/.python3_path.txt
+    - uses: actions/cache@v2
+      with:
+        path: ${{ matrix.path }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
+        restore-keys: |
+         ${{ runner.os }}-pip-
+    - name: Install dependencies 
+      run: |
+        pip install --upgrade pip wheel setuptools build cmake
+    - name: Install Eigen3 on ${{ matrix.os }}
+      if: ${{ matrix.os == 'macos-latest'}}
+      run: brew install libomp 
+    - name: Test 
+      run: |
+        python setup.py build --debug test
