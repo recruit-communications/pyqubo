@@ -164,15 +164,6 @@ install_requires = [
         'six>=1.15.0'
         ]
 
-setup_requires = [
-    'cmake>=3.20.5',
-    'pip>=19.3',
-    'setuptools>=57.1.0',
-    'wheel>=0.36.2',
-    'build>=0.5.1',
-    'Cython>=0.29.24', 
-     ]
-
 
 tests_require = [
         'coverage>=4.5.1',
@@ -199,7 +190,6 @@ setup(
         packages=packages,
         keywords=package_info.__keywords__,
         install_requires=install_requires,
-        setup_requires=setup_requires,
         python_requires=python_requires,
         tests_require=tests_require,
         include_package_data=True,
