@@ -119,8 +119,6 @@ install_requires = [
         'six>=1.15.0'
         ]
 
-extras_require = {'dimod-old-version': ['dimod>=0.9.14, <0.10.0']}
-
 setup_requires = [
         'numpy>=1.17.3, <=1.20.0',
         'scikit-build>=0.11.1',
@@ -158,7 +156,7 @@ setup(
         keywords=package_info.__keywords__,
         install_requires=install_requires,
         setup_requires=setup_requires,
-        extras_require=extras_require,
+        extras_require={'dimod-old-version': ['dimod>=0.9.14, <0.10.0']},
         python_requires=python_requires,
         tests_require=tests_require,
         include_package_data=True,
