@@ -138,11 +138,11 @@ jobs:
           CIBW_MANYLINUX_AARCH64_IMAGE: quay.io/pypa/manylinux2014_aarch64:latest
           
           CIBW_ENVIRONMENT:
-              CFLAGS="-flto -O3 -pipe"
-              CXXFLAGS="-flto -O3 -pipe"
+              CFLAGS="-flto -O3 -pipe -mfpmath=both"
+              CXXFLAGS="-flto -O3 -pipe -mfpmath=both"
           CIBW_ENVIRONMENT_MACOS:
-              CFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"
-              CXXFLAGS="-flto -O3 -pipe  -lcblas -lclapack -framework Accelerate -framework OpenCL"          
+              CFLAGS="-flto -O3 -pipe -mfpmath=both -lcblas -lclapack -framework Accelerate -framework OpenCL"
+              CXXFLAGS="-flto -O3 -pipe -mfpmath=both -lcblas -lclapack -framework Accelerate -framework OpenCL"          
 
       - uses: actions/upload-artifact@v2
         with:
