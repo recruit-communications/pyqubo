@@ -110,20 +110,26 @@ class CppTest(Command):
 
 
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
-    
-install_requires = [
-        'numpy>=1.17.3',
-        'dwave-neal>=0.5.7',
-        'Deprecated>=1.2.12',
-        'six>=1.15.0'
-        ]
+  
+install_default_requires = [
+    'numpy>=1.17.3',
+    'dwave-neal>=0.5.7',
+    'Deprecated>=1.2.12',
+    'six>=1.15.0',
+    ]
+
+install_dimod_requires = [
+    "dimod>=0.10.0, <0.11; extra != 'old-dimod'",
+    ]
+
+install_old_dimod_requires = [
+    'dimod>=0.9.14, <0.10.0'
+    ]
 
 extras_require = {
-    'dimod-old-version': ['dimod>=0.9.14, <0.10.0'],
-}
-
-if extra != 'dimod-old-version':
-    install_requires + ["dimod>=0.10.0, <0.11"]
+    '' : install_dimod_requires,
+    'old-dimod' : install_old_dimod_requires,
+    }
 
 setup_requires = [
         'numpy>=1.17.3, <=1.20.0',
@@ -160,9 +166,9 @@ setup(
         zip_safe=False,
         packages=packages,
         keywords=package_info.__keywords__,
-        install_requires=install_requires,
-        setup_requires=setup_requires,
+        install_requires=install_default_requires,
         extras_require=extras_require,
+        setup_requires=setup_requires,
         python_requires=python_requires,
         tests_require=tests_require,
         include_package_data=True,
