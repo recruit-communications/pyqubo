@@ -219,8 +219,6 @@ namespace pyqubo {
       return _variables.names();
     }
 
-    // TODO: std::stringじゃなくてintの方を特殊化する。
-
     template <typename T = std::string>
     auto to_bqm_parameters(const std::unordered_map<std::string, double>& feed_dict) const noexcept { // 不格好でごめんなさい。PythonのBinaryQuadraticModelを作成可能にするために、このメンバ関数でBinaryQuadraticModelの引数を生成します。
       const auto evaluate = pyqubo::evaluate(feed_dict);
