@@ -31,10 +31,10 @@ jobs:
         python setup.py build --debug test
     - name: Install 
       run: |
-        python setup.py install
+        python -m pip install .
     - name: Install 
       run: |
-        python setup.py install[dimod-old-version]
+        python -m pip  .[dimod-old-version]
     - name: IMPORT
       run: |
           python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
