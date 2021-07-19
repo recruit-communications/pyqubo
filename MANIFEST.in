@@ -10,5 +10,3 @@ recursive-include pyqubo *
 recursive-include tests *
 recursive-include src *
 recursive-include external *
-recursive-include include *
-recursive-include cpp_dimod *
