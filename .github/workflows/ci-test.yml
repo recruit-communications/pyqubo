@@ -45,3 +45,12 @@ jobs:
     - name: Test 
       run: |
         python setup.py build --debug test
+    - name: Install 
+      run: |
+        python setup.py install 
+    - name: IMPORT
+      run: |
+          python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
+    - name: IMPORT
+      run: |
+          python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'
