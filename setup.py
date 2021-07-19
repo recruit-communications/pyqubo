@@ -113,11 +113,15 @@ packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
         'numpy>=1.17.3',
-        'dimod>=0.9.14, <=0.10.0',
+        'dimod>=0.10.0, <0.11',
         'dwave-neal>=0.5.7',
         'Deprecated>=1.2.12',
         'six>=1.15.0'
         ]
+
+ extras_require = {
+        'dimod-old-version': ['dimod>=0.9.14, <0.10.0'],
+    },
 
 setup_requires = [
         'numpy>=1.17.3, <=1.20.0',
