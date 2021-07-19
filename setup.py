@@ -119,7 +119,7 @@ install_requires = [
         'six>=1.15.0'
         ]
 
-extras_require = ['dimod-old-version': ['dimod>=0.9.14, <0.10.0']]
+extras_require = {'dimod-old-version': ['dimod>=0.9.14, <0.10.0']}
 
 setup_requires = [
         'numpy>=1.17.3, <=1.20.0',
