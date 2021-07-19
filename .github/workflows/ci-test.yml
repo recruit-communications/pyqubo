@@ -31,7 +31,7 @@ jobs:
         python setup.py build --debug test
     - name: Install 
       run: |
-        python setup.py install[dimod-old-version]
+        python setup.py install
     - name: Install 
       run: |
         python setup.py install[dimod-old-version]
