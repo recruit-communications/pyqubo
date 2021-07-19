@@ -28,7 +28,7 @@ jobs:
         pip install --upgrade pip wheel setuptools build cmake ninja
     - name: Install 
       run: |
-        python -m pip  -e .[dimod-old-version]
+        python -m pip install  .[dimod-old-version]
     - name: IMPORT
       run: |
           python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
@@ -37,7 +37,7 @@ jobs:
           python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'
     - name: Install 
       run: |
-        python -m pip install -e .
+        python -m pip install  .
     - name: IMPORT
       run: |
           python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
