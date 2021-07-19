@@ -184,7 +184,7 @@ setup(
         url=package_info.__repository_url__,
         download_url=package_info.__download_url__,
         license=package_info.__license__,
-        ext_modules=[CMakeExtension('pyqubo')],
+        ext_modules=[CMakeExtension('cpp_pyqubo')],
         cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
         zip_safe=False,
         packages=packages,
