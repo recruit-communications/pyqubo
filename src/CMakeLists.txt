@@ -30,7 +30,7 @@ set_target_properties(cpp_pyqubo PROPERTIES
 )
 
 target_link_libraries(cpp_pyqubo PRIVATE 
-    pybind11::lto
+    pybind11::thin_lto
     $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
 
