@@ -2,6 +2,10 @@ from __future__ import absolute_import
 
 import cpp_pyqubo
 from cpp_pyqubo import *
+try:
+    import typing 
+except ImportError:
+    from typing_extensions import *
 from pyqubo.utils.asserts import *
 from pyqubo.utils.solver import *
 from .array import *
