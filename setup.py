@@ -116,7 +116,9 @@ class CMakeBuild(build_ext):
             if hasattr(self, "parallel") and self.parallel:
                 # CMake 3.12+ only.
                 build_args += ["-j{}".format(self.parallel)]       
-                
+        if "USE_TEST" in os.environ:  
+            cmake_args += ["-DUSE_TEST=Yes", "-LA", "-LH"]      
+            
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''), self.distribution.get_version())
         if not os.path.exists(self.build_temp):
@@ -125,27 +127,37 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
 
-class CppTest(Command):
+class GoogleTestCommand(TestCommand):
+    """
+    A custom test runner to execute both Python unittest tests and C++ Google Tests.
+    """
 
-    def initialize_options(self):
-        self.cpplibdir = self.distutils_dir_name()
-
-    def finalize_options(self):
-        pass
-
-    user_options = []
-
-    def distutils_dir_name(self):
+    def distutils_dir_name(self, dname):
         """Returns the name of a distutils build directory"""
-        f = "temp.{platform}-{version[0]}.{version[1]}"
-        return f.format(platform=sysconfig.get_platform(),
-                        version=sys.version_info)
+        dir_name = "{dirname}.{platform}-{version[0]}.{version[1]}"
+        return dir_name.format(dirname=dname,
+                               platform=sysconfig.get_platform(),
+                               version=sys.version_info)
 
     def run(self):
-        subprocess.call(['make pyqubo_test'],
-                        cwd=os.path.join('build', self.cpplibdir), shell=True)
-        subprocess.call(['./tests/pyqubo_test'],
-                        cwd=os.path.join('build', self.cpplibdir), shell=True)
+        # Run Python tests
+        super(GoogleTestCommand, self).run()
+        print("\nPython tests complete, now running C++ tests...\n")
+        # Run catch tests
+        print(os.path.join('build/', self.distutils_dir_name('lib')))
+        subprocess.call(['make cxxjij_test'],
+                        cwd=os.path.join('build',
+                                         self.distutils_dir_name('temp')),
+                        shell=True)
+        subprocess.call(['./tests/cxxjij_test'],
+                        cwd=os.path.join('build',
+                                         self.distutils_dir_name('temp')),
+                        shell=True)
+
+
+class PyTestCommand(TestCommand):
+    def run(self):
+        super().run()
 
 
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
@@ -179,7 +191,7 @@ setup(
         download_url=package_info.__download_url__,
         license=package_info.__license__,
         ext_modules=[CMakeExtension('cpp_pyqubo')],
-        cmdclass=dict(build_ext=CMakeBuild, cpp_test=CppTest),
+        cmdclass=dict(build_ext=CMakeBuild, test=GoogleTestCommand, pytest=PyTestCommand),
         zip_safe=False,
         packages=packages,
         keywords=package_info.__keywords__,
