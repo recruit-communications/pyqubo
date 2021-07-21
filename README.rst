@@ -130,12 +130,14 @@ Test
 Run all tests.
 
 .. code-block:: shell
+
     export USE_TEST=1
     python -m unittest discover test
 
 Show coverage report.
 
 .. code-block:: shell
+
     export USE_TEST=1
     coverage run -m unittest discover
     coverage html
