@@ -45,6 +45,9 @@ endif()
 include(external/pybind11.cmake)
 
 find_package(Python COMPONENTS Development.Module)
+
+add_subdirectory(cpp_dimod)
+add_subdirectory(include)
 add_subdirectory(src)
 
 if(USE_TEST)
