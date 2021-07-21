@@ -10,5 +10,4 @@ target_link_libraries(pyqubo_test PRIVATE
     gtest
     pthread
     pybind11::module
-    $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
 )
