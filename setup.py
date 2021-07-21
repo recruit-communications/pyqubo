@@ -164,6 +164,7 @@ class PyTestCommand(TestCommand):
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
+        "typing-extensions; python_version < '3.8'",
         'numpy>=1.17.3',
         "dimod>=0.10.0, <0.11",
         'dwave-neal>=0.5.7',
