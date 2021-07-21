@@ -58,11 +58,6 @@ jobs:
       shell: bash
       run: |
         export USE_TEST=1
-        python -m unittest discover test
-    - name: Coverage Test 
-      shell: bash
-      run: |
-        export USE_TEST=1
         coverage run -m unittest discover
-          
+    
        
