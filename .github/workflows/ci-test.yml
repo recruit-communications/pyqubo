@@ -36,11 +36,6 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
         restore-keys: |
          ${{ runner.os }}-pip-
-    - name: Test 
-      shell: bash
-      run: |
-        export USE_TEST=1
-        python setup.py build --debug test
     - name: Install 
       run: |
         python -m pip install .
@@ -50,3 +45,8 @@ jobs:
     - name: IMPORT
       run: |
           python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'
+    - name: Test 
+      shell: bash
+      run: |
+        export USE_TEST=1
+        python setup.py build --debug test     
