@@ -1,4 +1,4 @@
-pybind11_add_module(cpp_pyqubo MODULE
+add_library(cpp_pyqubo MODULE 
     pybind_mapping.cpp
     express.cpp
     coeff.cpp
@@ -6,7 +6,7 @@ pybind11_add_module(cpp_pyqubo MODULE
     placeholderpoly.cpp
     expanded.cpp
     poly.cpp
- )
+)
 
 set_target_properties(cpp_pyqubo PROPERTIES
     CXX_VISIBILITY_PRESET "hidden"
@@ -17,7 +17,13 @@ set_target_properties(cpp_pyqubo PROPERTIES
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
 
-target_link_libraries(cpp_pyqubo PRIVATE pybind11::thin_lto)
+target_link_libraries(cpp_pyqubo PRIVATE 
+  pybind11::module
+  pybind11::thin_lto
+  cpp_pyqubo
+  cpp_pyqubo_header_only
+  cpp_dimod
+)
 
 add_library(cpp_pyqubo_body MODULE
     express.cpp
@@ -27,8 +33,15 @@ add_library(cpp_pyqubo_body MODULE
     expanded.cpp
     poly.cpp
 )
-target_include_directories(cpp_pyqubo_body PUBLIC ${PROJECT_SOURCE_DIR}/cpp_dimod)
-target_include_directories(cpp_pyqubo_body PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
-target_include_directories(cpp_pyqubo PRIVATE ${PROJECT_SOURCE_DIR}/cpp_dimod)
-target_include_directories(cpp_pyqubo PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(cpp_pyqubo_body PRIVATE 
+  pybind11::module
+  pybind11::thin_lto
+  cpp_pyqubo
+  cpp_pyqubo_header_only
+  cpp_dimod
+)
+
+add_custom_target(python
+    DEPENDS cpp_pyqubo
+)
