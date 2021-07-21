@@ -156,7 +156,8 @@ class CppTest(Command):
 
 packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
-install_requires = [
+install_requires = [ 
+        "typing-extensions; python_version < '3.8'",
         'numpy>=1.17.3',
         "dimod>=0.10.0, <0.11",
         'dwave-neal>=0.5.7',
@@ -167,7 +168,7 @@ install_requires = [
 
 tests_require = [
         'coverage>=4.5.1',
-        'codecov>=2.1.9'
+        'codecov>=2.1.9',
         ]
 
 python_requires = '>=3.7, <=3.10'
