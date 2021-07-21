@@ -41,10 +41,10 @@ jobs:
         python -m pip install .
     - name: IMPORT
       run: |
-          python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
+          python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'    
     - name: IMPORT
       run: |
-          python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'
+          python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
     - name: Test 
       shell: bash
       run: |
