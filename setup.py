@@ -9,6 +9,7 @@ from importlib.util import find_spec
 
 from setuptools import setup, Command, Extension
 from setuptools.command.build_ext import build_ext
+from setuptools.command.test import test as TestCommand
 
 # Convert distutils Windows platform specifiers to CMake -A arguments
 PLAT_TO_CMAKE = {
@@ -47,8 +48,8 @@ class CMakeBuild(build_ext):
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(re.search(r'version\s*([\d.]+)', out.decode()).group(1))
-            if cmake_version < '3.16':
-                raise RuntimeError("CMake >= 3.16 is required on Windows")
+            if cmake_version < '3.17':
+                raise RuntimeError("CMake >= 3.17 is required on Windows")
 
         for ext in self.extensions:
             self.build_extension(ext)
