@@ -36,18 +36,14 @@ jobs:
         key: ${{ runner.os }}-pip-${{ hashFiles('~/.python3_path.txt') }}
         restore-keys: |
          ${{ runner.os }}-pip-
-    - name: Install dependencies 
-      run: |
-        pip install --upgrade pip wheel setuptools build cmake
-    - name: Install Eigen3 on ${{ matrix.os }}
-      if: ${{ matrix.os == 'macos-latest'}}
-      run: brew install libomp 
     - name: Test 
+      shell: bash
       run: |
+        export USE_TEST=1
         python setup.py build --debug test
     - name: Install 
       run: |
-        python setup.py install 
+        python -m pip install .
     - name: IMPORT
       run: |
           python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
