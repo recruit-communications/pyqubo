@@ -20,12 +20,11 @@ set_target_properties(cpp_pyqubo PROPERTIES
 target_link_libraries(cpp_pyqubo PRIVATE 
   pybind11::module
   pybind11::thin_lto
-  cpp_pyqubo
   cpp_pyqubo_header_only
   cpp_dimod
 )
 
-add_library(cpp_pyqubo_body MODULE
+add_library(cpp_pyqubo_body SHARED
     express.cpp
     coeff.cpp
     encoder.cpp
@@ -37,7 +36,6 @@ add_library(cpp_pyqubo_body MODULE
 target_link_libraries(cpp_pyqubo_body PRIVATE 
   pybind11::module
   pybind11::thin_lto
-  cpp_pyqubo
   cpp_pyqubo_header_only
   cpp_dimod
 )
