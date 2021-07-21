@@ -1,5 +1,4 @@
-if (${PYQUBO_BUILD_SHARED_LIBS})
-  pybind11_add_module(cpp_pyqubo SHARED
+pybind11_add_module(cpp_pyqubo MODULE
     pybind_mapping.cpp
     express.cpp
     coeff.cpp
@@ -7,18 +6,7 @@ if (${PYQUBO_BUILD_SHARED_LIBS})
     placeholderpoly.cpp
     expanded.cpp
     poly.cpp
-  )
-else()
-  pybind11_add_module(cpp_pyqubo MODULE
-    pybind_mapping.cpp
-    express.cpp
-    coeff.cpp
-    encoder.cpp
-    placeholderpoly.cpp
-    expanded.cpp
-    poly.cpp
-  )
-endif()
+ )
 
 set_target_properties(cpp_pyqubo PROPERTIES
     CXX_VISIBILITY_PRESET "hidden"
@@ -29,30 +17,16 @@ set_target_properties(cpp_pyqubo PROPERTIES
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
 )
 
-target_link_libraries(cpp_pyqubo PRIVATE 
-    pybind11::thin_lto
-    $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-)
+target_link_libraries(cpp_pyqubo PRIVATE pybind11::thin_lto)
 
-if (PYQUBO_BUILD_SHARED_LIBS)
-  add_library(cpp_pyqubo_body SHARED
+add_library(cpp_pyqubo_body MODULE
     express.cpp
     coeff.cpp
     encoder.cpp
     placeholderpoly.cpp
     expanded.cpp
     poly.cpp
-  )
-else()
-  add_library(cpp_pyqubo_body STATIC
-    express.cpp
-    coeff.cpp
-    encoder.cpp
-    placeholderpoly.cpp
-    expanded.cpp
-    poly.cpp
-  )
-endif()
+)
 target_include_directories(cpp_pyqubo_body PUBLIC ${PROJECT_SOURCE_DIR}/cpp_dimod)
 target_include_directories(cpp_pyqubo_body PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
