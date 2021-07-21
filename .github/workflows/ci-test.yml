@@ -39,18 +39,30 @@ jobs:
     - name: Install Dependency 
       run: |
         python -m pip install --upgrade pip wheel build setuptools cmake
+        python -m pip install -r requirements.txt
     - name: Install 
       run: |
         python -m pip install .
     - name: IMPORT
       run: |
           python -c 'import pprint; import cpp_pyqubo; pprint.pprint(dir(cpp_pyqubo), compact=True)'  
+    - name: IMPORT
+      run: |
+          python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'      
     - name: Test 
       shell: bash
       run: |
         export USE_TEST=1
         python setup.py build --debug test        
-    - name: IMPORT
+    - name: Unit Test 
+      shell: bash
       run: |
-          python -c 'import pprint; import pyqubo; pprint.pprint(dir(pyqubo), compact=True)'
+        export USE_TEST=1
+        python -m unittest discover test
+    - name: Coverage Test 
+      shell: bash
+      run: |
+        export USE_TEST=1
+        coverage run -m unittest discover
+          
        
