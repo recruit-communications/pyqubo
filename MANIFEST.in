@@ -1,10 +1,12 @@
 include README.rst
+include LICENSE
 include *.cmake
 include FetchContent/*.cmake.in
 include CMakeLists.txt
 include pyproject.toml
 include requirements.txt
 include setup.py
+include setup.cfg
 
 recursive-include pyqubo *
 recursive-include tests *
