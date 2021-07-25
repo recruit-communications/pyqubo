@@ -3,8 +3,8 @@ include(FetchContent)
 #### cimod ####
 FetchContent_Declare(
     cimod
-    GIT_REPOSITORY  https://github.com/OpenJij/cimod.git
-    GIT_TAG  v1.2.3
+    GIT_REPOSITORY  https://github.com/OpenJij/cimod
+    GIT_TAG  v1.3.0
 )
 
 FetchContent_MakeAvailable(cimod)
