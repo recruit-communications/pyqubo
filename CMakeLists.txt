@@ -36,6 +36,7 @@ endif()
 
 
 include(external/pybind11.cmake)
+include(external/cimod.cmake)
 
 find_package(Python COMPONENTS Development.Module)
 
