@@ -15,6 +15,7 @@ set_target_properties(cpp_pyqubo PROPERTIES
     POSITION_INDEPENDENT_CODE ON
     PREFIX "${PYTHON_MODULE_PREFIX}"
     SUFFIX "${PYTHON_MODULE_EXTENSION}"
+    VERSION_INFO=${PYQUBO_VERSION_INFO}
 )
 
 target_link_libraries(cpp_pyqubo PRIVATE 
