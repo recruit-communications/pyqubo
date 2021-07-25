@@ -8,9 +8,3 @@ FetchContent_Declare(
 )
 
 FetchContent_MakeAvailable(cimod)
-
-add_library(cxxcimod_header_only-lib INTERFACE)
-target_include_directories(cxxcimod_header_only-lib INTERFACE ${cimod_SOURCE_DIR})
-target_link_libraries(cxxcimod_header_only-lib INTERFACE 
-  $<$<TARGET_EXISTS:OpenMP::OpenMP_CXX>:OpenMP::OpenMP_CXX>
-)
