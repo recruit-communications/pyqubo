@@ -23,7 +23,6 @@ target_link_libraries(cpp_pyqubo PRIVATE
   pybind11::thin_lto
   cpp_pyqubo_header_only
   cpp_dimod
-  cxxcimod_header_only
 )
 
 add_library(cpp_pyqubo_body SHARED
@@ -40,7 +39,6 @@ target_link_libraries(cpp_pyqubo_body PRIVATE
   pybind11::thin_lto
   cpp_pyqubo_header_only
   cpp_dimod
-  cxxcimod_header_only
 )
 
 add_custom_target(python
