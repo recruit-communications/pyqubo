@@ -24,6 +24,7 @@ target_link_libraries(cpp_pyqubo PRIVATE
   cpp_pyqubo_header_only
   cpp_dimod
   cxxcimod_header_only
+  $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen-lib-headder>
 )
 
 add_library(cpp_pyqubo_body SHARED
@@ -41,6 +42,7 @@ target_link_libraries(cpp_pyqubo_body PRIVATE
   cpp_pyqubo_header_only
   cpp_dimod
   cxxcimod_header_only
+  $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen-lib-headder>
 )
 
 add_custom_target(Python3
