@@ -12,7 +12,7 @@ target_link_libraries(pyqubo_test PRIVATE
     cpp_pyqubo_header_only
     cpp_dimod
     cpp_pyqubo_body
-    cxxcimod_header_only
+    cxxcimod_header_only-lib
     $<IF:$<TARGET_EXISTS:Eigen3::Eigen>,Eigen3::Eigen,eigen-lib-headder>
     gmock
     gtest_main
