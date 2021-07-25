@@ -1,22 +1,20 @@
 cmake_minimum_required(VERSION 3.17)
-
 project(cpp_pyqubo)
 
 include(CheckLanguage)
-
 check_language(C)
 check_language(CXX)
 
-if (APPLE)
+if(APPLE)
     set(CMAKE_MACOSX_RPATH TRUE)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-unused-command-line-argument")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}  -Wno-unused-command-line-argument")
+    find_package(BLAS)
+    find_package(LAPACK)
 endif()
-
 
 set(CXX_STANDARD_REQUIRED TRUE)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
-
 set(CMAKE_CXX_STANDARD 14)
 
 
@@ -36,11 +34,6 @@ else()
 	message(STATUS "Skip downloding googletest")
 endif()
 
-
-if (APPLE)
-    find_package(BLAS)
-    find_package(LAPACK)
-endif()
 
 include(external/pybind11.cmake)
 
