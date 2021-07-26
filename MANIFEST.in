@@ -1,14 +1,27 @@
 include README.rst
-include *.cmake
-include FetchContent/*.cmake.in
+include LICENSE
 include CMakeLists.txt
 include pyproject.toml
-include requirements.txt
 include setup.py
+include setup.cfg
 
-recursive-include pyqubo *
-recursive-include tests *
-recursive-include src *
-recursive-include external *
-recursive-include include *
-recursive-include cpp_dimod *
+exclude requirements.txt
+exclude .coveragerc
+exclude .gitignore
+exclude Makefile
+exclude requirements_doctest.txt
+exclude requirements_rtd.txt
+
+graft pyqubo
+graft src
+graft external
+graft cpp_dimod
+graft include
+graft tests 
+
+prune .circleci
+prune .github
+prune benchmark
+prune docs
+prune images
+prune notebooks
