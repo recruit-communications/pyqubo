@@ -37,7 +37,7 @@ endif()
 
 include(external/pybind11.cmake)
 #include(external/cimod.cmake)
-include(external/eigen.cmake)
+#include(external/eigen.cmake)
 find_package(Python COMPONENTS Development.Module)
 
 add_subdirectory(cpp_dimod)
