@@ -6,5 +6,4 @@ FetchContent_Declare(
     CMAKE_ARGS -DEIGEN_MPL2_ONLY
     )
 set(EIGEN_MPL2_ONLY ON)
-set(EIGEN_CPP_STANDARD -std=c++11)    
 FetchContent_MakeAvailable(eigen)
