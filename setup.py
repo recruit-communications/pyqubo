@@ -175,6 +175,12 @@ install_requires = [
 
 
 tests_require = [
+        'pytest',
+        'pytest-cpp',
+        'pytest-flakes',
+        'pytest-mock',
+        'pytest-cov', 
+        'pytest-html',
         'coverage>=4.5.1',
         'codecov>=2.1.9'
         ]
@@ -198,6 +204,7 @@ setup(
         zip_safe=False,
         packages=packages,
         keywords=package_info.__keywords__,
+        setup_requires=['pytest-runner',],
         install_requires=install_requires,
         python_requires=python_requires,
         tests_require=tests_require,
