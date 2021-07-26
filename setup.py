@@ -176,7 +176,7 @@ install_requires = [
 
 tests_require = [
         'pytest',
-        'pytest-cpp',
+        #'pytest-cpp',
         'pytest-flakes',
         'pytest-mock',
         'pytest-cov', 
