@@ -108,12 +108,12 @@ or
 
 .. code-block:: shell
 
-    python setup.py install
+    python -m pip install .
 
 Supported Python Versions
 -------------------------
 
-Python 3.5, 3.6, 3.7, 3.8 and 3.9 are supported.
+Python 3.7, 3.8 and 3.9 are supported.
 
 Supported Operating Systems
 ---------------------------
@@ -131,12 +131,14 @@ Run all tests.
 
 .. code-block:: shell
 
+    export USE_TEST=1
     python -m unittest discover test
 
 Show coverage report.
 
 .. code-block:: shell
 
+    export USE_TEST=1
     coverage run -m unittest discover
     coverage html
 
