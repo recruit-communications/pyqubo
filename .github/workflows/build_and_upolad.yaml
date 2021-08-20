@@ -8,7 +8,7 @@ on:
       - released
   push:
     branches:
-      - feature/github-workflow 
+      - feature/addGithubActions 
 
 env:
   Python_Version: 3.9
