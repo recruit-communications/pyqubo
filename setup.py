@@ -116,7 +116,7 @@ install_requires = [
     'dimod>=0.9.14, <=0.10.0',
     'dwave-neal>=0.5.7',
     'Deprecated>=1.2.12',
-    'jij-cimod>=1.0.1'
+    #'jij-cimod>=1.0.1'
     'six>=1.15.0'
 ]
 
