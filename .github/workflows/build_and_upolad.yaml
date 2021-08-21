@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CIRCLE_PROJECT_REPONAME: pyqubo
-      CIRCLE_PROJECT_USERNAME: ${{ GITHUB_ACTOR }}
+      CIRCLE_PROJECT_USERNAME: ${{ env.GITHUB_ACTOR }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
