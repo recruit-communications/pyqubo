@@ -120,7 +120,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' &&  matrix.arch == 'x86_64' && matrix.python == 36 }}
         with:
           name: codecov
-          path: ${{ env.GITHUB_WORKSPACE }}/.coverage
+          path: $GITHUB_WORKSPACE/.coverage
           retention-days: 1
       
       - uses: actions/upload-artifact@v2
