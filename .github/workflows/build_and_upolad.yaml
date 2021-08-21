@@ -45,6 +45,7 @@ jobs:
           python -m pip install .
       - name: Generate Codecov Report
         run: |
+          pip install -r requirements.txt
           python -m coverage run -m unittest discover .
       - name: test command
         run: |
