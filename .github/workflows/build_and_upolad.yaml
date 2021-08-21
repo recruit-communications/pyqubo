@@ -34,6 +34,9 @@ jobs:
   
   codecove:
     runs-on: ubuntu-latest
+    env:
+      CIRCLE_PROJECT_REPONAME: pyqubo
+      CIRCLE_PROJECT_USERNAME: kotarotanahashi
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -48,16 +51,13 @@ jobs:
           pip install -r requirements.txt
           python -m coverage run -m unittest discover .
           cat .coverage
+          codecov
       - uses: actions/upload-artifact@v2
         with:
           name: codecov
           path: .coverage
           retention-days: 1
-      - uses: codecov/codecov-action@v2
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: .coverage
-          dry_run: false
+     
   
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
