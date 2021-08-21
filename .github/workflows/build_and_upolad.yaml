@@ -48,6 +48,11 @@ jobs:
           pip install -r requirements.txt
           python -m coverage run -m unittest discover .
           cat .coverage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: codecov
+          path: .coverage
+          retention-days: 1
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
