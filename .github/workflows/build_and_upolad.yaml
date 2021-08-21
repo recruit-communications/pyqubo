@@ -47,6 +47,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           python -m coverage run -m unittest discover .
+          cat .coverage
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
