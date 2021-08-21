@@ -119,6 +119,7 @@ jobs:
       - name: test command
         run: |
           ls -a
+          ls -a /Users/runner/work/pyqubo/pyqubo
 
       - uses: actions/upload-artifact@v2
         if: ${{ matrix.os == 'macos-latest' &&  matrix.arch == 'x86_64' && matrix.python == 36 }}
