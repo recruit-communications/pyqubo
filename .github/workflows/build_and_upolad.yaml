@@ -51,7 +51,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: .coverage
-          dry_run: true
+          dry_run: false
   
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
