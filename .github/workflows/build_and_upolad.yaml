@@ -32,9 +32,33 @@ jobs:
           path: dist/*.tar.gz
           retention-days: 1
   
+  covecove:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        name: Install Python
+        with:
+          python-version: ${{env.Python_Version}}
+      - name: Install PyQUBO
+        run: |
+          python -m pip install .
+      - name: Generate Codecov Report
+        run: |
+          python -m coverage run -m unittest discover .
+      - name: test command
+        run: |
+          ls -a
+      - uses: actions/upload-artifact@v2
+        with:
+          name: codecov
+          path: .coverage
+          retention-days: 1
+  
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
+    if: github.event_name == 'release'
     env:
       CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
