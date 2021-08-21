@@ -32,7 +32,7 @@ jobs:
           path: dist/*.tar.gz
           retention-days: 1
   
-  covecove:
+  codecove:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -47,14 +47,11 @@ jobs:
         run: |
           pip install -r requirements.txt
           python -m coverage run -m unittest discover .
-      - name: test command
-        run: |
-          ls -a
-      - uses: actions/upload-artifact@v2
+      - uses: codecov/codecov-action@v2
         with:
-          name: codecov
-          path: .coverage
-          retention-days: 1
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: .coverage
+          dry_run: true
   
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
