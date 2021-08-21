@@ -34,9 +34,6 @@ jobs:
   
   codecove:
     runs-on: ubuntu-latest
-    env:
-      CIRCLE_PROJECT_REPONAME: ${{github.repository}}
-      CIRCLE_PROJECT_USERNAME: ${{github.actor}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -50,15 +47,9 @@ jobs:
         run: |
           pip install -r requirements.txt
           python -m coverage run -m unittest discover .
-          cat .coverage
-          codecov
-      - name: Generate Codecov Report
+      - name: Upload Codecov Report
         run: |
-          pip install -r requirements.txt
-          python -m coverage run -m unittest discover .
-          cat .coverage
           codecov
-     
   
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
