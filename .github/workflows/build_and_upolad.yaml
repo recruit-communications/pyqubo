@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CIRCLE_PROJECT_REPONAME: pyqubo
-      CIRCLE_PROJECT_USERNAME: kotarotanahashi
+      CIRCLE_PROJECT_USERNAME: ${{ GITHUB_ACTOR }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
@@ -52,11 +52,12 @@ jobs:
           python -m coverage run -m unittest discover .
           cat .coverage
           codecov
-      - uses: actions/upload-artifact@v2
-        with:
-          name: codecov
-          path: .coverage
-          retention-days: 1
+      - name: Generate Codecov Report
+        run: |
+          pip install -r requirements.txt
+          python -m coverage run -m unittest discover .
+          cat .coverage
+          codecov
      
   
   build_wheels:
