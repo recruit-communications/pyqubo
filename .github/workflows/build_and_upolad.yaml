@@ -35,8 +35,8 @@ jobs:
   codecove:
     runs-on: ubuntu-latest
     env:
-      CIRCLE_PROJECT_REPONAME: pyqubo
-      CIRCLE_PROJECT_USERNAME: ${{ env.GITHUB_ACTOR }}
+      CIRCLE_PROJECT_REPONAME: ${{github.repository}}
+      CIRCLE_PROJECT_USERNAME: ${{github.actor}}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
