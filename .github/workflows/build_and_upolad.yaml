@@ -32,7 +32,7 @@ jobs:
           path: dist/*.tar.gz
           retention-days: 1
   
-  codecove:
+  codecov:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -136,18 +136,6 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
           CIBW_BUILD_VERBOSITY: 3
 
-      - name: test command
-        run: |
-          ls -a
-          ls -a /Users/runner/work/pyqubo/pyqubo
-
-      - uses: actions/upload-artifact@v2
-        if: ${{ matrix.os == 'macos-latest' &&  matrix.arch == 'x86_64' && matrix.python == 36 }}
-        with:
-          name: codecov
-          path: ${{env.GITHUB_WORKSPACE}}/.coverage
-          retention-days: 1
-      
       - uses: actions/upload-artifact@v2
         with:
           name: artifact
