@@ -40,15 +40,15 @@ class Array:
         
         >>> from pyqubo import Array, Binary
         >>> Array.create('x', shape=(2, 2), vartype='BINARY')
-        Array([[Binary(x[0][0]), Binary(x[0][1])],
-               [Binary(x[1][0]), Binary(x[1][1])]])
+        Array([[Binary('x[0][0]'), Binary('x[0][1]')],
+               [Binary('x[1][0]'), Binary('x[1][1]')]])
         
         Create a new array from a nested list of :class:`Express`.
         
         >>> array = Array([[Binary('x0'), Binary('x1')], [Binary('x2'), Binary('x3')]])
         >>> array
-        Array([[Binary(x0), Binary(x1)],
-               [Binary(x2), Binary(x3)]])
+        Array([[Binary('x0'), Binary('x1')],
+               [Binary('x2'), Binary('x3')]])
         
         Get the shape of the array.
         
@@ -58,21 +58,21 @@ class Array:
         Access an element with index.
         
         >>> array[0, 0]  # = array[(0, 0)]
-        Binary(x0)
+        Binary('x0')
         
         Use slice ":" to select a subset of the array.
         
         >>> array[:, 1]  # = array[(slice(None), 1)]
-        Array([Binary(x1), Binary(x3)])
+        Array([Binary('x1'), Binary('x3')])
         >>> sum(array[:, 1])
-        (Binary(x1)+Binary(x3))
+        (Binary('x1') + Binary('x3'))
         
         Use list or tuple to select a subset of the array.
 
         >>> array[[0, 1], 1]
-        Array([Binary(x1), Binary(x3)])
+        Array([Binary('x1'), Binary('x3')])
         >>> array[(0, 1), 1]
-        Array([Binary(x1), Binary(x3)])
+        Array([Binary('x1'), Binary('x3')])
         
         Create an array from numpy array.
         
@@ -445,8 +445,8 @@ class Array:
             
             >>> from pyqubo import Array, Binary
             >>> Array.fill(Binary('a'), shape=(2, 3))
-            Array([[Binary(a), Binary(a), Binary(a)],
-                   [Binary(a), Binary(a), Binary(a)]])
+            Array([[Binary('a'), Binary('a'), Binary('a')],
+                  [Binary('a'), Binary('a'), Binary('a')]])
         """
         return Array._create_with_generator(shape, lambda _: obj)
 
@@ -523,12 +523,12 @@ class Array:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
             >>> array
-            Array([[Binary(x[0][0]), Binary(x[0][1]), Binary(x[0][2])],
-                   [Binary(x[1][0]), Binary(x[1][1]), Binary(x[1][2])]])
+            Array([[Binary('x[0][0]'), Binary('x[0][1]'), Binary('x[0][2]')],
+                   [Binary('x[1][0]'), Binary('x[1][1]'), Binary('x[1][2]')]])
             >>> array.T
-            Array([[Binary(x[0][0]), Binary(x[1][0])],
-                   [Binary(x[0][1]), Binary(x[1][1])],
-                   [Binary(x[0][2]), Binary(x[1][2])]])
+            Array([[Binary('x[0][0]'), Binary('x[1][0]')],
+                   [Binary('x[0][1]'), Binary('x[1][1]')],
+                   [Binary('x[0][2]'), Binary('x[1][2]')]])
         """
 
         def generator(index):
@@ -764,9 +764,9 @@ class Array:
             >>> from pyqubo import Array
             >>> array = Array.create('x', shape=(2, 3), vartype='BINARY')
             >>> array
-            Array([[Binary(x[0][0]), Binary(x[0][1]), Binary(x[0][2])],
-                   [Binary(x[1][0]), Binary(x[1][1]), Binary(x[1][2])]])
-            >>> array.reshape((3, 2, 1))
+            Array([[Binary('x[0][0]'), Binary('x[0][1]'), Binary('x[0][2]')],
+                   [Binary('x[1][0]'), Binary('x[1][1]'), Binary('x[1][2]')]])
+            >>> array.reshape((3, 2, 1)) # doctest: +SKIP
             Array([[[Binary(x[0][0])],
                     [Binary(x[0][1])]],\
             

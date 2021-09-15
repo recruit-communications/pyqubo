@@ -24,7 +24,7 @@ Expression
         >>> from pyqubo import Binary
         >>> a, b = Binary("a"), Binary("b")
         >>> 2*a*b + 1
-        (Binary(a)*Num(2.000000)*Binary(b)+Num(1.000000))
+        (((2.000000 * Binary('a')) * Binary('b')) + 1.000000)
 
 
 .. py:method:: compile(strength=5.0)
@@ -182,48 +182,6 @@ Constraint
         >>> pprint(dec.constraints(only_broken=True))
         {'const1': (False, -1.0)}
 
-Add
----
-
-.. py:class:: Add(left, right)
-    
-    Addition of expressions.
-    
-    :param `Base` left: An expression
-    :param `Base` right: An expression
-    
-    **Example:**
-
-        You can add expressions with either the built-in operator or :class:`Add`.
-        
-        >>> from pyqubo import Binary, Add
-        >>> a, b = Binary('a'), Binary('b')
-        >>> a + b
-        (Binary(a)+Binary(b))
-        >>> Add(a, b)
-        (Binary(a)+Binary(b))
-
-Mul
----
-
-.. py:class:: Mul(left, right)
-
-    Product of expressions.
-    
-    :param `Base` left: An expression
-    :param `Base` right: An expression
-
-    **Example:**
-
-        You can multiply expressions with either the built-in operator or :class:`Mul`.
-        
-        >>> from pyqubo import Binary, Mul
-        >>> a, b = Binary('a'), Binary('b')
-        >>> a * b
-        Binary(a)*Binary(b)
-        >>> Mul(a, b)
-        Binary(a)*Binary(b)
-
 Num
 ---
     
@@ -240,9 +198,9 @@ Num
         >>> from pyqubo import Binary, Num
         >>> a = Binary('a')
         >>> a + 1
-        (Binary(a)+Num(1.000000))
+        (Binary('a') + 1.000000)
         >>> a + Num(1)
-        (Binary(a)+Num(1.000000))
+        (Binary('a') + 1.000000)
 
 UserDefinedExpress
 ------------------

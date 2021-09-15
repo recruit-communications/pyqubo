@@ -178,7 +178,7 @@ Array of Variables
 >>> from pyqubo import Array
 >>> x = Array.create('x', shape=(2, 3), vartype='BINARY')
 >>> x[0, 1] + x[1, 2]
-(Binary(x[0][1])+Binary(x[1][2]))
+(Binary('x[0][1]') + Binary('x[1][2]'))
 
 
 **Example:**

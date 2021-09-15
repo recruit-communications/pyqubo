@@ -154,7 +154,7 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
 
             return constraints;
           },
-          py::arg("only_broken"))
+          py::arg("only_broken")=false)
       .def("array", [](const pyqubo::solution& solution, const std::string& name, int index) {
         return solution.sample().at(name + "[" + std::to_string(index) + "]");
       })
