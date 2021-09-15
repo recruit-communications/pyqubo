@@ -77,7 +77,6 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
-    if: github.event_name == 'release'
     env:
       CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
