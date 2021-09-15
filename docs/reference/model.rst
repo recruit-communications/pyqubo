@@ -35,7 +35,7 @@ Model
         >>> model = H.compile()
         >>> pprint(model.to_qubo())
         ({('a', 'a'): 1.0, ('b', 'b'): 2.0, ('c', 'c'): 3.0}, 0.0)
-        >>> model.to_qubo(index_label=True) 
+        >>> model.to_qubo(index_label=True)  # doctest: +SKIP
         ({(2, 2): 3.0, (1, 1): 2.0, (0, 0): 1.0}, 0.0)
         >>> model.variables
         ['a', 'b', 'c']
