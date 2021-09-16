@@ -22,6 +22,12 @@ FetchContent_Declare(
 )
 
 FetchContent_Declare(
+    boost_container_hash
+    GIT_REPOSITORY ${PREFIX_BOOST_URL}/container_hash
+    GIT_TAG        ${PREFIX_BOOST_TAG}
+)
+
+FetchContent_Declare(
     boost_core
     GIT_REPOSITORY ${PREFIX_BOOST_URL}/core
     GIT_TAG        ${PREFIX_BOOST_TAG}
@@ -62,3 +68,6 @@ FetchContent_Declare(
     GIT_REPOSITORY ${PREFIX_BOOST_URL}/type_traits
     GIT_TAG        ${PREFIX_BOOST_TAG}
 )
+
+FetchContent_MakeAvailable(boost_container_hash)
+FetchContent_MakeAvailable(boost_container)
