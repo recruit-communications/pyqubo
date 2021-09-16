@@ -8,6 +8,7 @@ FetchContent_Declare(
 
 FetchContent_GetProperties(pybind11)
 if(NOT pybind11_POPULATED)
+    message(STATUS "Fetch pybind11")
     FetchContent_Populate(pybind11)
     add_subdirectory(${pybind11_SOURCE_DIR})
 endif()
