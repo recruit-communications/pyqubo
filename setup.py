@@ -52,6 +52,7 @@ class CMakeBuild(build_ext):
         # EXAMPLE_VERSION_INFO shows you how to pass a value into the C++ code
         # from Python.
         cmake_args = [
+            "-DCMAKE_VERBOSE_MAKEFILE=1",
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(extdir),
             "-DPYTHON_EXECUTABLE={}".format(sys.executable),
             "-DPYQUBOC_VERSION_INFO={}".format(self.distribution.get_version()),
@@ -116,19 +117,7 @@ install_requires = [
     'dimod>=0.9.14, <0.11',
     'dwave-neal>=0.5.7',
     'Deprecated>=1.2.12',
-    #'jij-cimod>=1.0.1'
     'six>=1.15.0'
-]
-
-
-setup_requires = [
-    'numpy>=1.17.3, <=1.20.0',
-    'scikit-build>=0.11.1',
-    'wheel>=0.36.2',
-    'Cython>=0.29.21'
-    "cmake>=3.20.0",
-    'setuptools',
-    'nbsphinx'
 ]
 
 tests_require = [
@@ -136,7 +125,7 @@ tests_require = [
     'codecov>=2.1.9'
 ]
 
-python_requires = '>=3.5, <3.10'
+python_requires = '>=3.6, <+3.10'
 
 setup(
     name=package_info.__package_name__,
@@ -161,7 +150,6 @@ setup(
     tests_require=tests_require,
     include_package_data=True,
     classifiers=[
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
