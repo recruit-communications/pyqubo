@@ -5,8 +5,6 @@ requires-python = ">=3.6"
 requires = [
     "cmake>=3.20",
     'setuptools>=56.0.0',
-    'pybind11>=2.7.1',
-    'wheel>=0.36.2',
     'numpy>=1.17.3, <=1.20.0',
     'nbsphinx',
     "ninja; sys_platform != 'win32'"
