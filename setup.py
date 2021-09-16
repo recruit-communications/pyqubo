@@ -122,8 +122,6 @@ install_requires = [
 
 setup_requires = [
     'numpy>=1.17.3, <=1.20.0',
-    'wheel>=0.36.2',
-    'Cython>=0.29.21'
     "cmake>=3.20.0",
     'setuptools',
     'nbsphinx'
