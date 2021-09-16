@@ -69,5 +69,6 @@ FetchContent_Declare(
     GIT_TAG        ${PREFIX_BOOST_TAG}
 )
 
-FetchContent_MakeAvailable(boost_container_hash)
-FetchContent_MakeAvailable(boost_container)
+FetchContent_MakeAvailable(boost_container, boost_assert, boost_config, boost_core, boost_intrusive, boost_sratic_assert, boost_type_traits)
+FetchContent_MakeAvailable(boost_container_hash, boost_assert, boost_config, boost_core, boost_detail, boost_sratic_assert, boost_type_traits)
+
