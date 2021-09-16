@@ -120,6 +120,15 @@ install_requires = [
     'six>=1.15.0'
 ]
 
+setup_requires = [
+    'numpy>=1.17.3, <=1.20.0',
+    'wheel>=0.36.2',
+    'Cython>=0.29.21'
+    "cmake>=3.20.0",
+    'setuptools',
+    'nbsphinx'
+]
+
 tests_require = [
     'coverage>=4.5.1',
     'codecov>=2.1.9'
