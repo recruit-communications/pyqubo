@@ -29,6 +29,7 @@ test-extras = []
 
 [tool.cibuildwheel.linux]
 archs = ["x86_64", "i686", "aarch64"]
+test-skip = "*_aarch64"
 #before-build = "pip install scikit-build"
 repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
 
