@@ -14,6 +14,10 @@ if(CMAKE_CXX_COMPILER)
   enable_language(CXX)
 endif() 
 
+set(CXX_STANDARD_REQUIRED TRUE)
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
+set(CMAKE_CXX_STANDARD 17)
+
 set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
 
 find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
