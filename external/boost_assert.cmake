@@ -6,4 +6,4 @@ FetchContent_Declare(
     GIT_TAG        boost-1.76.0
 )
 
-FetchContent_MakeAvailable(boost_assert)
+FetchContent_MakeAvailable(boost_assert, boost_config)
