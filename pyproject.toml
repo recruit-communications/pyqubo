@@ -1,8 +1,46 @@
+[project]
+requires-python = ">=3.6"
+
 [build-system]
 requires = [
     "cmake>=3.20",
     'setuptools>=56.0.0',
+    'pybind11>=2.7.1',
     'wheel>=0.36.2',
     "ninja; sys_platform != 'win32'"
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.cibuildwheel]
+build = "*"
+skip = ""
+test-skip = ""
+
+build-frontend = "build"
+dependency-versions = "pinned"
+environment = { CFLAGS="-flto -Ofast -pipe", CXXFLAGS="-flto -Ofast -pipe" }
+build-verbosity = "3"
+
+
+test-command = "python -m coverage run -m unittest discover {package}"
+before-test = "pip install -r requirements.txt"
+test-requires = ["coverage","codecov"]
+test-extras = []
+
+[tool.cibuildwheel.linux]
+archs = ["x86_64", "i686", "aarch64"]
+before-build = "pip install scikit-build"
+repair-wheel-command = "auditwheel repair -w {dest_dir} {wheel}"
+
+[tool.cibuildwheel.macos]
+archs = ["x86_64", "arm64"]
+before-build = "pip install git+https://github.com/scikit-build/scikit-build.git@master"
+repair-wheel-command = [
+  "delocate-listdeps {wheel}",
+  "delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}",
+]
+
+[tool.cibuildwheel.windows]
+archs = ["AMD64", "x86"]
+before-build = "pip install delvewheel"
+repair-wheel-command = "delvewheel repair -w {dest_dir} {wheel}"
