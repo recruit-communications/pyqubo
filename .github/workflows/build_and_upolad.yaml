@@ -75,89 +75,22 @@ jobs:
           make doctest
   
   build_wheels:
-    name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
+    name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    env:
-      CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        arch: [x86_64, AMD64, i686, arm64]
-        python: [36, 37, 38, 39]
-        exclude:
-         - os: ubuntu-latest
-           arch: AMD64
-         - os: ubuntu-latest
-           arch: arm64
-           
-         - os: macos-latest
-           arch: AMD64
-         - os: macos-latest
-           arch: i686
-         - os: macos-latest
-           arch: arm64
-           python: 36
-         - os: macos-latest
-           arch: arm64
-           python: 37
-         
-         - os: windows-latest
-           arch: x86_64
-         - os: windows-latest
-           arch: i686
-         - os: windows-latest
-           arch: arm64
-        
-        include:
-         - os: ubuntu-latest
-           CIBW_PLATFORM: linux
-           CIBW_BUILD: "cp3*-manylinux*"
-           CIBW_BEFORE_ALL: ""
-           CIBW_BEFORE_BUILD: "pip install scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: "auditwheel repair -w {dest_dir} {wheel}"
-           
-         - os: macos-latest
-           CIBW_PLATFORM: macos
-           CIBW_BUILD: "cp3*-macosx*"
-           CIBW_BEFORE_ALL: ""
-           CIBW_BEFORE_BUILD: "pip install git+https://github.com/scikit-build/scikit-build.git@master"
-           CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs {delocate_archs} -w {dest_dir} {wheel}"
-           
-           
-         - os: windows-latest
-           CIBW_PLATFORM: windows
-           CIBW_BUILD: "cp3*-win_amd64*"
-           CIBW_BEFORE_ALL: ""
-           CIBW_BEFORE_BUILD: "pip install delvewheel scikit-build"
-           CIBW_REPAIR_WHEEL_COMMAND: "delvewheel repair -w {dest_dir} {wheel}"
-           
       fail-fast: false 
     
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        name: Install Python
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v1
         with:
-          python-version: ${{env.Python_Version}}
-      
+          platforms: all
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v1.12.0
-        env:
-          CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
-          CIBW_BUILD: cp${{matrix.python}}-*
-          CIBW_SKIP: "cp35-*"
-          CIBW_ENVIRONMENT:
-             CFLAGS="-flto -Ofast -pipe"
-             CXXFLAGS="-flto -Ofast -pipe"
-          CIBW_ARCHS: ${{matrix.arch}}
-          CIBW_BEFORE_TEST: "pip install -r requirements.txt"
-          CIBW_TEST_COMMAND: "python -m coverage run -m unittest discover {package}"
-          CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
-          CIBW_BEFORE_BUILD: ${{matrix.CIBW_BEFORE_BUILD}}        
-          CIBW_BEFORE_ALL: ${{matrix.CIBW_BEFORE_ALL}}
-          CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
-          CIBW_BUILD_VERBOSITY: 3
-
+        uses: pypa/cibuildwheel@v2.1.2
       - uses: actions/upload-artifact@v2
         with:
           name: artifact
