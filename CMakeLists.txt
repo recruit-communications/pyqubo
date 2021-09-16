@@ -14,9 +14,10 @@ if(CMAKE_CXX_COMPILER)
   enable_language(CXX)
 endif() 
 
-#set(Python3_FIND_VIRTUALENV FIRST)
-#set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
-#find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
+
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+
 #set(pybind11_DIR ${Python3_SITELIB}/pybind11/share/cmake/pybind11)
 #find_package(pybind11 REQUIRED CONFIG)
 #if(NOT TARGET pybind11::pybind11)
@@ -41,7 +42,7 @@ include(external/eigen.cmake)
 
 pybind11_add_module(cpp_pyqubo src/main.cpp)
 
-target_compile_definitions(cpp_pyqubo PRIVATE VERSION_INFO=${PYQUBO_VERSION_INFO})
+target_compile_definitions(cpp_pyqubo PRIVATE VERSION_INFO=${PYQUBOC_VERSION_INFO})
 target_compile_features(cpp_pyqubo PRIVATE cxx_std_17)
 target_compile_options(cpp_pyqubo PRIVATE
     $<$<CXX_COMPILER_ID:GNU>: -Ofast -Wall -Wno-terminate>
