@@ -2,8 +2,7 @@ include(FetchContent)
 
 FetchContent_Declare(
     boost_config
-    GIT_REPOSITORY https://github.com/boostorg/config
-    GIT_TAG        boost-1.76.0
+    GIT_REPOSITORY ${PREFIX_BOOST_URL}/config
+    GIT_TAG        ${PREFIX_BOOST_TAG}
 )
 
-FetchContent_MakeAvailable(boost_config)
