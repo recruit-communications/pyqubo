@@ -2,6 +2,32 @@ cmake_minimum_required(VERSION 3.20)
 
 project(cpp_pyqubo)
 
+include(CheckLanguage)
+
+check_language(C)
+check_language(CXX)
+
+if(CMAKE_C_COMPILER)
+  enable_language(C)
+endif() 
+if(CMAKE_CXX_COMPILER)
+  enable_language(CXX)
+endif() 
+
+set(Python3_FIND_VIRTUALENV FIRST)
+set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+set(pybind11_DIR ${Python3_SITELIB}/pybind11/share/cmake/pybind11)
+find_package(pybind11 REQUIRED CONFIG)
+if(NOT TARGET pybind11::pybind11)
+  include(external/pybind11.cmake)
+endif() 
+
+find_package(Eigen3 3.3 NO_MODULE)
+if(NOT TARGET Eigen3::Eigen)
+  include(external/eigen.cmake)
+endif() 
+
 include(external/boost_assert.cmake)
 include(external/boost_config.cmake)
 include(external/boost_container.cmake)
@@ -14,8 +40,6 @@ include(external/boost_move.cmake)
 include(external/boost_static_assert.cmake)
 include(external/boost_type_traits.cmake)
 include(external/cimod.cmake)
-include(external/eigen.cmake)
-include(external/pybind11.cmake)
 include(external/robin_hood.cmake)
 
 pybind11_add_module(cpp_pyqubo src/main.cpp)
