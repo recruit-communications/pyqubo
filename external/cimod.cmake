@@ -6,4 +6,11 @@ FetchContent_Declare(
     GIT_TAG        v1.2.3
 )
 
-FetchContent_MakeAvailable(cimod)
+
+FetchContent_GetProperties(cimod)
+
+if(NOT cimod_POPULATED)
+    message(STATUS "Fetch cimod")
+    FetchContent_Populate(cimod)
+    include_directories(${cimod_SOURCE_DIR}/src)
+endif()
