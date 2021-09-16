@@ -6,10 +6,4 @@ FetchContent_Declare(
     GIT_TAG        boost-1.76.0
 )
 
-FetchContent_GetProperties(boost_detail)
-
-if(NOT boost_detail_POPULATED)
-    message(STATUS "Fetch boost detail")
-    FetchContent_Populate(boost_detail)
-    include_directories(${boost_detail_SOURCE_DIR}/include)
-endif()
+FetchContent_MakeAvailable(boost_detail)
