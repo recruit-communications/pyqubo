@@ -6,4 +6,8 @@ FetchContent_Declare(
     GIT_TAG        v2.6.2
 )
 
-FetchContent_MakeAvailable(pybind11)
+FetchContent_GetProperties(pybind11)
+if(NOT pybind11_POPULATED)
+    FetchContent_Populate(pybind11)
+    add_subdirectory(${pybind11_SOURCE_DIR})
+endif()
