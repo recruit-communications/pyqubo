@@ -21,11 +21,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
 find_package(Python3 COMPONENTS Interpreter Development)
 
-include(external/boost.cmake)
-include(external/cimod.cmake)
-include(external/robin_hood.cmake)
-include(external/pybind11.cmake)
-include(external/eigen.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/external/pyqubo_boost.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/external/cimod.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/external/robin_hood.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/external/pybind11.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/external/eigen.cmake)
 
 pybind11_add_module(cpp_pyqubo src/main.cpp)
 
