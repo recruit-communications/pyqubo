@@ -35,10 +35,10 @@ Model
         >>> model = H.compile()
         >>> pprint(model.to_qubo())
         ({('a', 'a'): 1.0, ('b', 'b'): 2.0, ('c', 'c'): 3.0}, 0.0)
-        >>> model.to_qubo(index_label=True) 
-        ({(0, 0): 3.0, (1, 1): 1.0, (2, 2): 2.0}, 0.0)
+        >>> model.to_qubo(index_label=True)  # doctest: +SKIP
+        ({(2, 2): 3.0, (1, 1): 2.0, (0, 0): 1.0}, 0.0)
         >>> model.variables
-        ['c', 'a', 'b']
+        ['a', 'b', 'c']
         
         This indicaretes the mapping of indices and labels as 'c'->0, 'a'->1, 'b'->2
 
@@ -96,7 +96,7 @@ Model
         >>> pprint(model.to_qubo(index_label=True)) # doctest: +SKIP
         ({(0, 0): 3.0, (0, 2): 1.0, (1, 1): 0.0, (1, 2): 1.0, (2, 2): 0.0}, 0.0)
         >>> model.variables
-        ['z', 'x', 'y']
+        ['x', 'y', 'z']
 
 
 .. py:method:: to_ising(index_label=False, feed_dict=None)
@@ -129,7 +129,7 @@ Model
         >>> pprint(model.to_ising(index_label=True)) # doctest: +SKIP
         ({0: 1.75, 1: 0.25, 2: 0.5}, {(0, 2): 0.25, (1, 2): 0.25}, 2.0)
         >>> model.variables
-        ['z', 'x', 'y']
+        ['x', 'y', 'z']
 
 
 .. py:method:: to_bqm(index_label=False, feed_dict=None)

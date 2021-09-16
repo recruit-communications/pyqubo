@@ -23,7 +23,7 @@ class TestArray(unittest.TestCase):
         array = Array.create('x', shape=(3, 3, 3), vartype='BINARY')
         self.assertTrue(array.shape == (3, 3, 3))
         self.assertTrue(array[0][0][0] == Binary('x[0][0][0]'))
-    
+
     def test_array_create_spin(self):
         array = Array.create('x', shape=(3, 3, 3), vartype='SPIN')
         self.assertTrue(array.shape == (3, 3, 3))
@@ -48,7 +48,7 @@ class TestArray(unittest.TestCase):
         with self.assertRaises(TypeError):
             array = Array([Binary('x0'), Binary('x1')])
             array[1.5]
-    
+
     def test_array_equality(self):
         array1 = Array([[Binary('x0'), Binary('x1')], [Binary('x2'), Binary('x3')]])
         array2 = Array([[Binary('x0'), Binary('x1')], [Binary('x2'), Binary('x3')]])
@@ -56,12 +56,12 @@ class TestArray(unittest.TestCase):
         self.assertTrue(array1 == array2)
         self.assertTrue(array1 != array3)
         self.assertTrue(not array1 == Binary('x2'))
-    
+
     def test_array_iter(self):
         array = Array.create('x', shape=(2, 2), vartype='BINARY')
         self.assertTrue(len(array) == 2)
         self.assertTrue([e for e in array] == [array[0], array[1]])
-    
+
     def test_array_from_numpy(self):
         array = Array(np.array([[1, 2], [3, 4]]))
         self.assertTrue(array == Array([[1, 2], [3, 4]]))
@@ -72,7 +72,7 @@ class TestArray(unittest.TestCase):
                           [Binary('x[0][1]'), Binary('x[1][1]')],
                           [Binary('x[0][2]'), Binary('x[1][2]')]])
         self.assertTrue(array.T == expected)
-    
+
     def test_array_add(self):
         array1 = Array.create('x', (2, 2), 'BINARY')
         array2 = Array.create('y', (2, 2), 'BINARY')
@@ -100,11 +100,13 @@ class TestArray(unittest.TestCase):
         expected2 = Array([[Binary('x[0][0]') - 1, Binary('x[0][1]') - 1],
                            [Binary('x[1][0]') - 1, Binary('x[1][1]') - 1]])
         self.assertTrue(array1 - 1 == expected2)
-        expected3 = Array([[1 - Binary('x[0][0]'), 1 - Binary('x[0][1]')],
-                           [1 - Binary('x[1][0]'), 1 - Binary('x[1][1]')]])
+        # expected3 = Array([[1 - Binary('x[0][0]'), 1 - Binary('x[0][1]')],
+        #                    [1 - Binary('x[1][0]'), 1 - Binary('x[1][1]')]])
+        expected3 = Array([[Binary('x[0][0]') * -1 + 1, Binary('x[0][1]') * -1 + 1],
+                           [Binary('x[1][0]') * -1 + 1, Binary('x[1][1]') * -1 + 1]])
         self.assertTrue(1 - array1 == expected3)
         self.assertTrue(array1 - np.ones((2, 2)) == expected2)
-    
+
     def test_array_multiply(self):
         array1 = Array.create('x', (2, 2), 'BINARY')
         array2 = Array.create('y', (2, 2), 'BINARY')
@@ -126,7 +128,7 @@ class TestArray(unittest.TestCase):
 
         self.assertRaises(ValueError, lambda: 1 / array1)
         self.assertRaises(ValueError, lambda: array1 / array1)
-    
+
     def test_array_dot(self):
 
         # inner product of 1-D arrays
@@ -165,7 +167,7 @@ class TestArray(unittest.TestCase):
 
         # test validation
         self.assertRaises(TypeError, lambda: array_a.dot(1))
-    
+
     def test_array_matmul(self):
 
         # the either of the arguments is 1-D array,
@@ -199,7 +201,7 @@ class TestArray(unittest.TestCase):
         array_a = Array.create('a', shape=(2, 2, 3), vartype='BINARY')
         array_b = Array.create('b', shape=(3, 3, 2), vartype='BINARY')
         self.assertRaises(AssertionError, lambda: array_a.matmul(array_b))
-    
+
     def test_array_reshape(self):
         array = Array.create('a', shape=(2, 3), vartype='BINARY')
         reshaped = array.reshape((3, 2))
@@ -208,7 +210,7 @@ class TestArray(unittest.TestCase):
                           [Binary('a[0][2]'), Binary('a[1][0]')],
                           [Binary('a[1][1]'), Binary('a[1][2]')]])
         self.assertTrue(reshaped == expected)
-    
+
 
 if __name__ == '__main__':
     unittest.main()
