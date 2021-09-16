@@ -1,5 +1,5 @@
-set(BOOST_URL "https://github.com/boostorg") 
-set(BOOST_TAG "boost-1.76.0")
+set(PREFIX_BOOST_URL "https://github.com/boostorg") 
+set(PREFIX_BOOST_TAG "boost-1.76.0")
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/boost_assert.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/boost_config.cmake)
