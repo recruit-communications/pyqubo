@@ -13,7 +13,7 @@ build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 build = "*"
-skip = "cp310-*"
+skip = ["cp310-*", "pp*"]
 test-skip = ""
 
 build-frontend = "build"
