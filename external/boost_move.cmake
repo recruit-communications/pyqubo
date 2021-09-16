@@ -6,4 +6,10 @@ FetchContent_Declare(
     GIT_TAG        boost-1.76.0
 )
 
-FetchContent_MakeAvailable(boost_move)
+FetchContent_GetProperties(boost_move)
+
+if(NOT boost_move_POPULATED)
+    message(STATUS "Fetch boost move")
+    FetchContent_Populate(boost_move)
+    include_directories(${boost_move_SOURCE_DIR}/include)
+endif()
