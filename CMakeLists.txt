@@ -20,7 +20,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 set(Python3_EXECUTABLE "${PYTHON_EXECUTABLE}")
 
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
+find_package(Python3 COMPONENTS Interpreter Development)
 
 #set(pybind11_DIR ${Python3_SITELIB}/pybind11/share/cmake/pybind11)
 #find_package(pybind11 REQUIRED CONFIG)
