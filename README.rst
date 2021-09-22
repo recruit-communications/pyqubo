@@ -7,9 +7,6 @@
 .. image:: https://readthedocs.org/projects/pyqubo/badge/?version=latest
     :target: http://pyqubo.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://circleci.com/gh/recruit-communications/pyqubo.svg?style=svg
-    :target: https://circleci.com/gh/recruit-communications/pyqubo
-
 .. image:: https://pepy.tech/badge/pyqubo
     :target: https://pepy.tech/project/pyqubo
 
