@@ -7,8 +7,6 @@ on:
     types:
       - released
   push:
-    branches:
-      - feature/addGithubActions 
 
 env:
   Python_Version: 3.9
