@@ -47,13 +47,13 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
 >>> pprint(qubo)
 {('s1', 's1'): -160.0,
 ('s1', 's2'): 64.0,
+('s1', 's3'): 224.0,
+('s1', 's4'): 32.0,
 ('s2', 's2'): -96.0,
-('s3', 's1'): 224.0,
-('s3', 's2'): 112.0,
+('s2', 's3'): 112.0,
+('s2', 's4'): 16.0,
 ('s3', 's3'): -196.0,
-('s4', 's1'): 32.0,
-('s4', 's2'): 16.0,
-('s4', 's3'): 56.0,
+('s3', 's4'): 56.0,
 ('s4', 's4'): -52.0}
 
 .. _integration:
@@ -108,12 +108,12 @@ or
 
 .. code-block:: shell
 
-    python setup.py install
+    python -m pip install .
 
 Supported Python Versions
 -------------------------
 
-Python 3.5, 3.6, 3.7, 3.8 and 3.9 are supported.
+Python 3.7, 3.8 and 3.9 are supported.
 
 Supported Operating Systems
 ---------------------------
@@ -131,12 +131,14 @@ Run all tests.
 
 .. code-block:: shell
 
+    export USE_TEST=1
     python -m unittest discover test
 
 Show coverage report.
 
 .. code-block:: shell
 
+    export USE_TEST=1
     coverage run -m unittest discover
     coverage html
 

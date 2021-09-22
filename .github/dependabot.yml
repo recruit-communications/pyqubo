@@ -1,0 +1,27 @@
+version: 2
+    
+updates:
+- package-ecosystem: docker
+  directory: "/"
+  schedule:
+    interval: "daily"
+  allow:
+      # Allow both direct and indirect updates for all packages
+      - dependency-type: "all"
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: "daily" 
+  allow:
+      # Allow both direct and indirect updates for all packages
+      - dependency-type: "all"
+      
+- package-ecosystem: pip 
+  directory: "/" 
+  insecure-external-code-execution: allow
+  versioning-strategy: auto
+  schedule:
+    interval: "daily"
+  allow:
+      # Allow both direct and indirect updates for all packages
+      - dependency-type: "all"

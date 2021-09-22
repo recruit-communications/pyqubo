@@ -1,6 +1,0 @@
-add_library(cpp_dimod STATIC)
-
-target_include_directories(cpp_dimod
-  PUBLIC ${PROJECT_SOURCE_DIR}
-)
-
