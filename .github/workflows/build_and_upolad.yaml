@@ -177,7 +177,7 @@ jobs:
           password: ${{ secrets.PYPI_PASSWORD }}
           
   upload_test_pypi:
-    needs: [build_wheels, build_sdist]
+    needs: [build_sdist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
@@ -188,3 +188,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_TEST_PASSWORD }}
+          repository_url: https://test.pypi.org/legacy/
