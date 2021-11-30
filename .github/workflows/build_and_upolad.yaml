@@ -80,7 +80,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        arch: [universal2]
+        arch: [arm64]
         python: [36, 37, 38, 39]
         exclude:
          - os: ubuntu-latest
@@ -119,7 +119,7 @@ jobs:
            CIBW_BUILD: "cp3*-macosx*"
            CIBW_BEFORE_ALL: ""
            CIBW_BEFORE_BUILD: "pip install git+https://github.com/scikit-build/scikit-build.git@master"
-           CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs arm64 -w {dest_dir} {wheel}"
+           #CIBW_REPAIR_WHEEL_COMMAND: "delocate-listdeps {wheel} && delocate-wheel --require-archs arm64 -w {dest_dir} {wheel}"
            
            
          - os: windows-latest
@@ -139,7 +139,7 @@ jobs:
           python-version: ${{env.Python_Version}}
       
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v1.12.0
+        uses: pypa/cibuildwheel@v2.3.0
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: cp${{matrix.python}}-*
