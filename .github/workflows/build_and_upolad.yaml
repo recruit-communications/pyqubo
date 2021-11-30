@@ -80,7 +80,7 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        arch: [arm64]
+        arch: [universal2]
         python: [36, 37, 38, 39]
         exclude:
          - os: ubuntu-latest
