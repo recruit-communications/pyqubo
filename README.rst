@@ -110,13 +110,13 @@ or
 Supported Python Versions
 -------------------------
 
-Python 3.7, 3.8 and 3.9 are supported.
+Python 3.6, 3.7, 3.8 and 3.9 are supported.
 
 Supported Operating Systems
 ---------------------------
 
 - Linux (32/64bit)
-- OSX (64bit, >=10.9)
+- OSX (x86_64(Intel)/arm64(Apple Silicon), 64bit, >=10.9)
 - Win (64bit)
 
 .. index-end-marker1
@@ -165,6 +165,14 @@ If you use PyQUBO in your research, please cite `this paper <https://journals.jp
 
 ::
 
+    @article{zaman2021pyqubo,
+        title={PyQUBO: Python Library for QUBO Creation},
+        author={Zaman, Mashiyat and Tanahashi, Kotaro and Tanaka, Shu},
+        journal={IEEE Transactions on Computers},
+        year={2021},
+        publisher={IEEE}
+    }
+
     @article{tanahashi2019application,
       title={Application of Ising Machines and a Software Development for Ising Machines},
       author={Tanahashi, Kotaro and Takayanagi, Shinichi and Motohashi, Tomomitsu and Tanaka, Shu},
@@ -191,3 +199,5 @@ Contribution
 ------------
 
 We welcome contributions to this project. See `CONTRIBUTING <./CONTRIBUTING.rst>`_.
+
+We thank the major contributors, @tail-island, @29rou.
