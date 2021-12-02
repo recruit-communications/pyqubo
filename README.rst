@@ -204,4 +204,4 @@ Contribution
 
 We welcome contributions to this project. See `CONTRIBUTING <./CONTRIBUTING.rst>`_.
 
-We thank the major contributors, @tail-island, @29rou.
+We thank all contributors, especially @tail-island and @29rou.
