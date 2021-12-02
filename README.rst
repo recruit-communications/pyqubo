@@ -165,7 +165,7 @@ This repository contains the source code of `cimod <https://github.com/OpenJij/c
 Citation
 --------
 
-If you use PyQUBO in your research, please cite `this paper <https://journals.jps.jp/doi/full/10.7566/JPSJ.88.061010>`_.
+If you use PyQUBO in your research, please cite the following papers (`[M. Zaman, et al., 2021] <https://ieeexplore.ieee.org/document/9369010>`_, `[K. Tanahashi, et al., 2019] <https://journals.jps.jp/doi/full/10.7566/JPSJ.88.061010>`_).
 
 ::
 
