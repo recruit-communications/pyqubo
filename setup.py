@@ -131,15 +131,7 @@ install_requires = [
 ]
 
 
-setup_requires = [
-    'numpy>=1.17.3, <=1.20.0',
-    'scikit-build>=0.11.1',
-    'wheel>=0.36.2',
-    'Cython>=0.29.21'
-    "cmake>=3.20.0",
-    'setuptools',
-    'nbsphinx'
-]
+setup_requires = []
 
 tests_require = [
     'coverage>=4.5.1',
