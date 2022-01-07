@@ -2,7 +2,7 @@ numpy==1.19.4; python_version >= '3.6'
 numpy==1.18.5; python_version == '3.5'
 Cython==0.29.21
 dimod==0.9.14
-dwave-neal==0.5.7
+dwave-neal==0.5.9
 Deprecated>=1.2.10
 six>=1.15.0
 cmake>=3.18.4
