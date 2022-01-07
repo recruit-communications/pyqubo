@@ -142,7 +142,6 @@ jobs:
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: cp${{matrix.python}}-*
-          CIBW_SKIP: "cp35-*"
           CIBW_ENVIRONMENT:
              CFLAGS="-flto -Ofast -pipe"
              CXXFLAGS="-flto -Ofast -pipe"
