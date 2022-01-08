@@ -81,7 +81,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x86_64, AMD64, i686, arm64]
-        python: [36, 37, 38, 39]
+        python: [36, 37, 38, 39, 310]
 
         exclude:
          - os: ubuntu-latest
@@ -138,15 +138,15 @@ jobs:
           python-version: ${{env.Python_Version}}
       
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v1.12.0
+        uses: pypa/cibuildwheel@v2.3.1
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: cp${{matrix.python}}-*
-          CIBW_SKIP: "cp35-*"
           CIBW_ENVIRONMENT:
              CFLAGS="-flto -Ofast -pipe"
              CXXFLAGS="-flto -Ofast -pipe"
           CIBW_ARCHS: ${{matrix.arch}}
+          CIBW_SKIP: "*-musllinux_*"
           CIBW_BEFORE_TEST: "pip install -r requirements.txt"
           CIBW_TEST_COMMAND: "python -m coverage run -m unittest discover {package}"
           CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
