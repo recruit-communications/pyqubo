@@ -146,6 +146,7 @@ jobs:
              CFLAGS="-flto -Ofast -pipe"
              CXXFLAGS="-flto -Ofast -pipe"
           CIBW_ARCHS: ${{matrix.arch}}
+          CIBW_SKIP: "*-musllinux_*"
           CIBW_BEFORE_TEST: "pip install -r requirements.txt"
           CIBW_TEST_COMMAND: "python -m coverage run -m unittest discover {package}"
           CIBW_DEPENDENCY_VERSIONS: ${{ env.CIBW_DEPENDENCY_VERSIONS }}
