@@ -123,7 +123,7 @@ packages = ['pyqubo', 'pyqubo.integer', 'pyqubo.utils']
 
 install_requires = [
     'numpy>=1.17.3',
-    'dimod>=0.9.14, <0.11',
+    'dimod>=0.9.14, <0.12',
     'dwave-neal>=0.5.7',
     'Deprecated>=1.2.12',
     #'jij-cimod>=1.0.1'
