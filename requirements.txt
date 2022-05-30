@@ -1,6 +1,6 @@
 numpy>=1.17.3
 Cython==0.29.21
-dimod>=0.9.14, <0.11
+dimod>=0.9.14, <0.12
 dwave-neal>=0.5.7
 Deprecated>=1.2.10
 six>=1.15.0
