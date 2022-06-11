@@ -12,6 +12,7 @@
 
 #include "abstract_syntax_tree.hpp"
 #include "compiler.hpp"
+#include "compiler2.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -170,7 +171,8 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         }();
 
         return solution.sample().at(name_and_indexes);
-      });
+      })
+      .def("eval", &pyqubo::solution::evaluate);
   py::class_<pyqubo::model>(m, "Model")
       .def_property_readonly("variables", &pyqubo::model::variable_names)
       .def(

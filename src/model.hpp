@@ -17,169 +17,85 @@
 #include <robin_hood.h>
 
 #include "abstract_syntax_tree.hpp"
+#include "compiler.hpp"
+#include "product.hpp"
+#include "variables.hpp"
 
-namespace pyqubo {
-  class variables final {
-    robin_hood::unordered_map<std::string, int> _indexes;
-    robin_hood::unordered_map<int, std::string> _names;
-
-  public:
-    variables() noexcept : _indexes{}, _names{} {
-      ;
-    }
-
-    auto index(const std::string& variable_name) noexcept {
-      const auto [it, emplaced] = _indexes.emplace(variable_name, std::size(_indexes));
-
-      if (emplaced) {
-        _names.emplace(it->second, variable_name);
-      }
-
-      return it->second;
-    }
-
-    const auto& name(int index) const noexcept {
-      return _names.find(index)->second;
-    }
-
-    auto names() const noexcept {
-      auto result = std::vector<std::string>(std::size(_names));
-
-      for (const auto& [index, name] : _names) {
-        result[index] = name;
-      }
-
-      return result;
-    }
-  };
-
-  using indexes = boost::container::small_vector<int, 2>;
-
-  class product final {
-    pyqubo::indexes _indexes;
-    std::size_t _hash;
-
-  public:
-    product(const pyqubo::indexes& indexes) noexcept : _indexes(indexes), _hash(boost::hash_range(std::begin(indexes), std::end(indexes))) {
-      ;
-    }
-
-    product(std::initializer_list<int> init) noexcept : product(pyqubo::indexes(init)) {
-      ;
-    }
-
-    const auto& indexes() const noexcept {
-      return _indexes;
-    }
-
-    friend std::hash<product>;
-  };
-
-  inline auto operator*(const product& product_1, const product& product_2) noexcept {
-    return product([&] {
-      auto result = indexes{};
-
-      std::set_union(std::begin(product_1.indexes()), std::end(product_1.indexes()),
-                     std::begin(product_2.indexes()), std::end(product_2.indexes()),
-                     std::back_inserter(result));
-
-      return result;
-    }());
-  }
-
-  inline bool operator==(const product& product_1, const product& product_2) noexcept {
-    return product_1.indexes() == product_2.indexes();
-  }
-}
-
-namespace std {
-  template <>
-  struct hash<pyqubo::product> {
-    auto operator()(const pyqubo::product& product) const noexcept {
-      return product._hash;
-    }
-  };
-}
 
 namespace pyqubo {
   // std::variantを使用してzeroやmonomialな場合の処理削減をやってみたのですが、パフォーマンスは向上しませんでした。なので、unordered_map一本でやります。
   // よく考えれば、要素数が0の場合の処理とかはunordered_mapの中でやっていそうですし。。。
 
-  using polynomial = robin_hood::unordered_map<product, std::shared_ptr<const expression>>;
-
-  inline auto operator+(const polynomial& polynomial_1, const polynomial& polynomial_2) noexcept {
-    auto result = polynomial_1;
-
-    for (const auto& [product, coefficient] : polynomial_2) {
-      const auto [it, emplaced] = result.emplace(product, coefficient);
-
-      if (!emplaced) {
-        it->second = it->second + coefficient;
-      }
-    }
-
-    return result;
-  }
-
-  inline auto operator*(const polynomial& polynomial_1, const polynomial& polynomial_2) noexcept {
-    auto result = polynomial{};
-
-    for (const auto& [product_1, coefficient_1] : polynomial_1) {
-      for (const auto& [product_2, coefficient_2] : polynomial_2) {
-        const auto [it, emplaced] = result.emplace(product_1 * product_2, coefficient_1 * coefficient_2);
-
-        if (!emplaced) {
-          it->second = it->second + coefficient_1 * coefficient_2;
-        }
-      }
-    }
-
-    return result;
-  }
-
   class evaluate final {
     std::unordered_map<std::string, double> _feed_dict;
 
   public:
-    evaluate(const std::unordered_map<std::string, double>& feed_dict) noexcept : _feed_dict(feed_dict) {
+    evaluate(const std::unordered_map<std::string, double>& feed_dict) : _feed_dict(feed_dict) {
       ;
     }
 
-    auto operator()(const std::shared_ptr<const expression>& expression) const noexcept {
+    auto operator()(const std::shared_ptr<const expression>& expression) const {
       return visit<double>(*this, expression);
     }
 
-    auto operator()(const std::shared_ptr<const add_operator>& add_operator) const noexcept {
+    auto operator()(const std::shared_ptr<const add_operator>& add_operator) const {
       return std::accumulate(std::begin(add_operator->children()), std::end(add_operator->children()), 0.0, [&](const auto& acc, const auto& child) {
         return acc + visit<double>(*this, child);
       });
     }
 
-    auto operator()(const std::shared_ptr<const mul_operator>& mul_operator) const noexcept {
+    auto operator()(const std::shared_ptr<const mul_operator>& mul_operator) const {
       return visit<double>(*this, mul_operator->lhs()) * visit<double>(*this, mul_operator->rhs());
     }
 
-    auto operator()(const std::shared_ptr<const placeholder_variable>& place_holder_variable) const noexcept {
-      return _feed_dict.at(place_holder_variable->name());
+    auto operator()(const std::shared_ptr<const placeholder_variable>& place_holder_variable) const {
+      
+      auto found = _feed_dict.find(place_holder_variable->name());
+      if(found != _feed_dict.end()){
+        return found->second;
+      }else{
+        std::string err_msg = "the value of " + place_holder_variable->name() + " is not provided in feed_dict.";
+        throw std::invalid_argument(err_msg);
+        return 0.0;
+      }
     }
 
-    auto operator()(const std::shared_ptr<const user_defined_expression>& user_defined_expression) const noexcept {
+    auto operator()(const std::shared_ptr<const user_defined_expression>& user_defined_expression) const {
       return visit<double>(*this, user_defined_expression->expression());
     }
 
-    auto operator()(const std::shared_ptr<const numeric_literal>& numeric_literal) const noexcept {
+    auto operator()(const std::shared_ptr<const numeric_literal>& numeric_literal) const {
       return numeric_literal->value();
     }
   };
+
 
   class solution final {
     std::unordered_map<std::string, int> _sample;
     double _energy;
     std::unordered_map<std::string, double> _sub_hamiltonians;
     std::unordered_map<std::string, std::pair<bool, double>> _constraints;
+    const std::unordered_map<std::string, double> _feed_dict;
+    const std::string _vartype;
+    variables _variables;
 
   public:
-    solution(const std::unordered_map<std::string, int> sample, double energy, const std::unordered_map<std::string, double>& sub_hamiltonians, const std::unordered_map<std::string, std::pair<bool, double>>& constraints) noexcept : _sample(sample), _energy(energy), _sub_hamiltonians(sub_hamiltonians), _constraints(constraints) {
+    solution(
+      const std::unordered_map<std::string, int> sample,
+      double energy,
+      const std::unordered_map<std::string, double>& sub_hamiltonians,
+      const std::unordered_map<std::string, std::pair<bool, double>>& constraints,
+      const std::unordered_map<std::string, double> feed_dict,
+      const std::string vartype,
+      variables variables
+    ) noexcept :
+      _sample(sample),
+      _energy(energy),
+      _sub_hamiltonians(sub_hamiltonians),
+      _constraints(constraints),
+      _feed_dict(feed_dict),
+      _vartype(vartype),
+      _variables(variables) {
       ;
     }
 
@@ -197,6 +113,26 @@ namespace pyqubo {
 
     const auto& constraints() const noexcept {
       return _constraints;
+    }
+
+    auto evaluate(const std::shared_ptr<const expression>& expression) const {
+
+      auto variables = pyqubo::variables();
+      const auto [polynomial, sub_hamiltonians, constraints] = pyqubo::expand()(expression, &variables);
+
+      const auto evaluate = pyqubo::evaluate(_feed_dict);
+      const auto evaluate_polynomial = [&](const auto& polynomial) {
+        return std::accumulate(std::begin(polynomial), std::end(polynomial), 0.0, [&](const auto acc, const auto& term) {
+          return acc +
+                 std::accumulate(std::begin(term.first.indexes()), std::end(term.first.indexes()), 1, [&](const auto acc, const auto& index) {
+                   const auto value = _sample.at(_variables.name(index));
+
+                   return acc * (_vartype == "BINARY" ? value : (value + 1) / 2);
+                 }) * evaluate(term.second);
+        });
+      };
+      const auto energy = evaluate_polynomial(polynomial);
+      return energy;
     }
   };
 
@@ -220,7 +156,8 @@ namespace pyqubo {
     }
 
     template <typename T = std::string>
-    auto to_bqm_parameters(const std::unordered_map<std::string, double>& feed_dict) const noexcept { // 不格好でごめんなさい。PythonのBinaryQuadraticModelを作成可能にするために、このメンバ関数でBinaryQuadraticModelの引数を生成します。
+    auto to_bqm_parameters(const std::unordered_map<std::string, double>& feed_dict) const { // 不格好でごめんなさい。PythonのBinaryQuadraticModelを作成可能にするために、このメンバ関数でBinaryQuadraticModelの引数を生成します。
+      //throw std::runtime_error("test to_qubo.");
       const auto evaluate = pyqubo::evaluate(feed_dict);
 
       auto linear = cimod::Linear<T, double>{};
@@ -252,7 +189,7 @@ namespace pyqubo {
     }
 
     template <typename T = std::string>
-    auto to_bqm(const std::unordered_map<std::string, double>& feed_dict, cimod::Vartype vartype) const noexcept {
+    auto to_bqm(const std::unordered_map<std::string, double>& feed_dict, cimod::Vartype vartype) const {
       const auto [linear, quadratic, offset] = to_bqm_parameters<T>(feed_dict);
 
       return cimod::BinaryQuadraticModel<T, double, cimod::Dense>(linear, quadratic, offset, vartype);
@@ -277,7 +214,7 @@ namespace pyqubo {
     }
 
     template <typename T = std::string>
-    auto decode_sample(const std::unordered_map<T, int>& sample, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const noexcept {
+    auto decode_sample(const std::unordered_map<T, int>& sample, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const {
       const auto evaluate = pyqubo::evaluate(feed_dict);
       const auto evaluate_polynomial = [&](const auto& polynomial, const auto& sample) {
         return std::accumulate(std::begin(polynomial), std::end(polynomial), 0.0, [&](const auto acc, const auto& term) {
@@ -313,11 +250,14 @@ namespace pyqubo {
             }
 
             return result;
-          }());
+          }(),
+          feed_dict,
+          vartype,
+          _variables);
     }
 
     template <typename T = std::string>
-    auto decode_samples(const std::vector<std::unordered_map<T, int>>& samples, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const noexcept {
+    auto decode_samples(const std::vector<std::unordered_map<T, int>>& samples, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const {
       auto result = std::vector<solution>{};
 
       std::transform(std::begin(samples), std::end(samples), std::back_inserter(result), [&](const auto& sample) {
@@ -329,7 +269,7 @@ namespace pyqubo {
   };
 
   template <>
-  inline auto model::to_bqm_parameters<int>(const std::unordered_map<std::string, double>& feed_dict) const noexcept { // メンバ関数を特殊化するときは、クラスの外に書かなければなりません。。。
+  inline auto model::to_bqm_parameters<int>(const std::unordered_map<std::string, double>& feed_dict) const { // メンバ関数を特殊化するときは、クラスの外に書かなければなりません。。。
     const auto evaluate = pyqubo::evaluate(feed_dict);
 
     auto linear = cimod::Linear<int, double>{};
@@ -361,7 +301,7 @@ namespace pyqubo {
   }
 
   template <>
-  inline auto model::decode_sample<int>(const std::unordered_map<int, int>& sample, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const noexcept {
+  inline auto model::decode_sample<int>(const std::unordered_map<int, int>& sample, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const {
     const auto evaluate = pyqubo::evaluate(feed_dict);
     const auto evaluate_polynomial = [&](const auto& polynomial, const auto& sample) {
       return std::accumulate(std::begin(polynomial), std::end(polynomial), 0.0, [&](const auto acc, const auto& term) {
@@ -405,6 +345,9 @@ namespace pyqubo {
           }
 
           return result;
-        }());
+        }(),
+        feed_dict,
+        vartype,
+        _variables);
   }
 }

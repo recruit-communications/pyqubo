@@ -434,7 +434,7 @@ namespace pyqubo {
   }
 
   template <typename Result, typename Functor>
-  Result visit(Functor& functor, const std::shared_ptr<const expression>& expression) noexcept {
+  Result visit(Functor& functor, const std::shared_ptr<const expression>& expression) {
     switch (expression->expression_type()) {
     case expression_type::add_operator:
       return functor(std::static_pointer_cast<const add_operator>(expression));

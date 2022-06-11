@@ -13,7 +13,8 @@
 #include <robin_hood.h>
 
 #include "abstract_syntax_tree.hpp"
-#include "model.hpp"
+#include "product.hpp"
+#include "variables.hpp"
 
 namespace pyqubo {
   // Expand to polynomial.
@@ -37,8 +38,6 @@ namespace pyqubo {
     }
 
     auto operator()(const std::shared_ptr<const add_operator>& add_operator) noexcept {
-      // 汚いコードでごめんなさい。パフォーマンスのためなので、ご容赦を。
-
       const auto& merge = [](auto& polyominal, const auto& other) {
         for (const auto& [product, coefficient] : other) {
           const auto [it, emplaced] = polyominal.emplace(product, coefficient);
@@ -208,16 +207,5 @@ namespace pyqubo {
     }
 
     return result;
-  }
-
-  // Compile.
-
-  inline auto compile(const std::shared_ptr<const expression>& expression, double strength) noexcept {
-    auto variables = pyqubo::variables();
-
-    const auto [polynomial, sub_hamiltonians, constraints] = expand()(expression, &variables);
-    const auto quadratic_polynomial = convert_to_quadratic(polynomial, strength, &variables);
-
-    return model(quadratic_polynomial, sub_hamiltonians, constraints, variables);
   }
 }
