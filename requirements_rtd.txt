@@ -6,7 +6,7 @@ Deprecated>=1.2.10
 six>=1.15.0
 numpy==1.19.4; python_version >= '3.6'
 numpy==1.18.5; python_version == '3.5'
-dimod==0.9.14
+dimod==0.11.3
 nbsphinx>=0.8.3; python_version >= '3.8'
 nbsphinx==0.3.5; python_version < '3.8'
 docutils<0.17,>=0.12; python_version < '3.8'
