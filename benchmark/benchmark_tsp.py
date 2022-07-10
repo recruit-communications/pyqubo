@@ -19,36 +19,116 @@ def tsp_with_timeout(n_city, timeout_sec):
         x = Array.create('c', (n_city, n_city), 'BINARY')
 
         # Constraint not to visit more than two cities at the same time.
+        """
         time_const = 0.0
         for i in range(n_city):
             # If you wrap the hamiltonian by Const(...), this part is recognized as constraint
             time_const += Constraint((sum(x[i, j] for j in range(n_city)) - 1)**2, label="time{}".format(i))
+        """
 
         # Constraint not to visit the same city more than twice.
+        """
         city_const = 0.0
         for j in range(n_city):
             city_const += Constraint((sum(x[i, j] for i in range(n_city)) - 1)**2, label="city{}".format(j))
-        
+        """
+
         # distance of route
+        feed_dict = {}
+        
         distance = 0.0
         for i in range(n_city):
             for j in range(n_city):
                 for k in range(n_city):
                     # we set the constant distance
                     d_ij = 10
-                    distance += d_ij * x[k, i] * x[(k+1)%n_city, j]
+                    #label = f"d_{i}_{j}"
+                    #feed_dict[label] = d_ij
+                    #distance += Placeholder(label) * x[k, i] * x[(k + 1) % n_city, j]
+                    #distance += d_ij * x[k, i] * x[(k + 1) % n_city, j]
+                    distance += d_ij * x[k, i]
+        
         
         # Construct hamiltonian
         A = Placeholder("A")
-        H = distance + A * (time_const + city_const)
+        H = distance
+
+        feed_dict["A"] = 1.0
 
         # Compile model
         t1 = time.time()
         model = H.compile()
-        qubo, offset = model.to_qubo(index_label=True, feed_dict={"A": 2.0})
         t2 = time.time()
+        qubo = model.to_qubo(index_label=False, feed_dict=feed_dict)
+        t3 = time.time()
 
-        return t1-t0, t2-t1
+        print("len(qubo)", len(qubo))
+
+        return t1-t0, t2-t1, t3-t2
+    
+    return tsp(n_city)
+
+    @timeout(timeout_sec)
+    def tsp_old(n_city):
+        t0 = time.time()
+        x = Array.create('c', (n_city, n_city), 'BINARY')
+
+        # Constraint not to visit more than two cities at the same time.
+        time_const = 0.0
+        for i in range(n_city):
+            # If you wrap the hamiltonian by Const(...), this part is recognized as constraint
+            time_const += Constraint((sum(x[i, j] for j in range(n_city)) - 1)**2, label="time{}".format(i))
+            """
+            tmp = 0
+            for j in range(n_city):
+                tmp += x[i, j]
+            tmp += (-1)
+            time_const += tmp**2
+            """
+
+        # Constraint not to visit the same city more than twice.
+        city_const = 0.0
+        for j in range(n_city):
+            city_const += Constraint((sum(x[i, j] for i in range(n_city)) - 1)**2, label="city{}".format(j))
+            """
+            tmp = 0
+            for i in range(n_city):
+                tmp += x[i, j]
+            tmp += (-1)
+            city_const += tmp**2
+            """
+        
+        # distance of route
+        feed_dict = {}
+        """
+        distance = 0.0
+        for i in range(n_city):
+            for j in range(n_city):
+                for k in range(n_city):
+                    # we set the constant distance
+                    d_ij = 10
+                    #label = f"d_{i}_{j}"
+                    #feed_dict[label] = d_ij
+                    #distance += Placeholder(label) * x[k, i] * x[(k + 1) % n_city, j]
+                    distance += d_ij * x[k, i] * x[(k + 1) % n_city, j]
+        """
+        
+        # Construct hamiltonian
+        A = Placeholder("A")
+        H =  A * (time_const + city_const)
+
+        feed_dict["A"] = 1.0
+
+        # Compile model
+        t1 = time.time()
+        model = H.compile()
+        t2 = time.time()
+        qubo = model.to_qubo(index_label=False, feed_dict=feed_dict)
+        t3 = time.time()
+
+        print("len(qubo)", len(qubo))
+
+        return t1-t0, t2-t1, t3-t2
     
     return tsp(n_city)
 
@@ -56,10 +136,10 @@ def tsp_with_timeout(n_city, timeout_sec):
 def measure(step, init_size, max_size, timeout):
     for n_city in range(init_size, max_size+step, step):
         try:
-            max_memory, (express_time, compile_time) = memory_usage((tsp_with_timeout, (n_city, timeout)), max_usage=True, retval=True)
+            max_memory, (express_time, compile_time, to_qubo_time) = memory_usage((tsp_with_timeout, (n_city, timeout)), max_usage=True, retval=True)
             logger.info("Memory usage is {} MB for n_city={}".format(max_memory, n_city))
-            logger.info("Elapsed time is {} sec (expression: {} sec, compile: {} sec), for n_city={}".format(
-                express_time+compile_time, express_time, compile_time, n_city))
+            logger.info("Elapsed time is {} sec (expression: {} sec, compile: {} sec, to_qubo {} sec), for n_city={}".format(
+                express_time+compile_time+to_qubo_time, express_time, compile_time, to_qubo_time, n_city))
 
         except TimeoutError as e:
             logger.error("TimeoutError: Elapsed time exceeded {} sec for n_city={}".format(timeout, n_city))

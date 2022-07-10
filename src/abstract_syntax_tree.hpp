@@ -6,6 +6,8 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <numeric>
+
 
 #include <boost/functional/hash.hpp>
 

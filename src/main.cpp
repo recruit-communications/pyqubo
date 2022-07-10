@@ -191,11 +191,14 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
           py::arg("index_label") = false, py::arg("feed_dict") = std::unordered_map<std::string, double>{})
       .def(
           "to_qubo", [](const pyqubo::model& model, bool index_label, const std::unordered_map<std::string, double>& feed_dict) {
+            return model.to_qubo<int>(feed_dict, cimod::Vartype::BINARY);
+            /*
             if (!index_label) {
               return py::cast(model.to_bqm<std::string>(feed_dict, cimod::Vartype::BINARY).to_qubo());
             } else {
+              //return model.to_qubo<int>(feed_dict, cimod::Vartype::BINARY);
               return py::cast(model.to_bqm<int>(feed_dict, cimod::Vartype::BINARY).to_qubo());
-            }
+            }*/
           },
           py::arg("index_label") = false, py::arg("feed_dict") = std::unordered_map<std::string, double>{})
       .def(

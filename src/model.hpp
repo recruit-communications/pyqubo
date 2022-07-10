@@ -196,6 +196,13 @@ namespace pyqubo {
     }
 
     template <typename T = std::string>
+    auto to_qubo(const std::unordered_map<std::string, double>& feed_dict, cimod::Vartype vartype) const {
+      const auto [linear, quadratic, offset] = to_bqm_parameters<T>(feed_dict);
+
+      return quadratic;
+    }
+
+    template <typename T = std::string>
     auto energy(const std::unordered_map<T, int>& sample, const std::string& vartype, const std::unordered_map<std::string, double>& feed_dict) const noexcept {
       return to_bqm<T>(feed_dict, to_cimod_vartype(vartype)).energy([&] {
         // BinaryQuadraticModelの引数でvartypeを設定しても、energyでは使われないみたい。。。Determine the energy of the specified sample of a binary quadratic modelって書いてある。
