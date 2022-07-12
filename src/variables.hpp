@@ -62,6 +62,18 @@ namespace pyqubo {
     }
   };
 
+  inline auto multiply(const product* product_1, const product* product_2) noexcept {
+    return new product([&] {
+      auto result = indexes{};
+
+      std::set_union(std::begin(product_1->indexes()), std::end(product_1->indexes()),
+                     std::begin(product_2->indexes()), std::end(product_2->indexes()),
+                     std::back_inserter(result));
+
+      return result;
+    }());
+  }
+
   inline auto operator*(const product& product_1, const product& product_2) noexcept {
     return product([&] {
       auto result = indexes{};

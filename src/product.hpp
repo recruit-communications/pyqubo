@@ -30,6 +30,18 @@ namespace pyqubo {
         ;
         }
 
+        std::string to_string() const {
+            std::stringstream ss;
+            ss << "[";
+            for(size_t i = 0; i < _indexes.size(); ++i){
+                if(i != 0) ss << ",";
+                ss << _indexes[i];
+            }
+            ss << "]";
+            std::string s = ss.str();
+            return s;
+        }
+
         const auto& indexes() const noexcept {
         return _indexes;
         }
