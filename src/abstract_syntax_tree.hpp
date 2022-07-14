@@ -8,8 +8,9 @@
 #include <vector>
 #include <numeric>
 
-
 #include <boost/functional/hash.hpp>
+#include "linkedlist.hpp"
+
 
 namespace pyqubo {
   enum class expression_type {
@@ -55,17 +56,26 @@ namespace std {
 }
 
 namespace pyqubo {
+
+  using add_list = LinkedList<shared_ptr<expression>>;
+
   class add_operator final : public expression {
-    std::vector<std::shared_ptr<const expression>> _children;
+    //std::vector<std::shared_ptr<const expression>> _children;
+    pyqubo::add_list* node;
 
   public:
     add_operator(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept : _children{lhs, rhs} {
       ;
     }
 
-    const auto& children() const noexcept {
-      return _children;
+    add_list* create_node(shared_ptr<add_operator> add, shared_ptr<expression> new_child){
+        AddList* new_node = new AddList(new_child, add->node);
+        return new_node;
     }
+
+    /*const auto& children() const noexcept {
+      return _children;
+    }*/
 
     auto add_child(const std::shared_ptr<const expression>& expression) noexcept {
       _children.emplace_back(expression);
@@ -420,18 +430,23 @@ namespace pyqubo {
   }
 
   inline std::shared_ptr<const expression> operator*(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
-    if (lhs->expression_type() == expression_type::numeric_literal && rhs->expression_type() == expression_type::numeric_literal) {
-      return std::make_shared<numeric_literal>(std::static_pointer_cast<const numeric_literal>(lhs)->value() * std::static_pointer_cast<const numeric_literal>(rhs)->value());
+    if(lhs->expression_type() != expression_type::numeric_literal && rhs->expression_type() != expression_type::numeric_literal){
+      return std::make_shared<const mul_operator>(lhs, rhs);
+    }else if (lhs->expression_type() == expression_type::numeric_literal){
+      if (rhs->expression_type() == expression_type::numeric_literal) {
+        return std::make_shared<numeric_literal>(std::static_pointer_cast<const numeric_literal>(lhs)->value() * std::static_pointer_cast<const numeric_literal>(rhs)->value());
+      }
+      if (std::static_pointer_cast<const numeric_literal>(lhs)->value() == 1) {
+        return rhs;
+      }
+    } else if (rhs->expression_type() == expression_type::numeric_literal){
+      if (std::static_pointer_cast<const numeric_literal>(rhs)->value() == 1) {
+        return lhs;
+      }
     }
+  }
 
-    if (lhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(lhs)->value() == 1) {
-      return rhs;
-    }
-
-    if (rhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(rhs)->value() == 1) {
-      return lhs;
-    }
-
+  inline std::shared_ptr<const expression> multiply_express(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
     return std::make_shared<const mul_operator>(lhs, rhs);
   }
 

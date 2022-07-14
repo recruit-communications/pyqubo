@@ -24,8 +24,9 @@ namespace pyqubo {
     auto variables = pyqubo::variables();
 
     const auto [polynomial, sub_hamiltonians, constraints] = expand()(expression, &variables);
-    const auto quadratic_polynomial = convert_to_quadratic(polynomial, strength, &variables);
-
-    return model(quadratic_polynomial, sub_hamiltonians, constraints, variables);
+    
+    //std::cout << "compile" << polynomial.to_string() << std::endl;
+    //const auto quadratic_polynomial = convert_to_quadratic(*polynomial.to_multi().terms, strength, &variables);
+    return model(polynomial.get_terms(), sub_hamiltonians, constraints, variables);
   }
 }

@@ -42,6 +42,11 @@ namespace pyqubo {
             this->prd = new product({});
         }
 
+        poly(){
+            this->coeff = std::make_shared<const pyqubo::numeric_literal>(0);
+            this->prd = new product({});
+        }
+
         poly(Coeff coeff, product* prd): coeff(coeff), prd(prd){
         }
 
@@ -50,6 +55,14 @@ namespace pyqubo {
                 return poly(new pyqubo::polynomial({{*prd, coeff}}));
             }else{
                 return *this;
+            }
+        }
+
+        pyqubo::polynomial* get_terms() const {
+            if(poly_type == poly_type::single_poly){
+                return new pyqubo::polynomial({{*prd, coeff}});
+            }else{
+                return terms;
             }
         }
 
@@ -95,15 +108,16 @@ namespace pyqubo {
     }
 
     auto& add_multi_single(poly& multi_poly, poly& single_poly){
+        //std::cout << "add_multi_single: " << multi_poly.to_string() << " <= " << single_poly.to_string() << "\n";
         const auto [it, emplaced] = multi_poly.terms->emplace(*(single_poly.prd), single_poly.coeff);
-        if (!emplaced) {
+        if(!emplaced){
             it->second = it->second + single_poly.coeff;
         }
         return multi_poly;
     }
 
     auto& add_multi_multi(const poly& multi_poly_1, const poly& multi_poly_2) {
-        printf("add_multi_multi");
+        //printf("add_multi_multi");
         for (const auto& [product, coefficient] : *multi_poly_2.terms) {
             const auto [it, emplaced] = multi_poly_1.terms->emplace(product, coefficient);
             if (!emplaced) {
@@ -135,14 +149,14 @@ namespace pyqubo {
                 return poly(terms);
             }
         }else if(poly_1.poly_type == poly_type::multi_poly && poly_2.poly_type == poly_type::single_poly){
-            printf("operator+ add_multi_single\n");
+            //printf("operator+ add_multi_single\n");
             return add_multi_single(poly_1, poly_2);
 
         }else if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::multi_poly){
-            printf("operator+ add_multi_single\n");
+            //printf("operator+ add_multi_single\n");
             return add_multi_single(poly_2, poly_1);
         }else{
-            printf("operator+ add_multi_multi\n");
+            //printf("operator+ add_multi_multi\n");
             if(poly_1.size() > poly_2.size()){
                 return add_multi_multi(poly_1, poly_2);
             }else{

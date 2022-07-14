@@ -119,10 +119,11 @@ namespace pyqubo {
 
       auto variables = pyqubo::variables();
       const auto [polynomial, sub_hamiltonians, constraints] = pyqubo::expand()(expression, &variables);
+      auto& poly_terms = *polynomial.terms;
 
       const auto evaluate = pyqubo::evaluate(_feed_dict);
-      const auto evaluate_polynomial = [&](const auto& polynomial) {
-        return std::accumulate(std::begin(polynomial), std::end(polynomial), 0.0, [&](const auto acc, const auto& term) {
+      const auto evaluate_polynomial = [&](const auto& poly_terms) {
+        return std::accumulate(std::begin(poly_terms), std::end(poly_terms), 0.0, [&](const auto acc, const auto& term) {
           return acc +
                  std::accumulate(std::begin(term.first.indexes()), std::end(term.first.indexes()), 1, [&](const auto acc, const auto& index) {
                    const auto value = _sample.at(_variables.name(index));
@@ -131,15 +132,15 @@ namespace pyqubo {
                  }) * evaluate(term.second);
         });
       };
-      const auto energy = evaluate_polynomial(polynomial);
+      const auto energy = evaluate_polynomial(poly_terms);
       return energy;
     }
   };
 
   class model final {
-    polynomial _quadratic_polynomial;
-    robin_hood::unordered_map<std::string, polynomial> _sub_hamiltonians;
-    robin_hood::unordered_map<std::string, std::pair<polynomial, std::function<bool(double)>>> _constraints;
+    const polynomial* _quadratic_polynomial;
+    robin_hood::unordered_map<std::string, poly> _sub_hamiltonians; // コンパイル中にpolyのコピーをしたかチェック
+    robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>> _constraints;
     variables _variables;
 
     static auto to_cimod_vartype(const std::string vartype) noexcept {
@@ -147,7 +148,7 @@ namespace pyqubo {
     }
 
   public:
-    model(const polynomial& quadratic_polynomial, const robin_hood::unordered_map<std::string, polynomial>& sub_hamiltonians, const robin_hood::unordered_map<std::string, std::pair<polynomial, std::function<bool(double)>>>& constraints, const variables& variables) noexcept : _quadratic_polynomial(quadratic_polynomial), _sub_hamiltonians(sub_hamiltonians), _constraints(constraints), _variables(variables) {
+    model(const polynomial* quadratic_polynomial, const robin_hood::unordered_map<std::string, poly>& sub_hamiltonians, const robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>>& constraints, const variables& variables) noexcept : _quadratic_polynomial(quadratic_polynomial), _sub_hamiltonians(sub_hamiltonians), _constraints(constraints), _variables(variables) {
       ;
     }
 
@@ -164,7 +165,7 @@ namespace pyqubo {
       auto quadratic = cimod::Quadratic<T, double>{};
       auto offset = 0.0;
 
-      for (const auto& [product, coefficient] : _quadratic_polynomial) {
+      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
         const auto coefficient_value = evaluate(coefficient);
 
         switch (std::size(product.indexes())) {
@@ -241,7 +242,7 @@ namespace pyqubo {
             auto result = std::unordered_map<std::string, double>{};
 
             for (const auto& [name, polynomial] : _sub_hamiltonians) {
-              result.emplace(name, evaluate_polynomial(polynomial, sample));
+              result.emplace(name, evaluate_polynomial(*polynomial.get_terms(), sample));
             }
 
             return result;
@@ -251,7 +252,7 @@ namespace pyqubo {
 
             for (const auto& [name, pair] : _constraints) {
               const auto& [polynomial, condition] = pair;
-              const auto energy = evaluate_polynomial(polynomial, sample);
+              const auto energy = evaluate_polynomial(*polynomial.get_terms(), sample);
 
               result.emplace(name, std::pair{condition(energy), energy});
             }
@@ -283,7 +284,7 @@ namespace pyqubo {
     auto quadratic = cimod::Quadratic<int, double>{};
     auto offset = 0.0;
 
-    for (const auto& [product, coefficient] : _quadratic_polynomial) {
+    for (const auto& [product, coefficient] : *_quadratic_polynomial) {
       const auto coefficient_value = evaluate(coefficient);
 
       switch (std::size(product.indexes())) {
@@ -336,7 +337,7 @@ namespace pyqubo {
           auto result = std::unordered_map<std::string, double>{};
 
           for (const auto& [name, polynomial] : _sub_hamiltonians) {
-            result.emplace(name, evaluate_polynomial(polynomial, sample));
+            result.emplace(name, evaluate_polynomial(*polynomial.get_terms(), sample));
           }
 
           return result;
@@ -346,7 +347,7 @@ namespace pyqubo {
 
           for (const auto& [name, pair] : _constraints) {
             const auto& [polynomial, condition] = pair;
-            const auto energy = evaluate_polynomial(polynomial, sample);
+            const auto energy = evaluate_polynomial(*polynomial.get_terms(), sample);
 
             result.emplace(name, std::pair{condition(energy), energy});
           }

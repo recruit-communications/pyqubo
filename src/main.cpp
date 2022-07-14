@@ -19,6 +19,7 @@ using namespace py::literals;
 
 PYBIND11_MODULE(cpp_pyqubo, m) {
   m.doc() = "pyqubo C++ binding";
+  
 
   py::class_<pyqubo::expression, std::shared_ptr<pyqubo::expression>>(m, "Base")
       .def("__add__", [](const std::shared_ptr<const pyqubo::expression>& expression, const std::shared_ptr<const pyqubo::expression>& other) {
@@ -84,6 +85,11 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def("__repr__", &pyqubo::expression::to_string);
 
   py::class_<pyqubo::add_operator, std::shared_ptr<pyqubo::add_operator>, pyqubo::expression>(m, "Add")
+      .def("__add__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
+        add_operator->add_child(other);
+
+        return add_operator;
+      })
       .def("__iadd__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
         add_operator->add_child(other);
 
