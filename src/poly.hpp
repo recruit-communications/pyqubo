@@ -164,7 +164,7 @@ namespace pyqubo {
             }
         }
     }
-
+/*
     class poly_base {
     public:
         virtual pyqubo::poly_type poly_type() const noexcept = 0;
@@ -203,10 +203,6 @@ namespace pyqubo {
         }
     };
 
-    /*poly merge(multi_poly poly_left, multi_poly poly_right){
-
-    }*/
-
     poly_base* merge(poly_base* poly_left, poly_base* poly_right){
         //single_poly(poly_left.coeff * poly_right.coeff)
         if(poly_left->poly_type() == poly_type::single_poly && poly_right->poly_type() == poly_type::single_poly){
@@ -221,4 +217,5 @@ namespace pyqubo {
     single_poly* merge(single_poly* poly_left, single_poly* poly_right){
         return new single_poly(poly_left->coeff * poly_right->coeff);
     }
+    */
 }

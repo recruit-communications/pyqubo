@@ -20,8 +20,6 @@
 namespace pyqubo {
   // Expand to polynomial.
 
-  // TODO: ペナルティを最後ではなく途中で足し合わせられるか検討する。もし途中で足し合わせられるなら、戻り値が一つになって嬉しい。
-
   class expand final {
     robin_hood::unordered_map<std::string, poly> _sub_hamiltonians;
     robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>> _constraints;
@@ -34,31 +32,26 @@ namespace pyqubo {
       _variables = variables;
 
       auto [polynomial, penalty] = visit<std::tuple<poly, poly>>(*this, expression);
-      //polynomial = polynomial + penalty;
-      //std::cout << polynomial.to_string() << std::endl;
-
+      polynomial = polynomial + penalty;
       return std::tuple{polynomial, _sub_hamiltonians, _constraints};
     }
 
     auto operator()(const std::shared_ptr<const add_operator>& add_operator) noexcept {
-      /*const auto& merge = [](auto& polyominal, const auto& other) {
-        for (const auto& [product, coefficient] : other) {
-          const auto [it, emplaced] = polyominal.emplace(product, coefficient);
-
-          if (!emplaced) {
-            it->second = it->second + coefficient;
-          }
-        }
-      };*/
 
       auto polynomial = pyqubo::poly();
       auto penalty = pyqubo::poly();
 
-      for (const auto& child: add_operator->children()) {
-        auto [child_polynomial, child_penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, child);
-        //std::cout << "add loop" << child_polynomial.to_string() << "\n";
-        polynomial = polynomial + child_polynomial;
-        penalty = penalty + child_penalty;
+      add_list* next_node = add_operator->node;
+      auto [child_polynomial, child_penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, next_node->value);
+      polynomial = polynomial + child_polynomial;
+      penalty = penalty + child_penalty;
+
+      next_node = next_node->next;
+      while(next_node != nullptr){
+          auto [child_polynomial_tmp, child_penalty_tmp] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, next_node->value);
+          polynomial = polynomial + child_polynomial_tmp;
+          penalty = penalty + child_penalty_tmp;
+          next_node = next_node->next;
       }
 
       return std::tuple{polynomial, penalty};
@@ -73,12 +66,10 @@ namespace pyqubo {
 
     auto operator()(const std::shared_ptr<const binary_variable>& binary_variable) noexcept {
       auto p1 = poly(std::make_shared<numeric_literal>(1), new product({_variables->index(binary_variable->name())}));
-      //std::cout << p1.to_string() << std::endl;
       return std::tuple{
         p1,
         poly()
       };
-      //return std::tuple{polynomial{{{_variables->index(binary_variable->name())}, std::make_shared<numeric_literal>(1)}}, polynomial{}};
     }
 
     auto operator()(const std::shared_ptr<const spin_variable>& spin_variable) noexcept {
@@ -92,20 +83,19 @@ namespace pyqubo {
     auto operator()(const std::shared_ptr<const placeholder_variable>& place_holder_variable) noexcept {
       return std::tuple{
         poly(place_holder_variable, new product({})),
-        //polynomial{{{}, place_holder_variable}},
         poly()
       };
     }
 
     auto operator()(const std::shared_ptr<const sub_hamiltonian>& sub_hamiltonian) noexcept {
       const auto [polynomial, penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, sub_hamiltonian->expression());
-      //_sub_hamiltonians.emplace(sub_hamiltonian->name(), polynomial);
+      _sub_hamiltonians.emplace(sub_hamiltonian->name(), polynomial);
       return std::tuple{polynomial, penalty};
     }
 
     auto operator()(const std::shared_ptr<const constraint>& constraint) noexcept {
       const auto [polynomial, penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, constraint->expression());
-      //_constraints.emplace(constraint->name(), std::pair{polynomial, constraint->condition()});
+      _constraints.emplace(constraint->name(), std::pair{polynomial, constraint->condition()});
       return std::tuple{polynomial, penalty};
     }
 
@@ -114,7 +104,6 @@ namespace pyqubo {
       auto [p_polynomial, p_penalty] = visit<std::tuple<poly, poly>>(*this, with_penalty->penalty());
       e_penalty = e_penalty + p_polynomial;
       e_penalty = e_penalty + p_penalty;
-      //return std::tuple{e_polynomial, e_penalty + p_penalty + p_polynomial};
       return std::tuple{e_polynomial, e_penalty};
     }
 
@@ -124,7 +113,6 @@ namespace pyqubo {
 
     auto operator()(const std::shared_ptr<const numeric_literal>& numeric_literal) noexcept {
       return std::tuple{
-        //polynomial{{{}, numeric_literal}},
         poly(numeric_literal, new product({})),
         poly()
       };
@@ -202,7 +190,6 @@ namespace pyqubo {
           return result;
         }();
         const auto expression = it->second;
-
         result.erase(it);
         result.emplace(product(indexes), expression);
       }

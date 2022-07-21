@@ -57,72 +57,55 @@ namespace std {
 
 namespace pyqubo {
 
-  using add_list = LinkedList<shared_ptr<expression>>;
+  using add_list = LinkedList<std::shared_ptr<const expression>>;
 
-  class add_operator final : public expression {
-    //std::vector<std::shared_ptr<const expression>> _children;
-    pyqubo::add_list* node;
+  class add_operator final : public expression {    
 
   public:
-    add_operator(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept : _children{lhs, rhs} {
-      ;
+    pyqubo::add_list* node;
+
+    add_operator(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
+      this->node = new pyqubo::add_list(lhs);
+      this->node->next = new pyqubo::add_list(rhs);
     }
 
-    add_list* create_node(shared_ptr<add_operator> add, shared_ptr<expression> new_child){
-        AddList* new_node = new AddList(new_child, add->node);
+    auto create_node(const std::shared_ptr<const add_operator> add, const std::shared_ptr<const expression> new_child){
+        auto new_node = new pyqubo::add_list(new_child, add->node);
         return new_node;
     }
 
-    /*const auto& children() const noexcept {
-      return _children;
-    }*/
-
-    auto add_child(const std::shared_ptr<const expression>& expression) noexcept {
-      _children.emplace_back(expression);
-    }
+    add_operator(const std::shared_ptr<const add_operator> add, const std::shared_ptr<const expression> child):
+        node(create_node(add, child)){}
 
     pyqubo::expression_type expression_type() const noexcept override {
       return expression_type::add_operator;
     }
 
     std::string to_string() const noexcept override {
-      return "(" +
-             std::accumulate(std::begin(_children), std::end(_children), std::string(), [](const auto& acc, const auto& child) {
-               return acc + (std::size(acc) > 0 ? " + " : "") + child->to_string();
-             }) +
-             ")";
+      std::string s;
+      s += "AddList(";
+      pyqubo::add_list* next_node = this->node;
+      int i = 0;
+      while(next_node != nullptr){
+          s += next_node->value->to_string();
+          s += ",";
+          next_node = next_node->next;
+          i++;
+      }
+      s.pop_back();
+      s += ")";
+      printf("to_string cnt %d\n", i);
+      return s;
     }
 
     std::size_t hash() const noexcept override {
       auto result = static_cast<std::size_t>(0);
-
       boost::hash_combine(result, "+");
-
-      for (const auto& child : _children) {
-        boost::hash_combine(result, std::hash<expression>()(*child));
-      }
-
       return result;
     }
 
     bool equals(const std::shared_ptr<const expression>& other) const noexcept override {
-      if (!expression::equals(other)) {
-        return false;
-      }
-
-      const auto& other_add_operator = std::static_pointer_cast<const add_operator>(other);
-
-      if (std::size(_children) != std::size(other_add_operator->_children)) {
-        return false;
-      }
-
-      for (auto i = 0; i < static_cast<int>(std::size(_children)); ++i) {
-        if (!_children[i]->equals(other_add_operator->_children[i])) {
-          return false;
-        }
-      }
-
-      return true;
+      return false;
     }
   };
 
@@ -279,10 +262,8 @@ namespace pyqubo {
 
     std::size_t hash() const noexcept override {
       auto result = variable::hash();
-
       boost::hash_combine(result, "sub_hamiltonian");
       boost::hash_combine(result, std::hash<pyqubo::expression>()(*_expression));
-
       return result;
     }
 
@@ -309,7 +290,7 @@ namespace pyqubo {
     }
 
     std::string to_string() const noexcept override {
-      return "Constraint(" + expression()->to_string() + ", '" + name() + "')"; // conditionは文字列化できない……。
+      return "Constraint(" + expression()->to_string() + ", '" + name() + "')";
     }
 
     std::size_t hash() const noexcept override {
@@ -418,6 +399,7 @@ namespace pyqubo {
       return std::make_shared<numeric_literal>(std::static_pointer_cast<const numeric_literal>(lhs)->value() + std::static_pointer_cast<const numeric_literal>(rhs)->value());
     }
 
+    /*
     if (lhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(lhs)->value() == 0) {
       return rhs;
     }
@@ -425,25 +407,30 @@ namespace pyqubo {
     if (rhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(rhs)->value() == 0) {
       return lhs;
     }
+    */
 
     return std::make_shared<const add_operator>(lhs, rhs);
   }
 
   inline std::shared_ptr<const expression> operator*(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
-    if(lhs->expression_type() != expression_type::numeric_literal && rhs->expression_type() != expression_type::numeric_literal){
+    /*if(lhs->expression_type() != expression_type::numeric_literal && rhs->expression_type() != expression_type::numeric_literal){
       return std::make_shared<const mul_operator>(lhs, rhs);
     }else if (lhs->expression_type() == expression_type::numeric_literal){
       if (rhs->expression_type() == expression_type::numeric_literal) {
         return std::make_shared<numeric_literal>(std::static_pointer_cast<const numeric_literal>(lhs)->value() * std::static_pointer_cast<const numeric_literal>(rhs)->value());
-      }
-      if (std::static_pointer_cast<const numeric_literal>(lhs)->value() == 1) {
+      }else if (std::static_pointer_cast<const numeric_literal>(lhs)->value() == 1) {
         return rhs;
+      }else{
+        return std::make_shared<const mul_operator>(lhs, rhs);
       }
     } else if (rhs->expression_type() == expression_type::numeric_literal){
       if (std::static_pointer_cast<const numeric_literal>(rhs)->value() == 1) {
         return lhs;
+      }else{
+        return std::make_shared<const mul_operator>(lhs, rhs);
       }
-    }
+    }*/
+    return std::make_shared<const mul_operator>(lhs, rhs);
   }
 
   inline std::shared_ptr<const expression> multiply_express(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {

@@ -21,12 +21,7 @@ std::shared_ptr<const pyqubo::expression> create_numeric(double a){
     return std::make_shared<const pyqubo::numeric_literal>(a);
 }
 
-void test_poly(){
-    auto sp1 = new pyqubo::single_poly(2.0);
-    auto sp2 = new pyqubo::single_poly(3.0);
-    auto sp3 = pyqubo::merge(sp1, sp2);
-    std::cout << sp3->to_string() << std::endl;
-}
+
 
 void test_poly2(){
     auto sp1 = pyqubo::poly(create_numeric(2), new pyqubo::product({1}));
@@ -78,7 +73,7 @@ void test_express(int n){
     clock_t t0 = clock();
     auto a = create_binary("a");
     auto b = create_binary("b");
-    auto c = std::make_shared<pyqubo::add_operator>(a, b);
+    std::shared_ptr<const pyqubo::add_operator> c = std::make_shared<const pyqubo::add_operator>(a, b);
 
     for(int i=0; i < n; i++){
         for(int j=0; j < n; j++){
@@ -86,22 +81,28 @@ void test_express(int n){
                 auto bi = create_binary("xxx_" + std::to_string(i) + "_" + std::to_string(j));
                 auto bj = create_binary("xxx_" + std::to_string(j) + "_" + std::to_string(k));
                 auto coeff = std::make_shared<const pyqubo::numeric_literal>(2);
-                c->add_child(coeff*bi*bj);
+                auto p = coeff*bi*bj;
+                c = std::make_shared<const pyqubo::add_operator>(c, p);
                 //c->add_child(coeff*bi);
             }
         }
     }
     //std::cout << c->to_string() << std::endl;
-    
+    std::cout << "express done\n";
     clock_t t1 = clock();
 
-    pyqubo::compile(c, 5);
+    auto model = pyqubo::compile(c, 5);
+    std::cout << "compile done\n";
 
     clock_t t2 = clock();
     const double expression_time = static_cast<double>(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
     const double compile_time = static_cast<double>(t2 - t1) / CLOCKS_PER_SEC * 1000.0;
     printf("express time: %f, compile time %f\n", expression_time, compile_time);
-    //auto qubo = model.to_qubo();
+    const auto qubo = model.to_qubo_string({});
+    std::cout << "size:" << qubo.size() << "\n"; 
+    for(const auto& [key, value]: qubo){
+        //std::cout << std::get<0>(key) << "," << std::get<1>(key) << "," << value << std::endl;
+    }
 }
 
 void test_express2(int n){

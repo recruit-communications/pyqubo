@@ -39,9 +39,16 @@ namespace pyqubo {
     }
 
     auto operator()(const std::shared_ptr<const add_operator>& add_operator) const {
-      return std::accumulate(std::begin(add_operator->children()), std::end(add_operator->children()), 0.0, [&](const auto& acc, const auto& child) {
+      double acc = 0.0;
+      add_list* next_node = add_operator->node;
+      while(next_node != nullptr){
+        acc = acc + visit<double>(*this, next_node->value);
+        next_node = next_node->next;
+      }
+      return acc;
+      /*return std::accumulate(std::begin(add_operator->children()), std::end(add_operator->children()), 0.0, [&](const auto& acc, const auto& child) {
         return acc + visit<double>(*this, child);
-      });
+      });*/
     }
 
     auto operator()(const std::shared_ptr<const mul_operator>& mul_operator) const {
@@ -196,9 +203,63 @@ namespace pyqubo {
       return cimod::BinaryQuadraticModel<T, double, cimod::Dense>(linear, quadratic, offset, vartype);
     }
 
-    template <typename T = std::string>
-    auto to_qubo(const std::unordered_map<std::string, double>& feed_dict, cimod::Vartype vartype) const {
-      const auto [linear, quadratic, offset] = to_bqm_parameters<T>(feed_dict);
+    auto to_qubo_int(const std::unordered_map<std::string, double>& feed_dict) const {
+
+      const auto evaluate = pyqubo::evaluate(feed_dict);
+      auto quadratic = cimod::Quadratic<int, double>{};
+      auto offset = 0.0;
+
+      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+        const auto coefficient_value = evaluate(coefficient);
+
+        switch (std::size(product.indexes())) {
+        case 0: {
+          offset = coefficient_value; // 次数が0の項は1つにまとめられるので、この処理は最大で1回しか実行されません。なので、+=ではなくて=を使用しています。
+          break;
+        }
+        case 1: {
+          quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[0]}, coefficient_value);
+          break;
+        }
+        case 2: {
+          quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[1]}, coefficient_value);
+          break;
+        }
+        default:
+          throw std::runtime_error("invalid term.");
+        }
+      }
+
+      return quadratic;
+    }
+
+    auto to_qubo_string(const std::unordered_map<std::string, double>& feed_dict) const {
+
+      const auto evaluate = pyqubo::evaluate(feed_dict);
+
+      auto quadratic = cimod::Quadratic<std::string, double>{};
+      auto offset = 0.0;
+
+      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+        const auto coefficient_value = evaluate(coefficient);
+
+        switch (std::size(product.indexes())) {
+        case 0: {
+          offset = coefficient_value; // 次数が0の項は1つにまとめられるので、この処理は最大で1回しか実行されません。なので、+=ではなくて=を使用しています。
+          break;
+        }
+        case 1: {
+          quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[0])}, coefficient_value);
+          break;
+        }
+        case 2: {
+          quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[1])}, coefficient_value);
+          break;
+        }
+        default:
+          throw std::runtime_error("invalid term."); // ここには絶対にこないはず。
+        }
+      }
 
       return quadratic;
     }

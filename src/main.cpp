@@ -85,21 +85,22 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def("__repr__", &pyqubo::expression::to_string);
 
   py::class_<pyqubo::add_operator, std::shared_ptr<pyqubo::add_operator>, pyqubo::expression>(m, "Add")
-      .def("__add__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
-        add_operator->add_child(other);
-
-        return add_operator;
+      .def("__add__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, other);
       })
-      .def("__iadd__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
-        add_operator->add_child(other);
-
-        return add_operator;
+      .def("__add__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(other));
       })
-      .def("__iadd__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, double other) {
-        add_operator->add_child(std::make_shared<const pyqubo::numeric_literal>(other));
-
-        return add_operator;
+      .def("__radd__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(other));
+      })
+      .def("__sub__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(-1) * other);
+      })
+      .def("__sub__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(-other));
       });
+
 
   py::class_<pyqubo::binary_variable, std::shared_ptr<pyqubo::binary_variable>, pyqubo::expression>(m, "Binary")
       .def(py::init<const std::string&>());
@@ -197,14 +198,11 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
           py::arg("index_label") = false, py::arg("feed_dict") = std::unordered_map<std::string, double>{})
       .def(
           "to_qubo", [](const pyqubo::model& model, bool index_label, const std::unordered_map<std::string, double>& feed_dict) {
-            return model.to_qubo<int>(feed_dict, cimod::Vartype::BINARY);
-            /*
             if (!index_label) {
-              return py::cast(model.to_bqm<std::string>(feed_dict, cimod::Vartype::BINARY).to_qubo());
-            } else {
-              //return model.to_qubo<int>(feed_dict, cimod::Vartype::BINARY);
-              return py::cast(model.to_bqm<int>(feed_dict, cimod::Vartype::BINARY).to_qubo());
-            }*/
+              return py::cast(model.to_qubo_string(feed_dict));
+            }else{
+              return py::cast(model.to_qubo_int(feed_dict));
+            }
           },
           py::arg("index_label") = false, py::arg("feed_dict") = std::unordered_map<std::string, double>{})
       .def(
