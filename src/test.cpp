@@ -4,6 +4,7 @@
 #include <vector>
 #include <time.h>
 #include <vartypes.hpp>
+#include <functional>
 
 #include "abstract_syntax_tree.hpp"
 #include "compiler.hpp"
@@ -21,7 +22,30 @@ std::shared_ptr<const pyqubo::expression> create_numeric(double a){
     return std::make_shared<const pyqubo::numeric_literal>(a);
 }
 
+namespace pyqubo {
 
+void test_poly1(){
+    auto variables = pyqubo::variables();
+    int index1 = variables.index("x_1");
+    int index2 = variables.index("x_1");
+    auto p1 = new pyqubo::product({index1});
+    auto p2 = new pyqubo::product({index2});
+    auto sp1 = pyqubo::poly(create_numeric(2), p1);
+    auto sp2 = pyqubo::poly(create_numeric(3), p2);
+    auto sp3 = sp1 + sp2;
+
+    const product cp1 = *p1;
+    const product cp2 = *p2;
+    //auto h = std::hash<product>()(cp1);
+    std::cout << "p1: " << std::to_string(std::hash<product>()(cp1)) << ", p2: " << std::to_string(std::hash<product>()(cp2)) << std::endl;
+    if(cp1 == cp2){
+        std::cout << "p1==p2" << std::endl;
+    }else{
+        std::cout << "p1!=p2" << std::endl;
+    }
+    std::cout << sp3.to_string() << std::endl;
+    
+}
 
 void test_poly2(){
     auto sp1 = pyqubo::poly(create_numeric(2), new pyqubo::product({1}));
@@ -98,7 +122,7 @@ void test_express(int n){
     const double expression_time = static_cast<double>(t1 - t0) / CLOCKS_PER_SEC * 1000.0;
     const double compile_time = static_cast<double>(t2 - t1) / CLOCKS_PER_SEC * 1000.0;
     printf("express time: %f, compile time %f\n", expression_time, compile_time);
-    const auto qubo = model.to_qubo_string({});
+    const auto [qubo, offset] = model.to_qubo_string({});
     std::cout << "size:" << qubo.size() << "\n"; 
     for(const auto& [key, value]: qubo){
         //std::cout << std::get<0>(key) << "," << std::get<1>(key) << "," << value << std::endl;
@@ -123,14 +147,48 @@ void test_express2(int n){
     //auto qubo = model.to_qubo();
 }
 
+void test_express3(){
+    
+    auto a = create_binary("a");
+    auto b = create_binary("b");
+    auto c = create_binary("c");
+
+    auto H = a * b * c;
+    auto m = pyqubo::compile(H, 5);
+    //std::cout << ->to_string() << std::endl;
+    auto qubo = m.to_qubo_string({});
+}
+
+void test_express4(){
+    
+    auto a = create_binary("a");
+    auto b = create_binary("b");
+    auto c = create_binary("c");
+    auto n2 = create_numeric(2);
+    auto n1 = create_numeric(-1);
+    auto cc = (a + b + n1);
+    auto subh_var = std::make_shared<const pyqubo::sub_hamiltonian>(a + n2 * b, "my_subh");
+    auto with_p = std::make_shared<const pyqubo::with_penalty>(subh_var, cc * cc, "my_with_penalty");
+
+    auto H = subh_var + create_numeric(-3);
+    auto m = pyqubo::compile(H, 5);
+    //std::cout << ->to_string() << std::endl;
+    auto qubo = m.to_qubo_string({});
+}
+
+}
 
 int main(int argc, char* argv[]){
     if(argc > 1){
         int n = atoi(argv[1]);
         printf("hello world\n");
-        test_express(n);
+        pyqubo::test_express(n);
     }
 
-    //test_poly2();
+    //pyqubo::test_poly1();
+    //pyqubo::test_poly2();
+    //pyqubo::test_express3();
+    pyqubo::test_express4();
+
     return 0;
 }

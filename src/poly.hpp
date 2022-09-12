@@ -50,6 +50,17 @@ namespace pyqubo {
         poly(Coeff coeff, product* prd): coeff(coeff), prd(prd){
         }
 
+        // コピーコンストラクタ
+        poly(const poly &p){
+            this->poly_type = p.poly_type;
+            if(p.poly_type == poly_type::single_poly){
+                this->prd = p.prd;
+                this->coeff = p.coeff;
+            }else{
+                this->terms = new pyqubo::polynomial(*p.terms);
+            }
+        }
+
         poly to_multi() const {
             if(poly_type == poly_type::single_poly){
                 return poly(new pyqubo::polynomial({{*prd, coeff}}));
@@ -142,21 +153,22 @@ namespace pyqubo {
     auto operator+(poly& poly_1, poly& poly_2) noexcept {
         
         if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::single_poly){
-            if(poly_1.prd == poly_2.prd){
+            printf("single poly %s + single poly %s\n", poly_1.coeff->to_string().c_str(), poly_2.coeff->to_string().c_str());
+            if(poly_1.prd->equals(*poly_2.prd)){
                 return poly(poly_1.coeff + poly_2.coeff, poly_1.prd);
             }else{
                 auto terms = new pyqubo::polynomial({{*poly_1.prd, poly_1.coeff}, {*poly_2.prd, poly_2.coeff}});
                 return poly(terms);
             }
         }else if(poly_1.poly_type == poly_type::multi_poly && poly_2.poly_type == poly_type::single_poly){
-            //printf("operator+ add_multi_single\n");
+            std::cout << "operator+ add_multi_single\n";
             return add_multi_single(poly_1, poly_2);
 
         }else if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::multi_poly){
-            //printf("operator+ add_multi_single\n");
+            std::cout << "operator+ add_multi_single\n";
             return add_multi_single(poly_2, poly_1);
         }else{
-            //printf("operator+ add_multi_multi\n");
+            std::cout << "operator+ add_multi_multi\n";
             if(poly_1.size() > poly_2.size()){
                 return add_multi_multi(poly_1, poly_2);
             }else{

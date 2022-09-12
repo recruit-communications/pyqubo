@@ -18,9 +18,11 @@ include(external/eigen.cmake)
 include(external/pybind11.cmake)
 include(external/robin_hood.cmake)
 
-#pybind11_add_module(cpp_pyqubo src/main.cpp)
-add_executable(cpp_pyqubo src/test.cpp)
-
+if(DEFINED ENV{build_test})
+    add_executable(cpp_pyqubo src/test.cpp)
+else()
+    pybind11_add_module(cpp_pyqubo src/main.cpp)
+endif()
 
 target_compile_definitions(cpp_pyqubo PRIVATE VERSION_INFO=${PYQUBO_VERSION_INFO})
 target_compile_features(cpp_pyqubo PRIVATE cxx_std_17)

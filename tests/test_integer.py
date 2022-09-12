@@ -30,6 +30,7 @@ class TestInteger(unittest.TestCase):
             sampleset, feed_dict={"s": 10.0})
         best = min(decoded, key=lambda x: x.energy)
         self.assertTrue(best.subh["a"]==3)
+        
         self.assertTrue(a.value_range == (0, 4))
 
         # expected_q = {('a[0]', 'a[1]'): 20.0,
@@ -50,7 +51,7 @@ class TestInteger(unittest.TestCase):
         # expected_offset = 19
         # assert_qubo_equal(q, expected_q)
         # self.assertTrue(offset == expected_offset)
-
+  
     def test_one_hot_enc_integer_equal(self):
         a = OneHotEncInteger("a", (0, 4), strength=Placeholder("s"))
         b = OneHotEncInteger("b", (0, 4), strength=Placeholder("s"))
@@ -156,6 +157,7 @@ class TestInteger(unittest.TestCase):
         #      ('b[1]', 'b[1]'): -7.0,
         #      ('b[2]', 'b[2]'): -7.0}
         # assert_qubo_equal(q, expected_q)
+    
 
 if __name__ == '__main__':
     unittest.main()

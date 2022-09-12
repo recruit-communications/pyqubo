@@ -46,6 +46,12 @@ namespace pyqubo {
         return _indexes;
         }
 
+        bool equals(pyqubo::product other){
+            return this->indexes() == other.indexes();
+        }
+
         friend std::hash<product>;
     };
+
+
 }

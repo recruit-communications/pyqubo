@@ -94,7 +94,7 @@ namespace pyqubo {
       }
       s.pop_back();
       s += ")";
-      printf("to_string cnt %d\n", i);
+      //printf("to_string cnt %d\n", i);
       return s;
     }
 
@@ -396,7 +396,9 @@ namespace pyqubo {
 
   inline std::shared_ptr<const expression> operator+(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
     if (lhs->expression_type() == expression_type::numeric_literal && rhs->expression_type() == expression_type::numeric_literal) {
-      return std::make_shared<numeric_literal>(std::static_pointer_cast<const numeric_literal>(lhs)->value() + std::static_pointer_cast<const numeric_literal>(rhs)->value());
+      double left_value = std::static_pointer_cast<const numeric_literal>(lhs)->value();
+      double right_value = std::static_pointer_cast<const numeric_literal>(rhs)->value();
+      return std::make_shared<numeric_literal>(left_value + right_value);
     }
 
     /*

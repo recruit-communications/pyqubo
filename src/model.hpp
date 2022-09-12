@@ -145,7 +145,7 @@ namespace pyqubo {
   };
 
   class model final {
-    const polynomial* _quadratic_polynomial;
+    const polynomial _quadratic_polynomial;
     robin_hood::unordered_map<std::string, poly> _sub_hamiltonians; // コンパイル中にpolyのコピーをしたかチェック
     robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>> _constraints;
     variables _variables;
@@ -155,7 +155,7 @@ namespace pyqubo {
     }
 
   public:
-    model(const polynomial* quadratic_polynomial, const robin_hood::unordered_map<std::string, poly>& sub_hamiltonians, const robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>>& constraints, const variables& variables) noexcept : _quadratic_polynomial(quadratic_polynomial), _sub_hamiltonians(sub_hamiltonians), _constraints(constraints), _variables(variables) {
+    model(const polynomial &quadratic_polynomial, const robin_hood::unordered_map<std::string, poly>& sub_hamiltonians, const robin_hood::unordered_map<std::string, std::pair<poly, std::function<bool(double)>>>& constraints, const variables& variables) noexcept : _quadratic_polynomial(quadratic_polynomial), _sub_hamiltonians(sub_hamiltonians), _constraints(constraints), _variables(variables) {
       ;
     }
 
@@ -172,7 +172,7 @@ namespace pyqubo {
       auto quadratic = cimod::Quadratic<T, double>{};
       auto offset = 0.0;
 
-      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+      for (const auto& [product, coefficient] : _quadratic_polynomial) {
         const auto coefficient_value = evaluate(coefficient);
 
         switch (std::size(product.indexes())) {
@@ -209,7 +209,7 @@ namespace pyqubo {
       auto quadratic = cimod::Quadratic<int, double>{};
       auto offset = 0.0;
 
-      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+      for (const auto& [product, coefficient] : _quadratic_polynomial) {
         const auto coefficient_value = evaluate(coefficient);
 
         switch (std::size(product.indexes())) {
@@ -218,11 +218,15 @@ namespace pyqubo {
           break;
         }
         case 1: {
-          quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[0]}, coefficient_value);
+          if(coefficient_value != 0.0){
+            quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[0]}, coefficient_value);
+          }
           break;
         }
         case 2: {
-          quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[1]}, coefficient_value);
+          if(coefficient_value != 0.0){
+            quadratic.emplace(std::pair{product.indexes()[0], product.indexes()[1]}, coefficient_value);
+          }
           break;
         }
         default:
@@ -230,7 +234,7 @@ namespace pyqubo {
         }
       }
 
-      return quadratic;
+      return std::make_tuple(quadratic, offset);
     }
 
     auto to_qubo_string(const std::unordered_map<std::string, double>& feed_dict) const {
@@ -240,7 +244,7 @@ namespace pyqubo {
       auto quadratic = cimod::Quadratic<std::string, double>{};
       auto offset = 0.0;
 
-      for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+      for (const auto& [product, coefficient] : _quadratic_polynomial) {
         const auto coefficient_value = evaluate(coefficient);
 
         switch (std::size(product.indexes())) {
@@ -249,11 +253,15 @@ namespace pyqubo {
           break;
         }
         case 1: {
-          quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[0])}, coefficient_value);
+          if(coefficient_value != 0.0){
+            quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[0])}, coefficient_value);
+          }
           break;
         }
         case 2: {
-          quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[1])}, coefficient_value);
+          if(coefficient_value != 0.0){
+            quadratic.emplace(std::pair{_variables.name(product.indexes()[0]), _variables.name(product.indexes()[1])}, coefficient_value);
+          }
           break;
         }
         default:
@@ -261,7 +269,7 @@ namespace pyqubo {
         }
       }
 
-      return quadratic;
+      return std::make_tuple(quadratic, offset);
     }
 
     template <typename T = std::string>
@@ -345,7 +353,7 @@ namespace pyqubo {
     auto quadratic = cimod::Quadratic<int, double>{};
     auto offset = 0.0;
 
-    for (const auto& [product, coefficient] : *_quadratic_polynomial) {
+    for (const auto& [product, coefficient] : _quadratic_polynomial) {
       const auto coefficient_value = evaluate(coefficient);
 
       switch (std::size(product.indexes())) {
