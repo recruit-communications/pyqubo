@@ -51,13 +51,20 @@ namespace pyqubo {
         }
 
         // copy constructor
-        poly(const poly &p){
+        /*poly(const poly &p){
             this->poly_type = p.poly_type;
             if(p.poly_type == poly_type::single_poly){
                 this->prd = p.prd;
                 this->coeff = p.coeff;
             }else{
                 this->terms = new pyqubo::polynomial(*p.terms);
+            }
+        }*/
+        poly copy() const {
+            if(poly_type == poly_type::single_poly){
+                return poly(this->coeff, this->prd);
+            }else{
+                return poly(new pyqubo::polynomial(*terms));
             }
         }
 
@@ -145,11 +152,12 @@ namespace pyqubo {
 
     auto operator*(const poly& poly_1, const poly& poly_2) noexcept {
         if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::single_poly){
-            if(poly_1.is_numeric() && poly_2.is_numeric()){
+            /*if(poly_1.is_numeric() && poly_2.is_numeric()){
                 return poly(poly_1.coeff * poly_2.coeff, new product({}));
             }else{
                 return poly(poly_1.coeff * poly_2.coeff, multiply(poly_1.prd, poly_2.prd));
-            }
+            }*/
+            return poly(poly_1.coeff * poly_2.coeff, multiply(poly_1.prd, poly_2.prd));
         }else if(poly_1.poly_type == poly_type::multi_poly && poly_2.poly_type == poly_type::single_poly){
             return multiply_multi_multi(poly_1, poly_2.to_multi());
         }else if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::multi_poly){

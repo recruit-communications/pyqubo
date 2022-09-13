@@ -28,7 +28,8 @@ namespace pyqubo {
     //std::cout << "compile" << polynomial.to_string() << std::endl;
     const auto quadratic_polynomial = convert_to_quadratic(*(polynomial.get_terms()), strength, &variables);
     
-    /*for(auto [key, val]: quadratic_polynomial){
+    /*
+    for(auto [key, val]: quadratic_polynomial){
       std::cout << "quadratic_polynomial " << key.to_string() << ", " << val->to_string() << std::endl;
     }
 

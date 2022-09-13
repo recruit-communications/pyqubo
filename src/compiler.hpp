@@ -88,7 +88,7 @@ namespace pyqubo {
 
     auto operator()(const std::shared_ptr<const sub_hamiltonian>& sub_hamiltonian) noexcept {
       const auto [polynomial, penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, sub_hamiltonian->expression());
-      _sub_hamiltonians.emplace(sub_hamiltonian->name(), poly(polynomial));
+      _sub_hamiltonians.emplace(sub_hamiltonian->name(), polynomial.copy());
       return std::tuple{polynomial, penalty};
     }
 
@@ -101,9 +101,9 @@ namespace pyqubo {
     auto operator()(const std::shared_ptr<const with_penalty>& with_penalty) noexcept {
       auto [e_polynomial, e_penalty] = visit<std::tuple<poly, poly>>(*this, with_penalty->expression());
       auto [p_polynomial, p_penalty] = visit<std::tuple<poly, poly>>(*this, with_penalty->penalty());
-      auto copied_e_penalty = poly(e_penalty);
-      auto copied_p_polynomial = poly(p_polynomial);
-      auto copied_p_penalty = poly(p_penalty);
+      auto copied_e_penalty = e_penalty.copy();
+      auto copied_p_polynomial = p_polynomial.copy();
+      auto copied_p_penalty = p_penalty.copy();
       e_penalty = copied_e_penalty + copied_p_polynomial;
       e_penalty = e_penalty + copied_p_penalty;
       return std::tuple{e_polynomial, e_penalty};

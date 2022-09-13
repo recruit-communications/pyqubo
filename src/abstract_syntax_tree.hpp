@@ -433,7 +433,7 @@ namespace pyqubo {
       }
     }*/
     // constant times constant
-    if (rhs->expression_type() == expression_type::numeric_literal && rhs->expression_type() == expression_type::numeric_literal) {
+    if (lhs->expression_type() == expression_type::numeric_literal && rhs->expression_type() == expression_type::numeric_literal) {
       return std::make_shared<numeric_literal>(
         std::static_pointer_cast<const numeric_literal>(lhs)->value() * std::static_pointer_cast<const numeric_literal>(rhs)->value());
     }else{
