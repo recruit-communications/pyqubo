@@ -60,7 +60,6 @@ namespace pyqubo {
     auto operator()(const std::shared_ptr<const mul_operator>& mul_operator) noexcept {
       auto [l_polynomial, l_penalty] = visit<std::tuple<poly, poly>>(*this, mul_operator->lhs());
       auto [r_polynomial, r_penalty] = visit<std::tuple<poly, poly>>(*this, mul_operator->rhs());
-
       return std::tuple{l_polynomial * r_polynomial, l_penalty + r_penalty};
     }
 

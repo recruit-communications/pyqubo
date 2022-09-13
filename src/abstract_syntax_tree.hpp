@@ -432,7 +432,15 @@ namespace pyqubo {
         return std::make_shared<const mul_operator>(lhs, rhs);
       }
     }*/
-    return std::make_shared<const mul_operator>(lhs, rhs);
+    // constant times constant
+    if (rhs->expression_type() == expression_type::numeric_literal && rhs->expression_type() == expression_type::numeric_literal) {
+      return std::make_shared<numeric_literal>(
+        std::static_pointer_cast<const numeric_literal>(lhs)->value() * std::static_pointer_cast<const numeric_literal>(rhs)->value());
+    }else{
+      return std::make_shared<const mul_operator>(lhs, rhs);
+    }
+    
+    //return std::make_shared<const mul_operator>(lhs, rhs);
   }
 
   inline std::shared_ptr<const expression> multiply_express(const std::shared_ptr<const expression>& lhs, const std::shared_ptr<const expression>& rhs) noexcept {
