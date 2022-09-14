@@ -7,8 +7,8 @@
 #include <functional>
 
 #include "abstract_syntax_tree.hpp"
+#include "expand.hpp"
 #include "compiler.hpp"
-#include "compiler2.hpp"
 #include "poly.hpp"
 #include "product.hpp"
 #include "variables.hpp"
@@ -115,7 +115,7 @@ void test_express(int n){
     std::cout << "express done\n";
     clock_t t1 = clock();
 
-    auto model = pyqubo::compile(c, 5);
+    auto model = pyqubo::compile(c, create_numeric(5));
     std::cout << "compile done\n";
 
     clock_t t2 = clock();
@@ -134,7 +134,7 @@ void test_express2(int n){
     
     for(int i=0; i < n; i++){
         auto a = create_binary("a");
-        pyqubo::compile(a, 5);
+        pyqubo::compile(a, create_numeric(5));
     }
     //std::cout << a->to_string() << std::endl;
     
@@ -154,7 +154,7 @@ void test_express3(){
     auto c = create_binary("c");
 
     auto H = a * b * c;
-    auto m = pyqubo::compile(H, 5);
+    auto m = pyqubo::compile(H, create_numeric(5));
     //std::cout << ->to_string() << std::endl;
     auto qubo = m.to_qubo_string({});
 }
@@ -171,7 +171,7 @@ void test_express4(){
     auto with_p = std::make_shared<const pyqubo::with_penalty>(subh_var, cc * cc, "my_with_penalty");
 
     auto H = subh_var + create_numeric(-3);
-    auto m = pyqubo::compile(H, 5);
+    auto m = pyqubo::compile(H, create_numeric(5));
     //std::cout << ->to_string() << std::endl;
     auto qubo = m.to_qubo_string({});
 }

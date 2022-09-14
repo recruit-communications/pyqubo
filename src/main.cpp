@@ -11,8 +11,8 @@
 #include <vartypes.hpp>
 
 #include "abstract_syntax_tree.hpp"
+#include "expand.hpp"
 #include "compiler.hpp"
-#include "compiler2.hpp"
 
 namespace py = pybind11;
 using namespace py::literals;
@@ -74,9 +74,14 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       })
       .def(
           "compile", [](const std::shared_ptr<const pyqubo::expression>& expression, double strength) {
-            return pyqubo::compile(expression, strength);
+            return pyqubo::compile(expression, std::make_shared<const pyqubo::numeric_literal>(strength));
           },
           py::arg("strength") = 5)
+      .def(
+          "compile", [](const std::shared_ptr<const pyqubo::expression>& expression, const std::shared_ptr<const pyqubo::expression>& placeholder_strength) {
+            return pyqubo::compile(expression, placeholder_strength);
+          },
+          py::arg("strength"))
       .def("__hash__", [](const pyqubo::expression& expression) { // 必要？
         return std::hash<pyqubo::expression>()(expression);
       })
@@ -118,7 +123,10 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::string&, const std::function<bool(double)>&>(), py::arg("hamiltonian"), py::arg("label"), py::arg("condition") = py::cpp_function([](double x) { return x == 0; }));
 
   py::class_<pyqubo::with_penalty, std::shared_ptr<pyqubo::with_penalty>, pyqubo::expression>(m, "WithPenalty")
-      .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::shared_ptr<const pyqubo::expression>&, const std::string&>());
+      .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::shared_ptr<const pyqubo::expression>&, const std::string&>())
+      .def_property_readonly("express", &pyqubo::with_penalty::expression)
+      .def_property_readonly("penalty", &pyqubo::with_penalty::penalty);
+      
 
   py::class_<pyqubo::user_defined_expression, std::shared_ptr<pyqubo::user_defined_expression>, pyqubo::expression>(m, "UserDefinedExpress")
       .def(py::init<const std::shared_ptr<const pyqubo::expression>&>());
@@ -179,7 +187,8 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
 
         return solution.sample().at(name_and_indexes);
       })
-      .def("eval", &pyqubo::solution::evaluate);
+      .def("value", &pyqubo::solution::evaluate)
+      .def("__repr__", &pyqubo::solution::to_string);
   py::class_<pyqubo::model>(m, "Model")
       .def_property_readonly("variables", &pyqubo::model::variable_names)
       .def(

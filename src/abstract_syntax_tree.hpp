@@ -241,7 +241,7 @@ namespace pyqubo {
   };
 
   class sub_hamiltonian : public variable {
-    std::shared_ptr<const expression> _expression;
+    
 
   public:
     sub_hamiltonian(const std::shared_ptr<const pyqubo::expression>& expression, const std::string& name) noexcept : variable(name), _expression(expression) {
@@ -270,6 +270,9 @@ namespace pyqubo {
     bool equals(const std::shared_ptr<const pyqubo::expression>& other) const noexcept override {
       return variable::equals(other) && _expression->equals(std::static_pointer_cast<const sub_hamiltonian>(other)->_expression);
     }
+
+  protected:
+    std::shared_ptr<const pyqubo::expression> _expression;
   };
 
   class constraint final : public sub_hamiltonian {
@@ -401,15 +404,15 @@ namespace pyqubo {
       return std::make_shared<numeric_literal>(left_value + right_value);
     }
 
-    /*
-    if (lhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(lhs)->value() == 0) {
+    
+    /*if (lhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(lhs)->value() == 0) {
       return rhs;
     }
 
     if (rhs->expression_type() == expression_type::numeric_literal && std::static_pointer_cast<const numeric_literal>(rhs)->value() == 0) {
       return lhs;
-    }
-    */
+    }*/
+    
 
     return std::make_shared<const add_operator>(lhs, rhs);
   }

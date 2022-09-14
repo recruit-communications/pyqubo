@@ -244,6 +244,25 @@ class TestModel(unittest.TestCase):
         self.assertTrue(best_sample.array("S", 2) == 1)
         self.assertTrue(np.isclose(best_sample.energy, -1.8))
 
+    def test_compiler_strength(self):
+        a, b, c, d = Binary("a"), Binary("b"), Binary("c"), Binary("d")
+        H = a * b * c - 2 * c * d - 3 * a * b
+        model = H.compile(strength=Placeholder("s"))
+        feed_dict = {"s": 10.0}
+        qubo, offset = model.to_qubo(feed_dict=feed_dict)
+        sampler = dimod.ExactSolver()
+        sampleset = sampler.sample_qubo(qubo)
+        decoded_samples = model.decode_sampleset(sampleset, feed_dict=feed_dict)
+        best_sample = min(decoded_samples, key=lambda s: s.energy)
+        
+        self.assertTrue(qubo[('a', 'a * b')] == -20)
+        self.assertTrue(best_sample.value(b) == 1)
+        self.assertTrue(best_sample.value(a) == 1)
+        self.assertTrue(best_sample.value(b) == 1)
+        self.assertTrue(best_sample.value(c) == 1)
+        self.assertTrue(best_sample.value(d) == 1)
+        self.assertTrue(np.isclose(best_sample.energy, -4))
+
     def test_constraint(self):
         sampler = dimod.ExactSolver()
         x = Array.create('x',shape=(3),vartype="BINARY")

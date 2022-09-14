@@ -22,8 +22,18 @@ namespace pyqubo {
         std::size_t _hash;
 
     public:
-        product(const pyqubo::indexes& indexes) noexcept : _indexes(indexes), _hash(boost::hash_range(std::begin(indexes), std::end(indexes))) {
+        product(const pyqubo::indexes& indexes) noexcept : _indexes(indexes), _hash(create_hash(indexes)) {
         ;
+        }
+
+        std::size_t create_hash(const pyqubo::indexes& indexes){
+            std::size_t seed = robin_hood::hash_int(4711);
+            for(int v: indexes){
+                // Combine algorithm is same as boost::hash_conbine except hash function.
+                // We use robin_hood::hash_int since boost::hash doesn't work well. 
+                seed ^= robin_hood::hash_int(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
         }
 
         product(std::initializer_list<int> init) noexcept : product(pyqubo::indexes(init)) {

@@ -50,16 +50,6 @@ namespace pyqubo {
         poly(Coeff coeff, product* prd): coeff(coeff), prd(prd){
         }
 
-        // copy constructor
-        /*poly(const poly &p){
-            this->poly_type = p.poly_type;
-            if(p.poly_type == poly_type::single_poly){
-                this->prd = p.prd;
-                this->coeff = p.coeff;
-            }else{
-                this->terms = new pyqubo::polynomial(*p.terms);
-            }
-        }*/
         poly copy() const {
             if(poly_type == poly_type::single_poly){
                 return poly(this->coeff, this->prd);
@@ -193,58 +183,4 @@ namespace pyqubo {
             }
         }
     }
-/*
-    class poly_base {
-    public:
-        virtual pyqubo::poly_type poly_type() const noexcept = 0;
-        virtual std::string to_string() const noexcept = 0;
-    };
-
-    class multi_poly: public poly_base {
-        
-    public:
-    
-        pyqubo::polynomial polynomial;
-
-        pyqubo::poly_type poly_type() const noexcept override {
-            return poly_type::multi_poly;
-        }
-
-        std::string to_string() const noexcept override {
-            return "this is multi_poly";
-        }
-    };
-
-    class single_poly: public poly_base {
-    
-    public:
-        double coeff = 0.0;
-
-        single_poly(double coeff): coeff(coeff){
-        }
-        
-        pyqubo::poly_type poly_type() const noexcept override {
-            return poly_type::single_poly;
-        }
-
-        std::string to_string() const noexcept override {
-            return "single_poly(" + std::to_string(coeff) + ")";
-        }
-    };
-
-    poly_base* merge(poly_base* poly_left, poly_base* poly_right){
-        //single_poly(poly_left.coeff * poly_right.coeff)
-        if(poly_left->poly_type() == poly_type::single_poly && poly_right->poly_type() == poly_type::single_poly){
-            auto left = dynamic_cast<single_poly*>(poly_left);
-            auto right = dynamic_cast<single_poly*>(poly_right);
-
-        }
-        return nullptr;
-        //return poly_left;
-    }
-
-    single_poly* merge(single_poly* poly_left, single_poly* poly_right){
-        return new single_poly(poly_left->coeff * poly_right->coeff);
-    }
-    */
 }

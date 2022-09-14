@@ -17,14 +17,13 @@
 #include <robin_hood.h>
 
 #include "abstract_syntax_tree.hpp"
-#include "compiler.hpp"
+#include "expand.hpp"
 #include "product.hpp"
 #include "variables.hpp"
 
 
 namespace pyqubo {
-  // std::variantを使用してzeroやmonomialな場合の処理削減をやってみたのですが、パフォーマンスは向上しませんでした。なので、unordered_map一本でやります。
-  // よく考えれば、要素数が0の場合の処理とかはunordered_mapの中でやっていそうですし。。。
+
 
   class evaluate final {
     std::unordered_map<std::string, double> _feed_dict;
@@ -106,6 +105,20 @@ namespace pyqubo {
       ;
     }
 
+    std::string to_string(){
+      std::string s = "DecodedSolution({";
+      int counter = 0;
+      for(auto [k, v]: _sample){
+        s += k + ":" + std::to_string(v);
+        if(counter != _sample.size() - 1){
+          s += ", ";
+        }
+        counter ++;
+      }
+      s += "}, energy=" + std::to_string(_energy) + ")";
+      return s;
+    }
+
     const auto& sample() const noexcept {
       return _sample;
     }
@@ -122,10 +135,11 @@ namespace pyqubo {
       return _constraints;
     }
 
-    auto evaluate(const std::shared_ptr<const expression>& expression) const {
+    auto evaluate(const std::shared_ptr<const expression>& expression) {
 
-      auto variables = pyqubo::variables();
-      const auto [polynomial, sub_hamiltonians, constraints] = pyqubo::expand()(expression, &variables);
+      const auto [polynomial, sub_hamiltonians, constraints] = pyqubo::expand()(expression, &_variables);
+      //std::cout << _variables.to_string();
+      //std::cout << "compile" << polynomial.to_string() << std::endl;
       auto& poly_terms = *polynomial.terms;
 
       const auto evaluate = pyqubo::evaluate(_feed_dict);
@@ -134,12 +148,21 @@ namespace pyqubo {
           return acc +
                  std::accumulate(std::begin(term.first.indexes()), std::end(term.first.indexes()), 1, [&](const auto acc, const auto& index) {
                    const auto value = _sample.at(_variables.name(index));
-
                    return acc * (_vartype == "BINARY" ? value : (value + 1) / 2);
                  }) * evaluate(term.second);
         });
       };
       const auto energy = evaluate_polynomial(poly_terms);
+
+      // check constraints
+      for (const auto& [name, pair] : constraints) {
+        const auto& [polynomial, condition] = pair;
+        auto& const_poly_terms = *polynomial.terms;
+        const auto const_energy = evaluate_polynomial(const_poly_terms);
+        if(const_energy > 0){
+          throw std::runtime_error("constraint: " + name + " is broken.");
+        }
+      }
       return energy;
     }
   };

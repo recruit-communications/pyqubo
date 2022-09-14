@@ -27,6 +27,7 @@ namespace std {
 
 namespace pyqubo {
   using polynomial = robin_hood::unordered_map<product, std::shared_ptr<const expression>>;
+  //using polynomial = std::unordered_map<product, std::shared_ptr<const expression>>;
 
   class variables final {
     robin_hood::unordered_map<std::string, int> _indexes;
@@ -35,6 +36,15 @@ namespace pyqubo {
   public:
     variables() noexcept : _indexes{}, _names{} {
       ;
+    }
+
+    std::string to_string() const {
+      std::string s = "variables(";
+      for(auto [name, index]: _indexes){
+        s += name + "->" + std::to_string(index) + "\n";
+      }
+      s += ")";
+      return s;
     }
 
     auto index(const std::string& variable_name) noexcept {

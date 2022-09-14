@@ -20,9 +20,7 @@ def number_partition_with_timeout(n, timeout_sec):
         t0 = time.time()
         s = Array.create('s', n, 'SPIN')
         numbers = np.random.randint(0, 10, n)
-        use_for_loop=False
-
-        H = sum([si*ni for si, ni in zip(s, numbers)])**2
+        H = sum([si * ni for si, ni in zip(s, numbers)])**2
 
         # Compile model
         t1 = time.time()
@@ -30,7 +28,6 @@ def number_partition_with_timeout(n, timeout_sec):
         t2 = time.time()
         qubo, offset = model.to_qubo(index_label=False)
         t3 = time.time()
-
         print("len(qubo)", len(qubo))
 
         return t1-t0, t2-t1, t3-t2
@@ -116,75 +113,12 @@ def tsp_with_timeout(n_city, timeout_sec):
     
     return tsp(n_city)
 
-    @timeout(timeout_sec)
-    def tsp_old(n_city):
-        t0 = time.time()
-        x = Array.create('c', (n_city, n_city), 'BINARY')
-
-        # Constraint not to visit more than two cities at the same time.
-        time_const = 0.0
-        for i in range(n_city):
-            # If you wrap the hamiltonian by Const(...), this part is recognized as constraint
-            time_const += Constraint((sum(x[i, j] for j in range(n_city)) - 1)**2, label="time{}".format(i))
-            """
-            tmp = 0
-            for j in range(n_city):
-                tmp += x[i, j]
-            tmp += (-1)
-            time_const += tmp**2
-            """
-
-        # Constraint not to visit the same city more than twice.
-        city_const = 0.0
-        for j in range(n_city):
-            city_const += Constraint((sum(x[i, j] for i in range(n_city)) - 1)**2, label="city{}".format(j))
-            """
-            tmp = 0
-            for i in range(n_city):
-                tmp += x[i, j]
-            tmp += (-1)
-            city_const += tmp**2
-            """
-        
-        # distance of route
-        feed_dict = {}
-        """
-        distance = 0.0
-        for i in range(n_city):
-            for j in range(n_city):
-                for k in range(n_city):
-                    # we set the constant distance
-                    d_ij = 10
-                    #label = f"d_{i}_{j}"
-                    #feed_dict[label] = d_ij
-                    #distance += Placeholder(label) * x[k, i] * x[(k + 1) % n_city, j]
-                    distance += d_ij * x[k, i] * x[(k + 1) % n_city, j]
-        """
-        
-        # Construct hamiltonian
-        A = Placeholder("A")
-        H =  A * (time_const + city_const)
-
-        feed_dict["A"] = 1.0
-
-        # Compile model
-        t1 = time.time()
-        model = H.compile()
-        t2 = time.time()
-        qubo = model.to_qubo(index_label=False, feed_dict=feed_dict)
-        t3 = time.time()
-
-        print("len(qubo)", len(qubo))
-
-        return t1-t0, t2-t1, t3-t2
-    
-    return tsp(n_city)
-
+ 
 
 def measure(problem, step, init_size, max_size, timeout):
     if problem == "tsp":
         f = tsp_with_timeout
-    elif problem == "number_parition":
+    elif problem == "number_partition":
         f = number_partition_with_timeout
     
     for n in range(init_size, max_size+step, step):
@@ -208,4 +142,3 @@ if __name__=="__main__":
     args = parser.parse_args()
     #number_partition_with_timeout(2000, timeout_sec=10)
     measure(args.problem, args.step, args.init_size, args.max_size, args.timeout)
-    
