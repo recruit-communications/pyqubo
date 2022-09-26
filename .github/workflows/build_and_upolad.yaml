@@ -138,7 +138,7 @@ jobs:
           python-version: ${{env.Python_Version}}
       
       - name: Build wheels on ${{ matrix.CIBW_PLATFORM }} ${{matrix.arch}}
-        uses: pypa/cibuildwheel@v2.3.1
+        uses: pypa/cibuildwheel@v2.10.2
         env:
           CIBW_PLATFORM:  ${{ matrix.CIBW_PLATFORM }}
           CIBW_BUILD: cp${{matrix.python}}-*
