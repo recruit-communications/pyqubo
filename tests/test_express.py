@@ -7,14 +7,12 @@ class TestExpress(unittest.TestCase):
     def compile_check(self, exp, expected_qubo, expected_offset, feed_dict={}):
         model = exp.compile(strength=5)
         qubo, offset = model.to_qubo(feed_dict=feed_dict)
-        print(qubo)
         assert_qubo_equal(qubo, expected_qubo)
         self.assertEqual(offset, expected_offset)
 
     def test_compile_binary2(self):
         a, b = Binary("a"), Binary("b")
         exp =  a + 2*a + b -1
-        print(exp)
         # expected_qubo = {('a', 'a'): 1.0, ('a', 'b'): 1.0, ('b', 'b'): 0.0}
         expected_qubo = {('a', 'a'): 3.0, ('b', 'b'): 1.0}
         expected_offset = -1
@@ -23,7 +21,6 @@ class TestExpress(unittest.TestCase):
     def test_compile_binary(self):
         a, b = Binary("a"), Binary("b")
         exp = 1 + a*b + a - 2
-        print(exp)
         # expected_qubo = {('a', 'a'): 1.0, ('a', 'b'): 1.0, ('b', 'b'): 0.0}
         expected_qubo = {('a', 'a'): 1.0, ('a', 'b'): 1.0}
         expected_offset = -1
