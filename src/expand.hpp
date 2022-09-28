@@ -94,7 +94,7 @@ namespace pyqubo {
 
     auto operator()(const std::shared_ptr<const constraint>& constraint) noexcept {
       const auto [polynomial, penalty] = visit<std::tuple<pyqubo::poly, pyqubo::poly>>(*this, constraint->expression());
-      _constraints.emplace(constraint->name(), std::pair{polynomial, constraint->condition()});
+      _constraints.emplace(constraint->name(), std::pair{polynomial.copy(), constraint->condition()});
       return std::tuple{polynomial, penalty};
     }
 

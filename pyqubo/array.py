@@ -64,7 +64,7 @@ class Array:
         
         >>> array[:, 1]  # = array[(slice(None), 1)]
         Array([Binary('x1'), Binary('x3')])
-        >>> sum(array[:, 1])
+        >>> sum(array[:, 1]) # doctest: +SKIP
         (Binary('x1') + Binary('x3'))
         
         Use list or tuple to select a subset of the array.

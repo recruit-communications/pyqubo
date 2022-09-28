@@ -83,16 +83,17 @@ namespace pyqubo {
 
     std::string to_string() const noexcept override {
       std::string s;
-      s += "AddList(";
+      s += "(";
       pyqubo::add_list* next_node = this->node;
       int i = 0;
+      std::string sep = " + ";
       while(next_node != nullptr){
           s += next_node->value->to_string();
-          s += ",";
+          s += sep;
           next_node = next_node->next;
           i++;
       }
-      s.pop_back();
+      for(int j=0;j<sep.size();j++) s.pop_back();
       s += ")";
       //printf("to_string cnt %d\n", i);
       return s;
@@ -105,7 +106,24 @@ namespace pyqubo {
     }
 
     bool equals(const std::shared_ptr<const expression>& other) const noexcept override {
-      return false;
+      if(expression::equals(other)){
+        pyqubo::add_list* other_next_node = std::static_pointer_cast<const add_operator>(other)->node;
+        pyqubo::add_list* next_node = this->node;
+        while(next_node != nullptr && other_next_node != nullptr){
+            if(!next_node->value->equals(other_next_node->value)){
+              return false;
+            }
+            next_node = next_node->next;
+            other_next_node = other_next_node->next;
+        }
+        if(next_node == nullptr && other_next_node == nullptr){
+          return true;
+        }else{
+          return false;
+        }
+      }else{
+        return false;
+      }
     }
   };
 
