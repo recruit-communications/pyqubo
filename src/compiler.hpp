@@ -25,10 +25,10 @@ namespace pyqubo {
 
     const auto [polynomial, sub_hamiltonians, constraints] = expand()(express, &variables);
     
-    std::cout << "compile" << polynomial.to_string() << std::endl;
+    //std::cout << "compile" << polynomial.to_string() << std::endl;
     const auto quadratic_polynomial = convert_to_quadratic(*(polynomial.get_terms()), strength, &variables);
     
-    
+    /*
     for(auto [key, val]: quadratic_polynomial){
       std::cout << "quadratic_polynomial " << key.to_string() << ", " << val->to_string() << std::endl;
     }
@@ -36,6 +36,7 @@ namespace pyqubo {
     for(auto [key, val]: sub_hamiltonians){
       std::cout << "sub_hamiltonians " << key << ", " << val.to_string() << std::endl;
     }
+    */
     return model(quadratic_polynomial, sub_hamiltonians, constraints, variables);
   }
 }
