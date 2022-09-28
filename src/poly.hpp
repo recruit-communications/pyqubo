@@ -29,13 +29,13 @@ namespace pyqubo {
 
     class poly {
     public:
-        poly_type poly_type = poly_type::single_poly;
+        poly_type _poly_type = poly_type::single_poly;
         pyqubo::polynomial* terms = nullptr;
         product* prd = nullptr;
         Coeff coeff;
         
         poly(pyqubo::polynomial* terms): terms(terms){
-            poly_type = poly_type::multi_poly;
+            _poly_type = poly_type::multi_poly;
         }
 
         poly(Coeff coeff): coeff(coeff){
@@ -51,7 +51,7 @@ namespace pyqubo {
         }
 
         poly copy() const {
-            if(poly_type == poly_type::single_poly){
+            if(_poly_type == poly_type::single_poly){
                 return poly(this->coeff, this->prd);
             }else{
                 return poly(new pyqubo::polynomial(*terms));
@@ -60,11 +60,11 @@ namespace pyqubo {
 
         // polynomial is composed of only numeric constant or not
         bool is_numeric() const {
-            return poly_type == poly_type::single_poly && prd->indexes().size() == 0;
+            return _poly_type == poly_type::single_poly && prd->indexes().size() == 0;
         }
 
         poly to_multi() const {
-            if(poly_type == poly_type::single_poly){
+            if(_poly_type == poly_type::single_poly){
                 return poly(new pyqubo::polynomial({{*prd, coeff}}));
             }else{
                 return *this;
@@ -72,7 +72,7 @@ namespace pyqubo {
         }
 
         pyqubo::polynomial* get_terms() const {
-            if(poly_type == poly_type::single_poly){
+            if(_poly_type == poly_type::single_poly){
                 return new pyqubo::polynomial({{*prd, coeff}});
             }else{
                 return terms;
@@ -80,7 +80,7 @@ namespace pyqubo {
         }
 
         size_t size() const {
-            if(poly_type == poly_type::single_poly){
+            if(_poly_type == poly_type::single_poly){
                 return 1;
             }else{
                 return terms->size();
@@ -88,7 +88,7 @@ namespace pyqubo {
         }
 
         std::string to_string() const {
-            if(poly_type == poly_type::single_poly){
+            if(_poly_type == poly_type::single_poly){
                 return "single_poly(" + coeff->to_string() + "," + this->prd->to_string() + ")";
             }else{
                 std::stringstream ss;
@@ -141,16 +141,16 @@ namespace pyqubo {
     }
 
     auto operator*(const poly& poly_1, const poly& poly_2) noexcept {
-        if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::single_poly){
+        if(poly_1._poly_type == poly_type::single_poly && poly_2._poly_type == poly_type::single_poly){
             /*if(poly_1.is_numeric() && poly_2.is_numeric()){
                 return poly(poly_1.coeff * poly_2.coeff, new product({}));
             }else{
                 return poly(poly_1.coeff * poly_2.coeff, multiply(poly_1.prd, poly_2.prd));
             }*/
             return poly(poly_1.coeff * poly_2.coeff, multiply(poly_1.prd, poly_2.prd));
-        }else if(poly_1.poly_type == poly_type::multi_poly && poly_2.poly_type == poly_type::single_poly){
+        }else if(poly_1._poly_type == poly_type::multi_poly && poly_2._poly_type == poly_type::single_poly){
             return multiply_multi_multi(poly_1, poly_2.to_multi());
-        }else if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::multi_poly){
+        }else if(poly_1._poly_type == poly_type::single_poly && poly_2._poly_type == poly_type::multi_poly){
             return multiply_multi_multi(poly_1.to_multi(), poly_2);
         }else{
             return multiply_multi_multi(poly_1, poly_2);
@@ -159,7 +159,7 @@ namespace pyqubo {
 
     auto operator+(poly& poly_1, poly& poly_2) noexcept {
         
-        if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::single_poly){
+        if(poly_1._poly_type == poly_type::single_poly && poly_2._poly_type == poly_type::single_poly){
             //printf("single poly %s + single poly %s\n", poly_1.coeff->to_string().c_str(), poly_2.coeff->to_string().c_str());
             if(poly_1.prd->equals(*poly_2.prd)){
                 return poly(poly_1.coeff + poly_2.coeff, poly_1.prd);
@@ -167,11 +167,11 @@ namespace pyqubo {
                 auto terms = new pyqubo::polynomial({{*poly_1.prd, poly_1.coeff}, {*poly_2.prd, poly_2.coeff}});
                 return poly(terms);
             }
-        }else if(poly_1.poly_type == poly_type::multi_poly && poly_2.poly_type == poly_type::single_poly){
+        }else if(poly_1._poly_type == poly_type::multi_poly && poly_2._poly_type == poly_type::single_poly){
             //std::cout << "operator+ add_multi_single\n";
             return add_multi_single(poly_1, poly_2);
 
-        }else if(poly_1.poly_type == poly_type::single_poly && poly_2.poly_type == poly_type::multi_poly){
+        }else if(poly_1._poly_type == poly_type::single_poly && poly_2._poly_type == poly_type::multi_poly){
             //std::cout << "operator+ add_multi_single\n";
             return add_multi_single(poly_2, poly_1);
         }else{
