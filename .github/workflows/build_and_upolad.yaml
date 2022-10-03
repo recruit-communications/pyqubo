@@ -75,14 +75,14 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
+    if: github.event_name == 'release'
     env:
       CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x86_64, AMD64, i686, arm64]
-        #python: [36, 37, 38, 39, 310]
-        python: []
+        python: [36, 37, 38, 39, 310]
 
         exclude:
          - os: ubuntu-latest
