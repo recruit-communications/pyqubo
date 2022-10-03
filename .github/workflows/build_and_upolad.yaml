@@ -79,9 +79,11 @@ jobs:
       CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        #os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [macos-latest]
         arch: [x86_64, AMD64, i686, arm64]
-        python: [36, 37, 38, 39, 310]
+        #python: [36, 37, 38, 39, 310]
+        python: [310]
 
         exclude:
          - os: ubuntu-latest
@@ -172,7 +174,6 @@ jobs:
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
           
   upload_test_pypi:
@@ -185,7 +186,6 @@ jobs:
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_TEST_PASSWORD }}
           repository_url: https://test.pypi.org/legacy/
           skip_existing: true
