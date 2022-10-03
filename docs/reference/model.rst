@@ -38,7 +38,7 @@ Model
         >>> model.to_qubo(index_label=True)  # doctest: +SKIP
         ({(2, 2): 3.0, (1, 1): 2.0, (0, 0): 1.0}, 0.0)
         >>> model.variables
-        ['a', 'b', 'c']
+        ['c', 'a', 'b']
         
         This indicaretes the mapping of indices and labels as 'c'->0, 'a'->1, 'b'->2
 
@@ -96,7 +96,7 @@ Model
         >>> pprint(model.to_qubo(index_label=True)) # doctest: +SKIP
         ({(0, 0): 3.0, (0, 2): 1.0, (1, 1): 0.0, (1, 2): 1.0, (2, 2): 0.0}, 0.0)
         >>> model.variables
-        ['x', 'y', 'z']
+        ['z', 'x', 'y']
 
 
 .. py:method:: to_ising(index_label=False, feed_dict=None)
@@ -129,7 +129,7 @@ Model
         >>> pprint(model.to_ising(index_label=True)) # doctest: +SKIP
         ({0: 1.75, 1: 0.25, 2: 0.5}, {(0, 2): 0.25, (1, 2): 0.25}, 2.0)
         >>> model.variables
-        ['x', 'y', 'z']
+        ['z', 'x', 'y']
 
 
 .. py:method:: to_bqm(index_label=False, feed_dict=None)

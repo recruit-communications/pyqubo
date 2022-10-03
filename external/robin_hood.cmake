@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     robin_hood
     GIT_REPOSITORY https://github.com/martinus/robin-hood-hashing
-    GIT_TAG        3.11.2
+    GIT_TAG        3.11.3
 )
 
 FetchContent_GetProperties(robin_hood)

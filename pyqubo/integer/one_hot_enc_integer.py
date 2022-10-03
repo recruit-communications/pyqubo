@@ -65,6 +65,8 @@ class OneHotEncInteger(IntegerWithPenalty):
         express = SubH(lower + sum(i*x for i, x in enumerate(self.array)), label=label)
         penalty = self.constraint * strength
 
+        self._express = express
+
         super().__init__(
             label=label,
             value_range=value_range,

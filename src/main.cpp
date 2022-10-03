@@ -11,6 +11,7 @@
 #include <vartypes.hpp>
 
 #include "abstract_syntax_tree.hpp"
+#include "expand.hpp"
 #include "compiler.hpp"
 
 namespace py = pybind11;
@@ -18,6 +19,7 @@ using namespace py::literals;
 
 PYBIND11_MODULE(cpp_pyqubo, m) {
   m.doc() = "pyqubo C++ binding";
+  
 
   py::class_<pyqubo::expression, std::shared_ptr<pyqubo::expression>>(m, "Base")
       .def("__add__", [](const std::shared_ptr<const pyqubo::expression>& expression, const std::shared_ptr<const pyqubo::expression>& other) {
@@ -72,9 +74,14 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       })
       .def(
           "compile", [](const std::shared_ptr<const pyqubo::expression>& expression, double strength) {
-            return pyqubo::compile(expression, strength);
+            return pyqubo::compile(expression, std::make_shared<const pyqubo::numeric_literal>(strength));
           },
           py::arg("strength") = 5)
+      .def(
+          "compile", [](const std::shared_ptr<const pyqubo::expression>& expression, const std::shared_ptr<const pyqubo::expression>& placeholder_strength) {
+            return pyqubo::compile(expression, placeholder_strength);
+          },
+          py::arg("strength"))
       .def("__hash__", [](const pyqubo::expression& expression) { // 必要？
         return std::hash<pyqubo::expression>()(expression);
       })
@@ -83,16 +90,22 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def("__repr__", &pyqubo::expression::to_string);
 
   py::class_<pyqubo::add_operator, std::shared_ptr<pyqubo::add_operator>, pyqubo::expression>(m, "Add")
-      .def("__iadd__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
-        add_operator->add_child(other);
-
-        return add_operator;
+      .def("__add__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, other);
       })
-      .def("__iadd__", [](std::shared_ptr<pyqubo::add_operator>& add_operator, double other) {
-        add_operator->add_child(std::make_shared<const pyqubo::numeric_literal>(other));
-
-        return add_operator;
+      .def("__add__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(other));
+      })
+      .def("__radd__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(other));
+      })
+      .def("__sub__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, const std::shared_ptr<const pyqubo::expression>& other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(-1) * other);
+      })
+      .def("__sub__", [](const std::shared_ptr<const pyqubo::add_operator>& add_operator, double other) {
+        return std::make_shared<pyqubo::add_operator>(add_operator, std::make_shared<const pyqubo::numeric_literal>(-other));
       });
+
 
   py::class_<pyqubo::binary_variable, std::shared_ptr<pyqubo::binary_variable>, pyqubo::expression>(m, "Binary")
       .def(py::init<const std::string&>());
@@ -110,7 +123,10 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::string&, const std::function<bool(double)>&>(), py::arg("hamiltonian"), py::arg("label"), py::arg("condition") = py::cpp_function([](double x) { return x == 0; }));
 
   py::class_<pyqubo::with_penalty, std::shared_ptr<pyqubo::with_penalty>, pyqubo::expression>(m, "WithPenalty")
-      .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::shared_ptr<const pyqubo::expression>&, const std::string&>());
+      .def(py::init<const std::shared_ptr<const pyqubo::expression>&, const std::shared_ptr<const pyqubo::expression>&, const std::string&>())
+      .def_property_readonly("express", &pyqubo::with_penalty::expression)
+      .def_property_readonly("penalty", &pyqubo::with_penalty::penalty);
+      
 
   py::class_<pyqubo::user_defined_expression, std::shared_ptr<pyqubo::user_defined_expression>, pyqubo::expression>(m, "UserDefinedExpress")
       .def(py::init<const std::shared_ptr<const pyqubo::expression>&>());
@@ -170,7 +186,9 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
         }();
 
         return solution.sample().at(name_and_indexes);
-      });
+      })
+      .def("value", &pyqubo::solution::evaluate)
+      .def("__repr__", &pyqubo::solution::to_string);
   py::class_<pyqubo::model>(m, "Model")
       .def_property_readonly("variables", &pyqubo::model::variable_names)
       .def(
@@ -190,9 +208,9 @@ PYBIND11_MODULE(cpp_pyqubo, m) {
       .def(
           "to_qubo", [](const pyqubo::model& model, bool index_label, const std::unordered_map<std::string, double>& feed_dict) {
             if (!index_label) {
-              return py::cast(model.to_bqm<std::string>(feed_dict, cimod::Vartype::BINARY).to_qubo());
-            } else {
-              return py::cast(model.to_bqm<int>(feed_dict, cimod::Vartype::BINARY).to_qubo());
+              return py::cast(model.to_qubo_string(feed_dict));
+            }else{
+              return py::cast(model.to_qubo_int(feed_dict));
             }
           },
           py::arg("index_label") = false, py::arg("feed_dict") = std::unordered_map<std::string, double>{})

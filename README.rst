@@ -45,7 +45,7 @@ By calling ``model.to_qubo()``, we get the resulting QUBO.
 >>> H = (4*s1 + 2*s2 + 7*s3 + s4)**2
 >>> model = H.compile()
 >>> qubo, offset = model.to_qubo()
->>> pprint(qubo)
+>>> pprint(qubo) # doctest: +SKIP
 {('s1', 's1'): -160.0,
 ('s1', 's2'): 64.0,
 ('s1', 's3'): 224.0,

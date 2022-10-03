@@ -29,7 +29,12 @@ class TestInteger(unittest.TestCase):
         decoded = model.decode_sampleset(
             sampleset, feed_dict={"s": 10.0})
         best = min(decoded, key=lambda x: x.energy)
-        self.assertTrue(best.subh["a"]==3)
+        self.assertTrue(best.value(a) == 3)
+
+        # will raise runtime error if the constraint is broken, when evaluating the value of the one-hot-integer object.
+        worst = max(decoded, key=lambda x: x.energy)
+        self.assertRaises(RuntimeError, lambda: worst.value(a))
+
         self.assertTrue(a.value_range == (0, 4))
 
         # expected_q = {('a[0]', 'a[1]'): 20.0,
@@ -50,20 +55,20 @@ class TestInteger(unittest.TestCase):
         # expected_offset = 19
         # assert_qubo_equal(q, expected_q)
         # self.assertTrue(offset == expected_offset)
-
+  
     def test_one_hot_enc_integer_equal(self):
         a = OneHotEncInteger("a", (0, 4), strength=Placeholder("s"))
         b = OneHotEncInteger("b", (0, 4), strength=Placeholder("s"))
         M = 2.0
-        H = (a + b - 5) ** 2 + M*(a.equal_to(3)-1)**2
+        H = (a + b - 5) ** 2 + M * (a.equal_to(3) - 1)**2
         model = H.compile()
         q, offset = model.to_qubo(feed_dict={"s": 10.0})
         sampleset = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(
             sampleset, feed_dict={"s": 10.0})
         best = min(decoded, key=lambda x: x.energy)
-        self.assertTrue(best.subh["a"]==3)
-        self.assertTrue(best.subh["b"]==2)
+        self.assertTrue(best.value(a) == 3)
+        self.assertTrue(best.value(b) == 2)
         self.assertTrue(best.subh["a_const"]==0)
         self.assertTrue(best.subh["b_const"]==0)
         self.assertEqual(len(best.constraints(only_broken=True)), 0)
@@ -113,8 +118,8 @@ class TestInteger(unittest.TestCase):
         sampleset = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(sampleset)
         best = min(decoded, key=lambda x: x.energy)
-        self.assertTrue(best.subh["a"] == 2)
-        self.assertTrue(best.subh["b"] == 3)
+        self.assertTrue(best.value(a) == 2)
+        self.assertTrue(best.value(b) == 3)
         self.assertTrue(a.value_range == (0, 4))
         self.assertTrue(b.value_range == (0, 4))
 
@@ -129,8 +134,8 @@ class TestInteger(unittest.TestCase):
         sampleset = dimod.ExactSolver().sample_qubo(q)
         decoded = model.decode_sampleset(sampleset)
         best = min(decoded, key=lambda x: x.energy)
-        self.assertTrue(best.subh["a"] == 1)
-        self.assertTrue(best.subh["b"] == 2)
+        self.assertTrue(best.value(a) == 1)
+        self.assertTrue(best.value(b) == 2)
         self.assertTrue(a.value_range == (0, 3))
         self.assertTrue(b.value_range == (0, 3))
 
@@ -156,6 +161,7 @@ class TestInteger(unittest.TestCase):
         #      ('b[1]', 'b[1]'): -7.0,
         #      ('b[2]', 'b[2]'): -7.0}
         # assert_qubo_equal(q, expected_q)
+    
 
 if __name__ == '__main__':
     unittest.main()

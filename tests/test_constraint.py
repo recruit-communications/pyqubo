@@ -65,15 +65,6 @@ class TestConstraint(unittest.TestCase):
         self.assertTrue(model.energy({"a": 0, "b": 0, "c": 1, "aux_xor": 1}, vartype="BINARY") > 0)
         self.assertTrue(model.energy({"a": 1, "b": 1, "c": 1, "aux_xor": 1}, vartype="BINARY") > 0)
 
-    def test_equality(self):
-        xor1 = XorConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
-        xor2 = XorConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
-        xor3 = XorConst(Binary("b"), Binary("c"), Binary("a"), label="xor")
-        or1 = OrConst(Binary("a"), Binary("b"), Binary("c"), label="xor")
-        self.assertTrue(xor1 + 1 == xor2 + 1)
-        self.assertTrue(xor1 == xor2)
-        self.assertFalse(xor1 == or1)
-        self.assertFalse(xor1 == xor3)
 
 if __name__ == '__main__':
     unittest.main()
