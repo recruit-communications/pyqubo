@@ -1,11 +1,11 @@
 # (major, minor, patch, prerelease)
 
-VERSION = (1, 2, 0, "")
+VERSION = (1, 3, 0, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
 __package_name__ = 'pyqubo'
-__contact_names__ = 'Recruit Communications Co., Ltd.'
+__contact_names__ = 'Recruit Co., Ltd.'
 __contact_emails__ = 'rco_pyqubo@ml.cocorou.jp'
 __homepage__ = 'https://pyqubo.readthedocs.io/en/latest/'
 __repository_url__ = 'https://github.com/recruit-communications/pyqubo'

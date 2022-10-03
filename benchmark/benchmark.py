@@ -43,19 +43,15 @@ def tsp_with_timeout(n_city, timeout_sec):
         use_for_loop=False
 
         # Constraint not to visit more than two cities at the same time.
-        """
         time_const = 0.0
         for i in range(n_city):
             # If you wrap the hamiltonian by Const(...), this part is recognized as constraint
             time_const += Constraint((sum(x[i, j] for j in range(n_city)) - 1)**2, label="time{}".format(i))
-        """
 
         # Constraint not to visit the same city more than twice.
-        """
         city_const = 0.0
         for j in range(n_city):
             city_const += Constraint((sum(x[i, j] for i in range(n_city)) - 1)**2, label="city{}".format(j))
-        """
 
         # distance of route
         feed_dict = {}
@@ -67,9 +63,6 @@ def tsp_with_timeout(n_city, timeout_sec):
                     for k in range(n_city):
                         # we set the constant distance
                         d_ij = 10
-                        #label = f"d_{i}_{j}"
-                        #feed_dict[label] = d_ij
-                        #distance += Placeholder(label) * x[k, i] * x[(k + 1) % n_city, j]
                         distance += d_ij * x[k, i] * x[(k + 1) % n_city, j]
                     
         else:
@@ -79,19 +72,9 @@ def tsp_with_timeout(n_city, timeout_sec):
                     for k in range(n_city):
                         # we set the constant distance
                         d_ij = 10
-                        #label = f"d_{i}_{j}"
-                        #feed_dict[label] = d_ij
-                        #distance += Placeholder(label) * x[k, i] * x[(k + 1) % n_city, j]
                         distance.append(d_ij * x[k, i] * x[(k + 1) % n_city, j])
             distance = sum(distance)
 
-            """
-            distance = sum(
-                10 * x[k, i] * x[(k + 1) % n_city, j]
-                    for i in range(n_city)
-                    for j in range(n_city)
-                    for k in range(n_city))
-            """
         print("express done")
         
         # Construct hamiltonian

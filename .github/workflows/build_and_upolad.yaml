@@ -75,7 +75,6 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }} ${{matrix.arch}}
     runs-on: ${{ matrix.os }}
-    if: github.event_name == 'release'
     env:
       CIBW_DEPENDENCY_VERSIONS: pinned
     strategy:
@@ -176,8 +175,7 @@ jobs:
           password: ${{ secrets.PYPI_PASSWORD }}
           
   upload_test_pypi:
-    #needs: [build_wheels, build_sdist]
-    needs: [build_sdist]
+    needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v2
@@ -186,7 +184,7 @@ jobs:
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          password: ${{ secrets.PYPI_TEST_TOKEN }}
+          password: ${{ secrets.PYPI_TEST_PASSWORD }}
           repository_url: https://test.pypi.org/legacy/
           skip_existing: true
           verbose: true
