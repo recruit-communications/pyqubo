@@ -81,7 +81,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
         arch: [x86_64, AMD64, i686, arm64]
-        python: [36, 37, 38, 39, 310]
+        python: [36, 37, 38, 39, 310, 311]
 
         exclude:
          - os: ubuntu-latest
