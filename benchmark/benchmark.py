@@ -79,7 +79,7 @@ def tsp_with_timeout(n_city, timeout_sec):
         
         # Construct hamiltonian
         A = Placeholder("A")
-        H = distance
+        H = distance + A*(city_const+time_const)
 
         feed_dict["A"] = 1.0
 
