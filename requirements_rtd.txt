@@ -5,7 +5,7 @@ nbsphinx>=0.3.5
 Deprecated>=1.2.10
 six>=1.15.0
 numpy==1.19.4; python_version >= '3.6'
-numpy==1.18.5; python_version == '3.5'
+numpy==1.24.1; python_version == '3.5'
 dimod==0.9.14
 nbsphinx>=0.8.3; python_version >= '3.8'
 nbsphinx==0.3.5; python_version < '3.8'
