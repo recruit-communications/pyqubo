@@ -24,7 +24,7 @@ jobs:
         run: |
           pip install -r requirements.txt
           python setup.py sdist
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: dist/*.tar.gz
@@ -155,7 +155,7 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND: ${{matrix.CIBW_REPAIR_WHEEL_COMMAND}}
           CIBW_BUILD_VERBOSITY: 3
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: artifact
           path: ./wheelhouse/*.whl
