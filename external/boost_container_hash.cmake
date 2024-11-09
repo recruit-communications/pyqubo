@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     boost_container_hash
     GIT_REPOSITORY https://github.com/boostorg/container_hash
-    GIT_TAG        boost-1.76.0
+    GIT_TAG        boost-1.86.0
 )
 
 FetchContent_GetProperties(boost_container_hash)
