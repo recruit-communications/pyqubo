@@ -10,9 +10,8 @@
 .. image:: https://static.pepy.tech/badge/pyqubo
     :target: https://www.pepy.tech/projects/pyqubo
     
-.. image:: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml/badge.svg
+.. image:: https://img.shields.io/github/workflow/status/recruit-communications/pyqubo/build_and_upolad?label=build&logo=github
     :target: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml
-
 
 .. index-start-marker1
 
