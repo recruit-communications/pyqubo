@@ -25,7 +25,13 @@ else()
 endif()
 
 target_compile_definitions(cpp_pyqubo PRIVATE VERSION_INFO=${PYQUBO_VERSION_INFO})
-target_compile_features(cpp_pyqubo PRIVATE cxx_std_17)
+
+#target_compile_features(cpp_pyqubo PRIVATE cxx_std_17)
+
+# Explicitly set C++14 as the standard
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 target_compile_options(cpp_pyqubo PRIVATE
     $<$<CXX_COMPILER_ID:GNU>: -Ofast -Wall -Wno-terminate>
     $<$<CXX_COMPILER_ID:AppleClang>: -Ofast -Wno-exceptions>

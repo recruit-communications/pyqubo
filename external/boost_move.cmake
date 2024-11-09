@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     boost_move
     GIT_REPOSITORY https://github.com/boostorg/move
-    GIT_TAG        boost-1.86.0
+    GIT_TAG        boost-1.76.0
 )
 
 FetchContent_GetProperties(boost_move)
