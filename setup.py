@@ -156,7 +156,7 @@ tests_require = [
     'codecov>=2.1.9'
 ]
 
-python_requires = '>=3.6, <3.14'
+python_requires = '>=3.8, <3.14'
 
 setup(
     name=package_info.__package_name__,
