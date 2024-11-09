@@ -10,8 +10,9 @@
 .. image:: https://static.pepy.tech/badge/pyqubo
     :target: https://www.pepy.tech/projects/pyqubo
     
-.. image:: https://img.shields.io/github/workflow/status/recruit-communications/pyqubo/build_and_upolad?label=build&logo=github
+.. image:: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml/badge.svg
     :target: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml
+
 
 .. index-start-marker1
 
@@ -113,7 +114,7 @@ or
 Supported Python Versions
 -------------------------
 
-Python 3.8, 3.9, 3.10, 3.11, 3.12, 3.13 are supported.
+Python 3.8, 3.9, 3.10, 3.11, 3.12, are supported.
 
 Supported Operating Systems
 ---------------------------
