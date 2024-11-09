@@ -7,8 +7,8 @@
 .. image:: https://readthedocs.org/projects/pyqubo/badge/?version=latest
     :target: http://pyqubo.readthedocs.io/en/latest/?badge=latest
 
-.. image:: https://pepy.tech/badge/pyqubo
-    :target: https://pepy.tech/project/pyqubo
+.. image:: https://static.pepy.tech/badge/pyqubo
+    :target: https://www.pepy.tech/projects/pyqubo
     
 .. image:: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml/badge.svg
     :target: https://github.com/recruit-communications/pyqubo/actions/workflows/build_and_upolad.yaml
@@ -111,11 +111,6 @@ or
 
     python -m pip install .
 
-Supported Python Versions
--------------------------
-
-Python 3.6, 3.7, 3.8, 3.9 and 3.10 are supported.
-
 Supported Operating Systems
 ---------------------------
 
@@ -133,7 +128,7 @@ Run all tests.
 .. code-block:: shell
 
     export USE_TEST=1
-    python -m unittest discover test
+    python -m unittest discover tests
 
 Show coverage report.
 
@@ -142,12 +137,6 @@ Show coverage report.
     export USE_TEST=1
     coverage run -m unittest discover
     coverage html
-
-Run test with circleci CLI.
-
-.. code-block:: shell
-
-    circleci build --job $JOBNAME
 
 Run doctest.
 
