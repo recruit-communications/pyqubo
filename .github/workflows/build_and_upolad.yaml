@@ -157,7 +157,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: artifact-${{ matrix.CIBW_PLATFORM }}-${{matrix.arch}}-${{matrix.python}}
+          name: artifact-${{ github.sha }}
           path: ./wheelhouse/*.whl
           retention-days: 1
           
@@ -166,9 +166,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: artifact-${{ github.sha }}
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
@@ -179,9 +179,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
-          name: artifact
+          name: artifact-${{ github.sha }}
           path: dist
       - uses: pypa/gh-action-pypi-publish@release/v1
         with:
