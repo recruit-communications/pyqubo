@@ -1,6 +1,6 @@
 # (major, minor, patch, prerelease)
 
-VERSION = (1, 4, 0, "")
+VERSION = (1, 5, 0, "")
 __shortversion__ = '.'.join(map(str, VERSION[:3]))
 __version__ = '.'.join(map(str, VERSION[:3])) + "".join(VERSION[3:])
 
