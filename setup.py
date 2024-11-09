@@ -156,7 +156,7 @@ tests_require = [
     'codecov>=2.1.9'
 ]
 
-python_requires = '>=3.6, <3.13'
+python_requires = '>=3.6, <3.14'
 
 setup(
     name=package_info.__package_name__,
@@ -181,11 +181,7 @@ setup(
     tests_require=tests_require,
     include_package_data=True,
     classifiers=[
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python',
         'License :: OSI Approved :: Apache Software License',
     ]
 )
