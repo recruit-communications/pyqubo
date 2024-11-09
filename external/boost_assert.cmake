@@ -3,7 +3,7 @@ include(FetchContent)
 FetchContent_Declare(
     boost_assert
     GIT_REPOSITORY https://github.com/boostorg/assert
-    GIT_TAG        boost-1.76.0
+    GIT_TAG        boost-1.82.0
 )
 
 FetchContent_GetProperties(boost_assert)
